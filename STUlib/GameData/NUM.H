@@ -1,0 +1,24 @@
+#pragma once
+
+
+#define NUM_UNIT_TYPES 198
+
+#define NUM_UNIT_TYPE_NAMES 120
+
+#define NUM_HERO_UNIT_PROTOTYPES 35
+
+#define NUM_HERO_UNITS       35
+#define NUM_NORMAL_UNITS    119
+#define NUM_FANTASTIC_UNITS  44
+
+#define FST_HERO_UNIT         0
+#define LST_HERO_UNIT        34
+#define FST_NORMAL_UNIT      35
+#define LST_NORMAL_UNIT     153
+#define FST_FANTASTIC_UNIT  154
+#define LST_FANTASTIC_UNIT  197
+
+#define NUM_RACES 14
+
+#define NUM_WIZARD_PROTOTYPES 14
+

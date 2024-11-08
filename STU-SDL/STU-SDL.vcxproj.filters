@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{4026d3e8-6a7d-4701-8590-59d2991ec597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ReMoM">
+      <UniqueIdentifier>{3e2a026d-48b3-415d-a067-f4a672bdd178}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="STU-SDL.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imgui_impl_sdl2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3PL\imgui\imgui_impl_sdlrenderer2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\Fonts.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\Graphics.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\Video.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\MoX_Util.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\Mouse.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ReMoM\src\Video2.H">
+      <Filter>ReMoM</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STU_STD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="STU-SDL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_SDL2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_impl_sdl2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3PL\imgui\imgui_impl_sdlrenderer2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_SDL2_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Fonts.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Graphics.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Video.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\MoX_Util.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Mouse.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Video2.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\win_Fonts.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\MoX_PFL.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Fields.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\win_CLK.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\win_Video.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Input.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\MoX_Data.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\MoX.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ReMoM\src\Keyboard.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_Video.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Query_SDL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_ImGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="STU_MoX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl_MD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl_KD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ReMoM\src\win_PFL.cpp">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ReMoM\src\MoX_RNG.C">
+      <Filter>ReMoM</Filter>
+    </ClCompile>
+    <ClCompile Include="STU_STD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

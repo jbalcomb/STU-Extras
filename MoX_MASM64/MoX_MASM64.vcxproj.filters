@@ -15,31 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="STU-Extras.cpp">
+    <MASM Include="MoX_MASM64.asm" />
+    <MASM Include="MASM64_Style1.asm">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PoC-Inja.cpp">
+    </MASM>
+    <MASM Include="MASM64_Style2.asm">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PoC-json.cpp">
+    </MASM>
+    <MASM Include="MovePathFind.asm">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Deduce-ProgGen.cpp">
+    </MASM>
+    <MASM Include="Random.asm">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Deduce-UnitType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LFSR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="STU-Extras.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Deduce-UnitType.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    </MASM>
   </ItemGroup>
 </Project>

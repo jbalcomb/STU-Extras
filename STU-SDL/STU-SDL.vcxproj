@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2bff2687-6f03-4761-b263-e568ff1825c5}</ProjectGuid>
+    <RootNamespace>STUSDL</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)\$(Platform)\$(Configuration)\MoX.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2_image.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\libpng16-16.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\zlib1.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)\$(Platform)\$(Configuration)\MoX.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2_image.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\libpng16-16.dll" "$(OutDir)"
+xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\zlib1.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ReMoM\src\Fonts.H" />
+    <ClInclude Include="..\ReMoM\src\Graphics.H" />
+    <ClInclude Include="..\ReMoM\src\Mouse.H" />
+    <ClInclude Include="..\ReMoM\src\MoX_Util.H" />
+    <ClInclude Include="..\ReMoM\src\Video.H" />
+    <ClInclude Include="..\ReMoM\src\Video2.H" />
+    <ClInclude Include="3PL\imgui\imconfig.h" />
+    <ClInclude Include="3PL\imgui\imgui.h" />
+    <ClInclude Include="3PL\imgui\imgui_impl_sdl2.h" />
+    <ClInclude Include="3PL\imgui\imgui_impl_sdlrenderer2.h" />
+    <ClInclude Include="3PL\imgui\imgui_internal.h" />
+    <ClInclude Include="3PL\imgui\imstb_rectpack.h" />
+    <ClInclude Include="3PL\imgui\imstb_textedit.h" />
+    <ClInclude Include="3PL\imgui\imstb_truetype.h" />
+    <ClInclude Include="Configuration.hpp" />
+    <ClInclude Include="Platform.hpp" />
+    <ClInclude Include="STU-SDL.hpp" />
+    <ClInclude Include="STU_STD.H" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\ReMoM\src\MoX_RNG.C" />
+    <ClCompile Include="..\..\ReMoM\src\win_PFL.cpp" />
+    <ClCompile Include="..\ReMoM\src\Fields.C" />
+    <ClCompile Include="..\ReMoM\src\Fonts.C" />
+    <ClCompile Include="..\ReMoM\src\Graphics.C" />
+    <ClCompile Include="..\ReMoM\src\Input.C" />
+    <ClCompile Include="..\ReMoM\src\Keyboard.C" />
+    <ClCompile Include="..\ReMoM\src\Mouse.C" />
+    <ClCompile Include="..\ReMoM\src\MoX.C" />
+    <ClCompile Include="..\ReMoM\src\MoX_Data.C" />
+    <ClCompile Include="..\ReMoM\src\MoX_PFL.C" />
+    <ClCompile Include="..\ReMoM\src\MoX_Util.C" />
+    <ClCompile Include="..\ReMoM\src\Video.C" />
+    <ClCompile Include="..\ReMoM\src\Video2.C" />
+    <ClCompile Include="..\ReMoM\src\win_CLK.C" />
+    <ClCompile Include="..\ReMoM\src\win_Fonts.C" />
+    <ClCompile Include="..\ReMoM\src\win_Video.C" />
+    <ClCompile Include="3PL\imgui\imgui.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_demo.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_draw.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_impl_sdlrenderer2.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_tables.cpp" />
+    <ClCompile Include="3PL\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Configuration.cpp" />
+    <ClCompile Include="imgui_SDL2_main.cpp" />
+    <ClCompile Include="Platform_ImGui.cpp" />
+    <ClCompile Include="Platform_SDL2.cpp" />
+    <ClCompile Include="Query_SDL.cpp" />
+    <ClCompile Include="sdl_KD.C" />
+    <ClCompile Include="sdl_MD.cpp" />
+    <ClCompile Include="SDL_Video.cpp" />
+    <ClCompile Include="STU-SDL.cpp" />
+    <ClCompile Include="STU_MoX.cpp" />
+    <ClCompile Include="STU_STD.C" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReMoM\IDE\VS2019\MoX\MoX.vcxproj">
+      <Project>{da90c873-d83f-4cdf-963d-7b733fe10997}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

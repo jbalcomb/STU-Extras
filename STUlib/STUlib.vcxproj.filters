@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MWA_Current_Working_Directory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_Array.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_File.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_File_WinAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadGameFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="STUlib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\UnitRace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\Export-UnitTypeNames.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\Export-UnitTypeTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\GameData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\STU-GameData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData\UnitType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FC_Array.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_Common.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_External.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_File.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_File_WinAPI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_Internal.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadGameFiles.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STUlib.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\Export-UnitTypeTable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\NUM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\OFS_LEN.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\s_RACE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\s_UNIT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\s_UNITTYPE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\GameData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\UnitType.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\UnitTypeTable.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData\WZD_OFS.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -15,12 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="STU-Extras-Graphics.cpp">
+    <ClCompile Include="C4lib.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_Array.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_File.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC_File_WinAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="STU-Extras-Graphics.hpp">
+    <ClInclude Include="C4.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_Array.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_Common.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_External.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_File.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_File_WinAPI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FC_Internal.H">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

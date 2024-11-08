@@ -3,6 +3,39 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+
+
+# MoM
+
+*.GAM
+*.LBX
+*.MOM
+*.SET
+!SAVETEST.GAM
+
+# STU
+
+*.BIN
+*.BMP
+*.LOG
+
+stderr.txt
+stdout.txt
+
+# STU-Extras
+
+3PL/
+
+# Borland C++ v3.0 (c) 1992
+*.DSK
+*.EXE
+*.LST
+*.MAP
+*.OBJ
+*.XRF
+
+
+
 # User-specific files
 *.rsuser
 *.suo
