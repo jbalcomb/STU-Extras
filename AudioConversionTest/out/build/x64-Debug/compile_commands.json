@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/STU/devel/STU-Extras/AudioConversionTest/out/build/x64-Debug",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1441~1.341\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 /FoCMakeFiles\\AudioConversionTest.dir\\AudioConversionTest.cpp.obj /FdCMakeFiles\\AudioConversionTest.dir\\ /FS -c C:\\STU\\devel\\STU-Extras\\AudioConversionTest\\AudioConversionTest.cpp",
+  "file": "C:\\STU\\devel\\STU-Extras\\AudioConversionTest\\AudioConversionTest.cpp",
+  "output": "CMakeFiles\\AudioConversionTest.dir\\AudioConversionTest.cpp.obj"
+}
+]

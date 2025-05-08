@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\STU\devel\STU-Extras\AudioConversionTest\AudioConversionTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\STU\devel\STU-Extras\AudioConversionTest\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A69E4E82-AFA4-3F70-96C2-2C4C71A720B7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

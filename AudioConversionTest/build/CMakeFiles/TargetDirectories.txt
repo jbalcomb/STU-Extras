@@ -1,0 +1,3 @@
+C:/STU/devel/STU-Extras/AudioConversionTest/build/CMakeFiles/AudioConversionTest.dir
+C:/STU/devel/STU-Extras/AudioConversionTest/build/CMakeFiles/ALL_BUILD.dir
+C:/STU/devel/STU-Extras/AudioConversionTest/build/CMakeFiles/ZERO_CHECK.dir

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\STU\devel\STU-Extras\AudioConversionTest\build\CMakeFiles\cd976f8faf7287afe0cb1cda5747df96\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F1B7ABDB-B9C2-3C69-90A5-0A270FFAC3F2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
