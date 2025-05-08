@@ -515,32 +515,6 @@ o108p03_Empty_pFxn                             ovr108
 
 
 
-AITP_CombatSpell                               ovr111
-AITP_DarknessLight                             ovr111
-AITP_Healing                                   ovr111
-AITP_WarpWood                                  ovr111
-AITP_WarpCreature                              ovr111
-UU15_AITP_Disintegrate                         ovr111
-AITP_DispelMagic                               ovr111
-G_CMB_SpellEffect                              ovr111
-AITP_HolyWord                                  ovr111
-
-
-
-AI_SetBasicAttacks                             ovr114
-AI_BU_ProcessAction                            ovr114
-BU_SortSlowestFirst                            ovr114
-AI_GetCombatRallyPt                            ovr114
-AI_MoveBattleUnits                             ovr114
-AI_BU_AssignAction                             ovr114
-AI_BU_SelectAction                             ovr114
-G_AI_BU_MoveOrRampage                          ovr114
-G_AI_BU_Move                                   ovr114
-
-
-
-
-
 CMB_Disenchant                                 ovr131
 TILE_DispelMagic                               ovr131
 CMB_ApplyCracksCall                            ovr131
@@ -575,15 +549,6 @@ CMB_ProcessVortices                            ovr133
 CMB_VortexMovement                             ovr133
 CMB_CallChaos                                  ovr133
 WIZ_CallChaos                                  ovr133
-
-
-
-AI_SelectCmbtSpell                             ovr139
-AI_EvaluateCmbtSpell                           ovr139
-AI_GetThreat_BU                                ovr139
-AI_SetCombatRealms                             ovr139
-AI_UnitThreatRealms                            ovr139
-AI_CombatSpellList                             ovr139
 
 
 
