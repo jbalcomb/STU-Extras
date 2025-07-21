@@ -64,3 +64,12 @@ jobs:
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-cmake-build-artifacts
+        path: |
+          steps.strings.outputs.build-output-dir/**/*.exe
+        if-no-files-found: error
+        retention-days: 7
