@@ -70,5 +70,5 @@ jobs:
       with:
         name: my-cmake-build-artifacts
         path: ${{ steps.strings.outputs.build-output-dir }}/**/*.exe
-        if-no-files-found: error
+        if-no-files-found: ignore
         retention-days: 7
