@@ -1,0 +1,219 @@
+BEGIN
+sizeof(struct s_SPELL_DATA): 36
+ret_code: 7740
+"None", -1
+"Earth to Mud", 5
+"Resist Elements", 1
+"Wall of Stone", 5
+"Giant Strength", 1
+"Web", 14
+"War Bears", 0
+"Stone Skin", 1
+"Water Walking", 1
+"Sprites", 0
+"Earth Lore", 5
+"Cracks Call", 5
+"Nature's Eye", 2
+"Ice Bolt", 22
+"Giant Spiders", 0
+"Change Terrain", 5
+"Path Finding", 1
+"Cockatrices", 0
+"Transmute", 5
+"Nature's Cures", 5
+"Basilisk", 0
+"Elemental Armor", 1
+"Petrify", 12
+"Stone Giant", 0
+"Iron Skin", 1
+"Ice Storm", 4
+"Earthquake", 5
+"Gorgons", 0
+"Move Fortress", 5
+"Gaia's Blessing", 2
+"Earth Elemental", 0
+"Regeneration", 1
+"Behemoth", 0
+"Entangle", 10
+"Nature Awareness", 9
+"Call Lightning", 10
+"Colossus", 0
+"Earth Gate", 2
+"Herb Mastery", 9
+"Great Wyrm", 0
+"Nature's Wrath", 9
+"Resist Magic", 1
+"Dispel Magic True", 18
+"Floating Island", 0
+"Guardian Wind", 1
+"Phantom Warriors", 0
+"Confusion", 13
+"Word of Recall", 5
+"Counter Magic", 21
+"Nagas", 0
+"Psionic Blast", 22
+"Blur", 10
+"Disenchant True", 19
+"Vertigo", 13
+"Spell Lock", 1
+"Enchant Road", 5
+"Flight", 1
+"Wind Mastery", 9
+"Spell Blast", 6
+"Aura of Majesty", 9
+"Phantom Beast", 0
+"Disjunction True", 20
+"Invisiblity", 1
+"Wind Walking", 1
+"Banish", 23
+"Storm Giant", 0
+"Air Elemental", 0
+"Mind Storm", 14
+"Stasis", 5
+"Magic Immunity", 1
+"Haste", 1
+"Djinn", 0
+"Spell Ward", 5
+"Creature Binding", 13
+"Mass Invisibility", 10
+"Great Unsummoning", 5
+"Spell Binding", 5
+"Flying Fortress", 2
+"Sky Drake", 0
+"Suppress Magic", 9
+"Time Stop", 9
+"Warp Wood", 5
+"Disrupt", 5
+"Fire Bolt", 22
+"Hell Hounds", 0
+"Corruption", 5
+"Eldritch Weapon", 15
+"Wall of Fire", 2
+"Shatter", 16
+"Warp Creature", 5
+"Fire Elemental", 0
+"Lightning Bolt", 22
+"Fire Giant", 0
+"Chaos Channels", 5
+"Flame Blade", 15
+"Gargoyles", 0
+"Fireball", 22
+"Doom Bat", 0
+"Raise Volcano", 5
+"Immolation", 1
+"Chimeras", 0
+"Warp Lightning", 4
+"Metal Fires", 10
+"Chaos Spawn", 0
+"Doom Bolt", 4
+"Magic Vortex", 5
+"Efreet", 0
+"Fire Storm", 4
+"Warp Reality", 10
+"Flame Strike", 10
+"Chaos Rift", 3
+"Hydra", 0
+"Disintegrate", 12
+"Meteor Storm", 9
+"Great Wasting", 9
+"Call Chaos", 10
+"Chaos Surge", 9
+"Doom Mastery", 9
+"Great Drake", 0
+"Call the Void", 5
+"Armageddon", 9
+"Bless", 1
+"Star Fires", 4
+"Endurance", 1
+"Holy Weapon", 15
+"Healing", 5
+"Holy Armor", 15
+"Just Cause", 9
+"True Light", 10
+"Guardian Spirit", 0
+"Heroism", 15
+"True Sight", 1
+"Plane Shift", 5
+"Resurrection", 5
+"Dispel Evil", 12
+"Planar Seal", 9
+"Unicorns", 0
+"Raise Dead", 5
+"Planar Travel", 1
+"Heavenly Light", 2
+"Prayer", 10
+"Lionheart", 1
+"Incarnation", 5
+"Invulnerability", 1
+"Righteousness", 1
+"Prosperity", 2
+"Altar of Battle", 2
+"Angel", 0
+"Stream of Life", 2
+"Mass Healing", 10
+"Holy Word", 10
+"High Prayer", 10
+"Inspirations", 2
+"Astral Gate", 2
+"Holy Arms", 9
+"Consecration", 2
+"Life Force", 9
+"Tranquility", 9
+"Crusade", 9
+"Arch Angel", 0
+"Charm of Life", 9
+"Skeletons", 0
+"Weakness", 13
+"Dark Rituals", 2
+"Cloak of Fear", 1
+"Black Sleep", 13
+"Ghouls", 0
+"Life Drain", 22
+"Terror", 10
+"Darkness", 10
+"Mana Leak", 10
+"Drain Power", 6
+"Possession", 16
+"Lycanthropy", 5
+"Black Prayer", 10
+"Black Channels", 1
+"Night Stalker", 0
+"Subversion", 6
+"Wall of Darkness", 2
+"Berserk", 1
+"Shadow Demons", 0
+"Wraith Form", 1
+"Wrack", 10
+"Evil Presence", 3
+"Wraiths", 0
+"Cloud of Shadow", 2
+"Warp Node", 5
+"Black Wind", 5
+"Zombie Mastery", 9
+"Famine", 3
+"Cursed Lands", 3
+"Cruel Unminding", 6
+"Word of Death", 12
+"Death Knights", 0
+"Death Spell", 10
+"Animate Dead", 5
+"Pestilence", 3
+"Eternal Night", 9
+"Evil Omens", 9
+"Death Wish", 5
+"Demon Lord", 0
+"Magic Spirit", 0
+"Dispel Magic", 18
+"Summoning Circle", 2
+"Disenchant Area", 19
+"Recall Hero", 5
+"Detect Magic", 9
+"Enchant Item", 11
+"Summon Hero", 5
+"Awareness", 9
+"Disjunction", 20
+"Create Artifact", 11
+"Summon Champion", 5
+"Spell of Mastery", 5
+"Spell of Return", 5
+END

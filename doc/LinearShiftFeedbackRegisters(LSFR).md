@@ -60,6 +60,7 @@ a practical bitwise approach,
 and two theoretical approaches based on the algebra of finite fields,
 one using polynomials and
 the other using matrices.
+
 We’ll start with the bitwise approach.
 
 A shift register is a series of bit cells, each of which is a flip-flop:

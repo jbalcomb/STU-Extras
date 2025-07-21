@@ -1,3 +1,0 @@
-C:/STU/devel/STU-Extras/AudioConversionTest/out/build/x64-Debug/CMakeFiles/AudioConversionTest.dir
-C:/STU/devel/STU-Extras/AudioConversionTest/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/STU/devel/STU-Extras/AudioConversionTest/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
