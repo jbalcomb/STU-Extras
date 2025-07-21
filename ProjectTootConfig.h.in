@@ -1,0 +1,5 @@
+
+// the configured options and settings for The Project
+
+#define ProjectToot_VERSION_MAJOR @ProjectToot_VERSION_MAJOR@
+#define ProjectToot_VERSION_MINOR @ProjectToot_VERSION_MINOR@
