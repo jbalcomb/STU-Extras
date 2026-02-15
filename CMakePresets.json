@@ -1,0 +1,166 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default-firstest"
+        },
+        {
+            "name": "MSVC_x64-debug",
+            "displayName": "VS2022 amd64 Debug",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe"
+            }
+        },
+        {
+            "name": "MSVC_x64-release",
+            "displayName": "VS2022 amd64 Release",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe"
+            }
+        },
+        {
+            "name": "Ninja-MSVC_x64",
+            "displayName": "Windows x64 Debug",
+            "description": "Sets Ninja generator, compilers, x64 architecture, build and install directory, debug build type",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "hostOS": [
+                        "Windows"
+                    ]
+                }
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "MSVC_x64-debug",
+            "displayName": "VS2022 amd64 Debug",
+            "configurePreset": "MSVC_x64-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "MSVC_x64-release",
+            "displayName": "VS2022 amd64 Release",
+            "configurePreset": "MSVC_x64-release",
+            "configuration": "Release",
+            "targets": [
+                "TootMe"
+            ]
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "MSVC_x64-debug",
+            "displayName": "VS2022 amd64 Debug",
+            "configurePreset": "MSVC_x64-debug",
+            "configurations": [
+                "Debug"
+            ],
+            "generators": [
+                "TGZ", "ZIP"
+            ]
+        },
+        {
+            "name": "MSVC_x64-release",
+            "displayName": "VS2022 amd64 Release",
+            "configurePreset": "MSVC_x64-release",
+            "configurations": [
+                "Release"
+            ],
+            "generators": [
+                "TGZ", "ZIP"
+            ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "MSVC_x64-debug",
+            "displayName": "VS2022 amd64 Debug",
+            "configurePreset": "MSVC_x64-debug"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "MSVC_x64-debug",
+            "displayName": "VS2022 amd64 Debug",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "MSVC_x64-debug"
+                },
+                {
+                    "type": "build",
+                    "name": "MSVC_x64-debug"
+                },
+                {
+                    "type": "test",
+                    "name": "MSVC_x64-debug"
+                },
+                {
+                    "type": "package",
+                    "name": "MSVC_x64-debug"
+                }
+            ]
+        },
+        {
+            "name": "MSVC_x64-release",
+            "displayName": "VS2022 amd64 Release",
+            "steps": [
+            {
+                "type": "configure",
+                "name": "MSVC_x64-release"
+            },
+            {
+                "type": "build",
+                "name": "MSVC_x64-release"
+            },
+            {
+                "type": "package",
+                "name": "MSVC_x64-release"
+            }
+            ]
+        }
+    ]
+}
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "Clang 17.0.3 (GNU CLI) - amd64 for MSVC 17.9.34701.34 (Visual Studio Community 2022 Release)",
+            "displayName": "Clang 17.0.3 (GNU CLI) - amd64 for MSVC 17.9.34701.34 (Visual Studio Community 2022 Release)",
+            "description": "Using compilers: C = C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe, CXX = C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/x64/bin/clang.exe",
+                "CMAKE_CXX_COMPILER": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/x64/bin/clang.exe",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+}

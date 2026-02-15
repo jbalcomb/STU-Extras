@@ -1,0 +1,325 @@
+Change Dir: 'C:/devel/EduMat/Learning_CMake/me_cmake_022/build'
+
+Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+MSBuild version 17.14.14+a129329f1 for .NET Framework
+Build started 7/23/2025 8:17:30 PM.
+
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" on node 1 (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\ZERO_CHECK\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  1>Checking Build System
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ZERO_CHECK.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\TootLib.vcxproj" (3) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "TootLib.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\".
+  Creating directory "TootLib.dir\Debug\TootLib.tlog\".
+InitializeBuildStatus:
+  Creating "TootLib.dir\Debug\TootLib.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "TootLib.dir\Debug\TootLib.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/TootLib/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /IC:\devel\EduMat\Learning_CMake\me_cmake_022\TootLib /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"TootLib.dir\Debug\\" /Fd"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.pdb" /external:W1 /Gd /TC /errorReport:queue C:\devel\EduMat\Learning_CMake\me_cmake_022\TootLib\TootLib.c
+  TootLib.c
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\Lib.exe /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" /NOLOGO /MACHINE:X64  /machine:x64 TootLib.dir\Debug\TootLib.obj
+  TootLib.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.lib
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib.dir\Debug\TootLib.tlog\TootLib.write.1u.tlog" "TootLib.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib.dir\Debug\TootLib.tlog\TootLib.write.1u.tlog" "TootLib.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\Debug\TootLib.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib.dir\Debug\TootLib.tlog\TootLib.write.1u.tlog" "TootLib.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "TootLib.dir\Debug\TootLib.tlog\unsuccessfulbuild".
+  Touching "TootLib.dir\Debug\TootLib.tlog\TootLib.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\TootLib.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj" (4) on node 1 (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj" (4) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googletest\gtest.vcxproj" (5) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "gtest.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\".
+  Creating directory "gtest.dir\Debug\gtest.tlog\".
+InitializeBuildStatus:
+  Creating "gtest.dir\Debug\gtest.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "gtest.dir\Debug\gtest.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\include" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest" /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W4 /WX /diagnostics:column /Od /Ob0 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"gtest.dir\Debug\\" /Fd"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtestpdb_debug_postfix-NOTFOUND.pdb" /external:W4 /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -utf-8 "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\src\gtest-all.cc"
+  gtest-all.cc
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\Lib.exe /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" /NOLOGO /MACHINE:X64  /machine:x64 "gtest.dir\Debug\gtest-all.obj"
+  Copying file from "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtestpdb_debug_postfix-NOTFOUND.pdb" to "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.pdb".
+  gtest.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.lib
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest.dir\Debug\gtest.tlog\gtest.write.1u.tlog" "gtest.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest.dir\Debug\gtest.tlog\gtest.write.1u.tlog" "gtest.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest.dir\Debug\gtest.tlog\gtest.write.1u.tlog" "gtest.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "gtest.dir\Debug\gtest.tlog\unsuccessfulbuild".
+  Touching "gtest.dir\Debug\gtest.tlog\gtest.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googletest\gtest.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj" (4) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googletest\gtest_main.vcxproj" (6) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "gtest_main.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "gtest_main.dir\Debug\gtest_main.tlog\".
+InitializeBuildStatus:
+  Creating "gtest_main.dir\Debug\gtest_main.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "gtest_main.dir\Debug\gtest_main.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W4 /WX /diagnostics:column /Od /Ob0 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"gtest_main.dir\Debug\\" /Fd"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_mainpdb_debug_postfix-NOTFOUND.pdb" /external:W0 /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest/include" /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest" -J -utf-8 "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\src\gtest_main.cc"
+  gtest_main.cc
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\Lib.exe /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" /NOLOGO /MACHINE:X64  /machine:x64 gtest_main.dir\Debug\gtest_main.obj
+  Copying file from "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_mainpdb_debug_postfix-NOTFOUND.pdb" to "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.pdb".
+  gtest_main.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.lib
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest_main.dir\Debug\gtest_main.tlog\gtest_main.write.1u.tlog" "gtest_main.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest_main.dir\Debug\gtest_main.tlog\gtest_main.write.1u.tlog" "gtest_main.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gtest_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gtest_main.dir\Debug\gtest_main.tlog\gtest_main.write.1u.tlog" "gtest_main.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "gtest_main.dir\Debug\gtest_main.tlog\unsuccessfulbuild".
+  Touching "gtest_main.dir\Debug\gtest_main.tlog\gtest_main.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googletest\gtest_main.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "TootLib_tests.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\".
+  Creating directory "TootLib_tests.dir\Debug\TootLib_tests.tlog\".
+InitializeBuildStatus:
+  Creating "TootLib_tests.dir\Debug\TootLib_tests.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "TootLib_tests.dir\Debug\TootLib_tests.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/TootLib/tests/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /IC:\devel\EduMat\Learning_CMake\me_cmake_022\TootLib /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"TootLib_tests.dir\Debug\\" /Fd"TootLib_tests.dir\Debug\vc143.pdb" /external:W0 /Gd /TP /errorReport:queue  /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest/include" /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest" C:\devel\EduMat\Learning_CMake\me_cmake_022\TootLib\tests\TootLib_tests.cpp
+  TootLib_tests.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\TootLib_tests.exe" /INCREMENTAL /ILK:"TootLib_tests.dir\Debug\TootLib_tests.ilk" /NOLOGO /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" ..\..\lib\Debug\gtest_main.lib ..\Debug\TootLib.lib ..\..\lib\Debug\gtest.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\devellib\vcpkg\installed\x64-windows\lib\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/TootLib/tests/Debug/TootLib_tests.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/TootLib/tests/Debug/TootLib_tests.lib" /MACHINE:X64  /machine:x64 TootLib_tests.dir\Debug\TootLib_tests.obj
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library [C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj]
+  TootLib_tests.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\TootLib_tests.exe
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\TootLib_tests.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib_tests.dir\Debug\TootLib_tests.tlog\TootLib_tests.write.1u.tlog" "TootLib_tests.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\TootLib_tests.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib_tests.dir\Debug\TootLib_tests.tlog\TootLib_tests.write.1u.tlog" "TootLib_tests.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\Debug\TootLib_tests.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootLib_tests.dir\Debug\TootLib_tests.tlog\TootLib_tests.write.1u.tlog" "TootLib_tests.dir\Debug\vcpkg.applocal.log"
+PostBuildEvent:
+  setlocal
+  "C:\Program Files\CMake\bin\cmake.exe" -D TEST_TARGET=TootLib_tests -D TEST_EXECUTABLE=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/TootLib/tests/Debug/TootLib_tests.exe -D TEST_EXECUTOR= -D TEST_WORKING_DIR=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/TootLib/tests -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D TEST_FILTER= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=TootLib_tests_TESTS -D CTEST_FILE=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/TootLib/tests/TootLib_tests[1]_tests.cmake -D TEST_DISCOVERY_TIMEOUT=5 -D TEST_XML_OUTPUT_DIR= -P "C:/Program Files/CMake/share/cmake-3.28/Modules/GoogleTestAddTests.cmake"
+  if %errorlevel% neq 0 goto :cmEnd
+  :cmEnd
+  endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+  :cmErrorLevel
+  exit /b %1
+  :cmDone
+  if %errorlevel% neq 0 goto :VCEnd
+  :VCEnd
+FinalizeBuildStatus:
+  Deleting file "TootLib_tests.dir\Debug\TootLib_tests.tlog\unsuccessfulbuild".
+  Touching "TootLib_tests.dir\Debug\TootLib_tests.tlog\TootLib_tests.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootMe.vcxproj" (7) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "TootMe.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\".
+  Creating directory "TootMe.dir\Debug\TootMe.tlog\".
+InitializeBuildStatus:
+  Creating "TootMe.dir\Debug\TootMe.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "TootMe.dir\Debug\TootMe.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /IC:\devel\EduMat\Learning_CMake\me_cmake_022\TootLib /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"TootMe.dir\Debug\\" /Fd"TootMe.dir\Debug\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue C:\devel\EduMat\Learning_CMake\me_cmake_022\Toot.cpp
+  Toot.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\TootMe.exe" /INCREMENTAL /ILK:"TootMe.dir\Debug\TootMe.ilk" /NOLOGO /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" TootLib\Debug\TootLib.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\devellib\vcpkg\installed\x64-windows\lib\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/Debug/TootMe.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/Debug/TootMe.lib" /MACHINE:X64  /machine:x64 TootMe.dir\Debug\Toot.obj
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library [C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootMe.vcxproj]
+  TootMe.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\TootMe.exe
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\TootMe.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootMe.dir\Debug\TootMe.tlog\TootMe.write.1u.tlog" "TootMe.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\TootMe.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootMe.dir\Debug\TootMe.tlog\TootMe.write.1u.tlog" "TootMe.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\Debug\TootMe.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "TootMe.dir\Debug\TootMe.tlog\TootMe.write.1u.tlog" "TootMe.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "TootMe.dir\Debug\TootMe.tlog\unsuccessfulbuild".
+  Touching "TootMe.dir\Debug\TootMe.tlog\TootMe.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootMe.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googlemock\gmock.vcxproj" (8) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "gmock.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "gmock.dir\Debug\gmock.tlog\".
+InitializeBuildStatus:
+  Creating "gmock.dir\Debug\gmock.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "gmock.dir\Debug\gmock.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googlemock/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock\include" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\include" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest" /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W4 /WX /diagnostics:column /Od /Ob0 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"gmock.dir\Debug\\" /Fd"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmockpdb_debug_postfix-NOTFOUND.pdb" /external:W4 /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -utf-8 "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\src\gtest-all.cc" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock\src\gmock-all.cc"
+  gtest-all.cc
+  gmock-all.cc
+  Generating Code...
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\Lib.exe /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" /NOLOGO /MACHINE:X64  /machine:x64 "gmock.dir\Debug\gtest-all.obj"
+  "gmock.dir\Debug\gmock-all.obj"
+  Copying file from "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmockpdb_debug_postfix-NOTFOUND.pdb" to "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.pdb".
+  gmock.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.lib
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock.dir\Debug\gmock.tlog\gmock.write.1u.tlog" "gmock.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock.dir\Debug\gmock.tlog\gmock.write.1u.tlog" "gmock.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock.dir\Debug\gmock.tlog\gmock.write.1u.tlog" "gmock.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "gmock.dir\Debug\gmock.tlog\unsuccessfulbuild".
+  Touching "gmock.dir\Debug\gmock.tlog\gmock.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googlemock\gmock.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googlemock\gmock_main.vcxproj" (9) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "gmock_main.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "gmock_main.dir\Debug\gmock_main.tlog\".
+InitializeBuildStatus:
+  Creating "gmock_main.dir\Debug\gmock_main.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "gmock_main.dir\Debug\gmock_main.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googlemock/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock\include" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\include" /I"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest" /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W4 /WX /diagnostics:column /Od /Ob0 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"gmock_main.dir\Debug\\" /Fd"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_mainpdb_debug_postfix-NOTFOUND.pdb" /external:W4 /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -utf-8 "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googletest\src\gtest-all.cc" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock\src\gmock-all.cc" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-src\googlemock\src\gmock_main.cc"
+  gtest-all.cc
+  gmock-all.cc
+  gmock_main.cc
+  Generating Code...
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\Lib.exe /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" /NOLOGO /MACHINE:X64  /machine:x64 "gmock_main.dir\Debug\gtest-all.obj"
+  "gmock_main.dir\Debug\gmock-all.obj"
+  gmock_main.dir\Debug\gmock_main.obj
+  Copying file from "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_mainpdb_debug_postfix-NOTFOUND.pdb" to "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.pdb".
+  gmock_main.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.lib
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock_main.dir\Debug\gmock_main.tlog\gmock_main.write.1u.tlog" "gmock_main.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock_main.dir\Debug\gmock_main.tlog\gmock_main.write.1u.tlog" "gmock_main.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\lib\Debug\gmock_main.lib" "C:\devellib\vcpkg\installed\x64-windows\bin" "gmock_main.dir\Debug\gmock_main.tlog\gmock_main.write.1u.tlog" "gmock_main.dir\Debug\vcpkg.applocal.log"
+FinalizeBuildStatus:
+  Deleting file "gmock_main.dir\Debug\gmock_main.tlog\unsuccessfulbuild".
+  Touching "gmock_main.dir\Debug\gmock_main.tlog\gmock_main.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\_deps\googletest-build\googlemock\gmock_main.vcxproj" (default targets).
+Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (1) is building "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\hello_test.vcxproj" (10) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "hello_test.dir\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\".
+  Creating directory "hello_test.dir\Debug\hello_test.tlog\".
+InitializeBuildStatus:
+  Creating "hello_test.dir\Debug\hello_test.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "hello_test.dir\Debug\hello_test.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/tests/CMakeLists.txt
+VcpkgTripletSelection:
+  Using triplet "x64-windows" from "C:\devellib\vcpkg\installed\x64-windows\"
+  Using normalized configuration "Release"
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"C:\devellib\vcpkg\installed\x64-windows\include" /Zi /nologo /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"hello_test.dir\Debug\\" /Fd"hello_test.dir\Debug\vc143.pdb" /external:W0 /Gd /TP /errorReport:queue  /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest/include" /external:I "C:/devel/EduMat/Learning_CMake/me_cmake_022/build/_deps/googletest-src/googletest" C:\devel\EduMat\Learning_CMake\me_cmake_022\tests\hello_test.cpp
+  hello_test.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\hello_test.exe" /INCREMENTAL /ILK:"hello_test.dir\Debug\hello_test.ilk" /NOLOGO /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib" /LIBPATH:"C:\devellib\vcpkg\installed\x64-windows\lib\manual-link" ..\lib\Debug\gtest_main.lib ..\lib\Debug\gtest.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\devellib\vcpkg\installed\x64-windows\lib\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/tests/Debug/hello_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/devel/EduMat/Learning_CMake/me_cmake_022/build/tests/Debug/hello_test.lib" /MACHINE:X64  /machine:x64 hello_test.dir\Debug\hello_test.obj
+  hello_test.vcxproj -> C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\hello_test.exe
+AppLocalFromInstalled:
+  pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\hello_test.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "hello_test.dir\Debug\hello_test.tlog\hello_test.write.1u.tlog" "hello_test.dir\Debug\vcpkg.applocal.log"
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
+  The command "pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\hello_test.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "hello_test.dir\Debug\hello_test.tlog\hello_test.write.1u.tlog" "hello_test.dir\Debug\vcpkg.applocal.log"" exited with code 9009.
+  "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ExecutionPolicy Bypass -noprofile -File "C:\devellib\vcpkg\scripts\buildsystems\msbuild\applocal.ps1" "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\Debug\hello_test.exe" "C:\devellib\vcpkg\installed\x64-windows\bin" "hello_test.dir\Debug\hello_test.tlog\hello_test.write.1u.tlog" "hello_test.dir\Debug\vcpkg.applocal.log"
+PostBuildEvent:
+  setlocal
+  "C:\Program Files\CMake\bin\cmake.exe" -D TEST_TARGET=hello_test -D TEST_EXECUTABLE=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/tests/Debug/hello_test.exe -D TEST_EXECUTOR= -D TEST_WORKING_DIR=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/tests -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D TEST_FILTER= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=hello_test_TESTS -D CTEST_FILE=C:/devel/EduMat/Learning_CMake/me_cmake_022/build/tests/hello_test[1]_tests.cmake -D TEST_DISCOVERY_TIMEOUT=5 -D TEST_XML_OUTPUT_DIR= -P "C:/Program Files/CMake/share/cmake-3.28/Modules/GoogleTestAddTests.cmake"
+  if %errorlevel% neq 0 goto :cmEnd
+  :cmEnd
+  endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+  :cmErrorLevel
+  exit /b %1
+  :cmDone
+  if %errorlevel% neq 0 goto :VCEnd
+  :VCEnd
+FinalizeBuildStatus:
+  Deleting file "hello_test.dir\Debug\hello_test.tlog\unsuccessfulbuild".
+  Touching "hello_test.dir\Debug\hello_test.tlog\hello_test.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\tests\hello_test.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\ALL_BUILD\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule C:/devel/EduMat/Learning_CMake/me_cmake_022/CMakeLists.txt
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\ALL_BUILD.lastbuildstate".
+Done Building Project "C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (default targets).
+
+Build succeeded.
+
+"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (default target) (1) ->
+"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj" (default target) (4) ->
+(Link target) -> 
+  LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library [C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootLib\tests\TootLib_tests.vcxproj]
+
+
+"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\ALL_BUILD.vcxproj" (default target) (1) ->
+"C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootMe.vcxproj" (default target) (7) ->
+  LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library [C:\devel\EduMat\Learning_CMake\me_cmake_022\build\TootMe.vcxproj]
+
+    2 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:42.84
+

@@ -677,6 +677,43 @@ AI_CombatSpellList                             ovr139
 
 
 
+CMB_Disenchant                                 ovr131
+TILE_DispelMagic                               ovr131
+CMB_ApplyCracksCall                            ovr131
+CMB_BattlefieldSpell                           ovr131
+WIZ_FlameStrike                                ovr131
+WIZ_HolyWord                                   ovr131
+WIZ_DeathSpell                                 ovr131
+CMB_PlaySpellAnim                              ovr131
+CMB_RaiseDead                                  ovr131
+CMB_AnimateDead                                ovr131
+
+
+
+BU_WarpCreature                                ovr133
+WIZ_Wrack                                      ovr133
+WIZ_CallLightning                              ovr133
+BU_LifeDrain                                   ovr133
+CMB_WallRise_Anim                              ovr133
+CMB_CounterMessage                             ovr133
+WIZ_DispelAttempt                              ovr133
+TILE_CracksCall                                ovr133
+TILE_BoltFromAbove                             ovr133
+TILE_CombatSpellAnim                           ovr133
+BU_Teleport                                    ovr133
+BU_TunnelTo                                    ovr133
+BU_CombatSummon                                ovr133
+TILE_LightningBolt                             ovr133
+WIZ_CreateVortex                               ovr133
+CMB_SetVortexCursor                            ovr133
+CMB_VortexPlayerMove                           ovr133
+CMB_ProcessVortices                            ovr133
+CMB_VortexMovement                             ovr133
+CMB_CallChaos                                  ovr133
+WIZ_CallChaos                                  ovr133
+
+
+
 GAME_AutoSave                                  ovr141
 
 
@@ -747,90 +784,8 @@ UU_SPATH_15by15                                ovr151
 UU_SPATH_Segments                              ovr151
 UU_SPATH_GetBorderTiles                        ovr151
 
-Allocate_Data_Space                            ovr152
 
-
-
-AI_SetUnitOrders                               ovr158
-G_AI_RallyFill                                 ovr158
-AI_FillGarrisons                               ovr158
-AI_ProcessOcean                                ovr158
-G_AI_ProcessTransports                         ovr158
-AI_ProcessRoamers                              ovr158
-G_AI_HomeRallyFill                             ovr158
-AI_PullForMainWar                              ovr158
-G_AI_RallyOrFerry                              ovr158
-AI_CreateTargetList                            ovr158
-AI_AddTarget                                   ovr158
-AI_AssignStackTarget                           ovr158
-AI_CONTX_Regroup                               ovr158
-AI_FindClosestEnemy                            ovr158
-AI_OppMoveOverride                             ovr158
-AI_Balance_Upkeep                              ovr158
-AI_ShiftOffHomePlane                           ovr158
-AI_Transport_Sailoff                           ovr158
-AI_GarrBuilderPush                             ovr158
-sub_EFBD6                                      ovr158
-sub_EFC92                                      ovr158
-AI_ProcessMelders                              ovr158
-AI_ProcessSettlers                             ovr158
-AI_ProcessPurifiers                            ovr158
-AI_ProcessRoadBuilds                           ovr158
-AI_UNIT_SetMoveOrder                           ovr158
-AI_UNIT_SettleOrder                            ovr158
-AI_UNIT_RoadBldOrder                           ovr158
-AI_UNIT_SeekTransport                          ovr158
-AI_UNIT_SetMeldOrder                           ovr158
-AI_UNIT_PurifyOrder                            ovr158
-TILE_CheckEnemyUnits                           ovr158
-AI_TILE_CheckEnemies                           ovr158
-AI_CanSettleOffPlane                           ovr158
-AI_SendToColonize                              ovr158
-AI_SeekTransportFrom                           ovr158
-AI_CheckOtherPlane                             ovr158
-AI_SingleCont_Reeval                           ovr158
 
 Draw_Help_Entry                                ovr159
 Draw_Help_Entry_Draw                           ovr159
 EMM_Map_VGAFILEH1_5                            ovr159
-
-
-
-sub_F48F0                                      ovr162
-sub_F49E3                                      ovr162
-sub_F4A9E                                      ovr162
-sub_F4B96                                      ovr162
-sub_F4C89                                      ovr162
-sub_F4D32                                      ovr162
-sub_F4E28                                      ovr162
-sub_F5025                                      ovr162
-sub_F514D                                      ovr162
-sub_F528F                                      ovr162
-sub_F5432                                      ovr162
-AI_STK_SetTarget                               ovr162
-sub_F57AF                                      ovr162
-sub_F58D2                                      ovr162
-sub_F59DA                                      ovr162
-sub_F5B56                                      ovr162
-sub_F5D73                                      ovr162
-sub_F5EBF                                      ovr162
-AI_STK_MoveTransports                          ovr162
-sub_F60F4                                      ovr162
-TILE_AI_FindLoadTile                           ovr162
-sub_F6316                                      ovr162
-TILE_AI_FindEmptyLnd                           ovr162
-sub_F64C2                                      ovr162
-sub_F671D                                      ovr162
-sub_F689A                                      ovr162
-sub_F68C9                                      ovr162
-sub_F69A6                                      ovr162
-sub_F6CAB                                      ovr162
-sub_F6E1A                                      ovr162
-sub_F6EBF                                      ovr162
-TILE_NextFreeLand                              ovr162
-EVNT_MakeRampageList                           ovr162
-AI_TILE_CanLeave                               ovr162
-AI_Continent_Reeval                            ovr162
-AI_SetEnemyStrMaps                             ovr162
-AI_Pick_Action_Conts                           ovr162
-WIZ_UNIT_ResetOrders                           ovr162

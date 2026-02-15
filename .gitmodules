@@ -1,3 +1,4 @@
 [submodule "ReMoM"]
 	path = ReMoM
 	url = https://github.com/jbalcomb/ReMoM.git
+	branch = main
