@@ -1,0 +1,9 @@
+[requires]
+sdl/2.32.2
+
+[options]
+sdl:shared=False
+
+[generators]
+CMakeDeps
+CMakeToolchain

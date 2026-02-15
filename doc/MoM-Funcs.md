@@ -1,6 +1,164 @@
 
 
 
+
+
+/*
+    BEGIN:  MAGIC.EXE
+*/
+
+_main                              seg001    00000009 000003D0 R F . . B T .
+SND_Empty_Fn                       seg001    0000043A 00000005 R F . . B T .
+Menu_Screen_Control                seg001    0000043F 000000E1 R F . . B T .
+Load_MGC_Resources                 seg001    0000052A 000000C0 R F . . B T .
+Main_Menu_Screen                   seg001    000005EA 000004D0 R F . . B T .
+Main_Menu_Screen_Draw              seg001    00000ABA 000001DA R F . . B T .
+Load_TERRSTAT                      seg001    00000C94 0000002D R F . . B T .
+Load_SPELLDAT                      seg001    00000CC1 0000002D R F . . B T .
+UU_HLP_Load_MainMenu               seg001    00000CEE 00000033 R F . . B . .
+
+Settings_Screen                    ovr049    00000000 000003B8 R F . . B T .
+Settings_Screen_Draw               ovr049    000003B8 0000046F R F . . B T .
+Load_MAGIC_SET                     ovr049    00000827 00000127 R F . . B T .
+Set_Default_Game_Settings          ovr049    0000094E 000000E5 R F . . B T .
+Add_Settings_Screen_Help           ovr049    00000A33 00000033 R F . . B T .
+
+Newgame_Control__WIP               ovr050    00000000 00000107 R F . . B T .
+GAME_WizardsLaunch                 ovr050    0000012F 00000047 R F . . B T .
+Load_Screen                        ovr050    00000176 000003E6 R F . . B T .
+Load_Screen_Draw                   ovr050    0000055C 00000252 R F . . B T .
+Newgame_Screen_0__WIP              ovr050    000007AE 00000430 R F . . B T .
+Newgame_Screen_0_Draw              ovr050    00000BDE 000004C4 R F . . B T .
+Randomize_Book_Heights             ovr050    000010A2 000000CE R F . . B T .
+GAME_New_Screen_1                  ovr050    00001170 00000231 R F . . B T .
+Draw_NewGame_Screen1               ovr050    000013A1 000005F5 R F . . B T .
+GAME_New_Screen_2                  ovr050    00001996 000001EA R F . . B T .
+GAME_New_Screen_3                  ovr050    00001B80 0000010F R F . . B T .
+GAME_Draw_NewScr3                  ovr050    00001C8F 00000119 R F . . B T .
+GAME_New_Screen_7                  ovr050    00001DA8 00000229 R F . . B T .
+GAME_Draw_NewScr7                  ovr050    00001FDC 000001D4 R F . . B T .
+GAME_New_Screen_6                  ovr050    000021B0 00000457 R F . . B T .
+GAME_Draw_NewScr6                  ovr050    00002607 00000403 R F . . B T .
+GAME_DrawRetortsStr                ovr050    00002A0A 0000014A R F . . B T .
+NEWG_DrawDefShelf                  ovr050    00002B54 000000F9 R F . . B T .
+GAME_New_Screen_4                  ovr050    00002C4D 00000836 R F . . B T .
+GAME_Draw_NewScr4                  ovr050    00003490 00000B95 R F . . B T .
+GAME_New_Screen_5                  ovr050    0000402F 0000077B R F . . B T .
+GAME_SpellSel_GUI                  ovr050    000047AA 000002E1 R F . . B T .
+SCRN_Draw_NewScr5                  ovr050    00004A8B 000002B4 R F . . B T .
+SCRN_Draw_NewScr5_2                ovr050    00004D3F 00000935 R F . . B T .
+WIZ_CopyDefault                    ovr050    00005674 000002A5 R F . . B T .
+Fade_Out                           ovr050    00005919 00000038 R F . . B T .
+Fade_In                            ovr050    00005951 00000037 R F . . B T .
+Set_Load_Screen_Help_List_MGC      ovr050    00005988 00000033 R F . . B T .
+Set_Newgame_Screen0_Help_List      ovr050    000059BB 00000033 R F . . B T .
+HLP_Load_BannerSel                 ovr050    000059EE 00000033 R F . . B T .
+HLP_Load_PortraitSel               ovr050    00005A21 00000033 R F . . B T .
+HLP_Load_WizardSel                 ovr050    00005A54 0000003F R F . . B T .
+HLP_Load_WizCreate                 ovr050    00005A93 00000033 R F . . B T .
+HLP_Load_RaceSel                   ovr050    00005AC6 00000033 R F . . B T .
+STR_ListSeparator                  ovr050    00005AF9 0000003F R F . . B T .
+CRP_Empty_Dialog_Fn2               ovr050    00005B38 00000005 R F . . B T .
+CRP_Empty_Dialog_Fn1               ovr050    00005B3D 00000005 R F . . B T .
+Do_Toggle_Pages                    ovr050    00005B42 0000000A R F . . B T .
+
+NEWG_CreateWorld__WIP              ovr051    00000000 000002B9 R F . . B T .
+NEWG_EZ_MarkHadnLeft               ovr051    000002B9 0000008B R F . . B T .
+NEWG_TileIsleExtend                ovr051    00000344 000003BE R F . . B T .
+NEWG_CreateTowers                  ovr051    00000715 000001BA R F . . B T .
+NEWG_CreateCapitals                ovr051    000008CF 00000B22 R F . . B T .
+NEWG_ClearLandmasses               ovr051    00001450 0000003E R F . . B T .
+NEWG_EqualizeNodes                 ovr051    0000148E 000002AD R F . . B T .
+NEWG_SetSpecLands                  ovr051    0000173B 0000043B R F . . B T .
+NEWG_SetBaseLands                  ovr051    00001B76 00000293 R F . . B T .
+NEWG_CreateLands                   ovr051    00001E09 000002BC R F . . B T .
+NEWG_CreateNodes                   ovr051    000020C5 000004FD R F . . B T .
+NEWG_CreateNodeAura                ovr051    000025C2 0000019D R F . . B T .
+NODE_IsAuraUnique                  ovr051    0000275F 000000EA R F . . B T .
+NEWG_SetNodeType                   ovr051    00002849 00000260 R F . . B T .
+TILE_SetLandMass                   ovr051    00002AA9 000003DD R F . . B T .
+NEWG_CreateEZs                     ovr051    00002E86 000003A1 R F . . B T .
+NEWG_CreateEncounter               ovr051    00003227 00000A5A R F . . B T .
+UU_UNIT_RandomRacial               ovr051    00003CC7 00000080 R F . . B T .
+NEWG_SetDeserts                    ovr051    00003D47 00000378 R F . . B T .
+NEWG_CreateShores                  ovr051    000040BF 000011E2 R F . . B T .
+NEWG_RandomizeTiles                ovr051    000052A1 00000432 R F . . B T .
+NEWG_CreateRiver                   ovr051    000056E3 000004AC R F . . B T .
+NEWG_SetRiverTiles                 ovr051    00005B8F 00001763 R F . . B T .
+NEWG_CreateNeutrals                ovr051    000073C2 00000FB9 R F . . B T .
+CTY_SetDefaultName                 ovr051    000083F3 000000E0 R F . . B T .
+NEWG_CreateRoads                   ovr051    000084D3 000004D1 R F . . B T .
+CRP_NEWG_CreatePathGrids           ovr051    000089A4 0000006F R F . . B T .
+NEWG_CreateSpecials                ovr051    00008A13 000003DE R F . . B T .
+NEWG_DesertSpecials                ovr051    00008DFF 0000004E R F . . B T .
+NEWG_HillSpecials                  ovr051    00008E61 00000063 R F . . B T .
+NEWG_MntnSpecials                  ovr051    00008EED 00000065 R F . . B T .
+NEWG_SetScoutingMaps               ovr051    00008F7A 00000264 R F . . B T .
+TILE_SetScouting                   ovr051    000091DE 0000003E R F . . B T .
+NEWG_SetMoveMaps                   ovr051    0000921C 00000313 R F . . B T .
+TILE_InvalidOutflow                ovr051    0000952F 00000044 R F . . B T .
+NEWG_UpdateProgress                ovr051    00009573 00000062 R F . . B T .
+UNIT_Create                        ovr051    000095D5 000002E0 R F . . B T .
+NEWG_AnimateOceans                 ovr051    000098B5 000000E7 R F . . B T .
+TILE_IsOcean                       ovr051    0000999C 00000070 R F . . B T .
+TILE_HasNode                       ovr051    00009A0C 0000005C R F . . B T .
+TILE_HasTower                      ovr051    00009A68 00000043 R F . . B T .
+TILE_IsForest                      ovr051    00009AAB 0000004B R F . . B T .
+TILE_IsRiver                       ovr051    00009AF6 00000069 R F . . B T .
+UU_TILE_IsRiverOutlet              ovr051    00009B5F 00000061 R F . . B T .
+UU_TILE_IsShore                    ovr051    00009BC0 0000006E R F . . B T .
+TILE_IsMountains                   ovr051    00009C2E 0000004B R F . . B T .
+TILE_IsHills                       ovr051    00009C79 0000004B R F . . B T .
+TILE_IsSwamp                       ovr051    00009CC4 0000004B R F . . B T .
+TILE_IsDesert                      ovr051    00009D0F 0000005D R F . . B T .
+TILE_IsGrasslands                  ovr051    00009D6C 00000056 R F . . B T .
+TILE_GetFood                       ovr051    00009DC2 000000D8 R F . . B T .
+TILE_GetMaxPop                     ovr051    00009EC8 00000061 R F . . B T .
+TILE_GetCatchment                  ovr051    00009F29 0000008C R F . . B T .
+UU_Empty_Tile_Fn                   ovr051    00009FB5 00000005 R F . . B T .
+
+UU_GAME_AutoSave                   ovr052    00000000 00000067 R F . . B T .
+
+UU_GUI_Confirm_Dialog              ovr053    00000000 000001F1 R F . . B T .
+UU_GUI_DrawConfrmDialog            ovr053    000001F1 00000131 R F . . B T .
+UU_GUI_WarningType1                ovr053    00000322 00000014 R F . . B T .
+GUI_WarningType0                   ovr053    00000336 00000014 R F . . B T .
+Warning_Message                    ovr053    0000034A 00000108 R F . . B T .
+GUI_DrawRedMessage                 ovr053    00000452 0000014B R F . . B T .
+UU_GUI_ListSelect_Dlg              ovr053    0000059D 000004E4 R F . . B T .
+UU_GUI_DrawListSelector            ovr053    00000A81 00000720 R F . . B T .
+UU_GUI_SetListSelBounds            ovr053    000011A1 00000113 R F . . B T .
+UU_GUI_LoadNotifyGfx               ovr053    000012B4 00000188 R F . . B T .
+UU_GUI_Notify_Dialog               ovr053    00001444 00000218 R F . . B T .
+UU_GUI_DrawNotifyDialog            ovr053    00001667 0000035D R F . . B T .
+UU_GUI_Familiar_Notify             ovr053    000019C4 0000022C R F . . B T .
+UU_GUI_DrawFamiliarNtfy            ovr053    00001BFB 0000026C R F . . B T .
+UU_HLP_NoResizeExpand              ovr053    00001E67 00000036 R F . . B T .
+UU_HLP_DrawExpanding               ovr053    00001E9D 00000366 R F . . B T .
+UU_USW_DrawEHLines                 ovr053    00002203 00000055 R F . . B T .
+UU_HLP_DrawExpandLines             ovr053    00002258 000009FB R F . . B T .
+UU_ITEM_GetViewDrawPos             ovr053    00002C53 00000148 R F . . B T .
+UU_ITEM_ResetViewGrow              ovr053    00002D9B 0000000B R F . . B T .
+EMM_Sandbox2VGAFILEH               ovr053    00002DA6 0000004A R F . . B T .
+EMM_VGAFILEH2Sandbox               ovr053    00002DF0 0000004A R F . . B T .
+
+
+
+GUI_DisplayHelp                    ovr059    00000000 0000057B R F . . B T .
+GUI_Help_RedrawFn                  ovr059    0000057B 00000005 R F . . B T .
+_f590303_EMM_Map_VGAFILEH1_5       ovr059    00000580 00000019 R F . . B T .
+
+Hall_Of_Fame_Screen                ovr061    00000000 000001A2 R F . . B T .
+Draw_Hall_Of_Fame_Screen           ovr061    000001A2 00000294 R F . . B T .
+
+/*
+    END:  MAGIC.EXE
+*/
+
+
+
+
+
 UU_LBX_DOSAlloc                                seg007
 UU_DOS_MemAlloc                                seg007
 UU_DOS_MemFree                                 seg007
@@ -433,23 +591,6 @@ Set_Square_Scouted_Flags                       ovr092
 UNIT_ContactHuman                              ovr092
 Check_Square_Explored                          ovr092
 
-WIZ_Conquer                                    ovr093
-WIZ_Conquest                                   ovr093
-GAME_DrawConqstAnim                            ovr093
-GAME_DrawConquerors                            ovr093
-GAME_Conqest_Scene2                            ovr093
-GAME_DrawZappedWiz                             ovr093
-GAME_DrawZapping                               ovr093
-sub_79907                                      ovr093
-GAME_IsWon                                     ovr093
-GAME_PlayVictoryAnim                           ovr093
-GAME_Draw_WIN_Anim                             ovr093
-GAME_LimboFallAnim                             ovr093
-GAME_DrawLimboFall                             ovr093
-WIZ_Banishment                                 ovr093
-GAME_ReturnDialog                              ovr093
-GAME_DrawReturnAnim                            ovr093
-
 
 
 Move_Units                                     ovr095
@@ -512,6 +653,27 @@ GAME_DrawScoreBrkdwn                           ovr107
 o108p01_Empty_pFxn                             ovr108
 o108p02_Empty_pFxn                             ovr108
 o108p03_Empty_pFxn                             ovr108
+
+
+
+AI_SetBasicAttacks                             ovr114
+AI_BU_ProcessAction                            ovr114
+BU_SortSlowestFirst                            ovr114
+AI_GetCombatRallyPt                            ovr114
+AI_MoveBattleUnits                             ovr114
+AI_BU_AssignAction                             ovr114
+AI_BU_SelectAction                             ovr114
+G_AI_BU_MoveOrRampage                          ovr114
+G_AI_BU_Move                                   ovr114
+
+
+
+AI_SelectCmbtSpell                             ovr139
+AI_EvaluateCmbtSpell                           ovr139
+AI_GetThreat_BU                                ovr139
+AI_SetCombatRealms                             ovr139
+AI_UnitThreatRealms                            ovr139
+AI_CombatSpellList                             ovr139
 
 
 
@@ -622,90 +784,8 @@ UU_SPATH_15by15                                ovr151
 UU_SPATH_Segments                              ovr151
 UU_SPATH_GetBorderTiles                        ovr151
 
-Allocate_Data_Space                            ovr152
 
-
-
-AI_SetUnitOrders                               ovr158
-G_AI_RallyFill                                 ovr158
-AI_FillGarrisons                               ovr158
-AI_ProcessOcean                                ovr158
-G_AI_ProcessTransports                         ovr158
-AI_ProcessRoamers                              ovr158
-G_AI_HomeRallyFill                             ovr158
-AI_PullForMainWar                              ovr158
-G_AI_RallyOrFerry                              ovr158
-AI_CreateTargetList                            ovr158
-AI_AddTarget                                   ovr158
-AI_AssignStackTarget                           ovr158
-AI_CONTX_Regroup                               ovr158
-AI_FindClosestEnemy                            ovr158
-AI_OppMoveOverride                             ovr158
-AI_Balance_Upkeep                              ovr158
-AI_ShiftOffHomePlane                           ovr158
-AI_Transport_Sailoff                           ovr158
-AI_GarrBuilderPush                             ovr158
-sub_EFBD6                                      ovr158
-sub_EFC92                                      ovr158
-AI_ProcessMelders                              ovr158
-AI_ProcessSettlers                             ovr158
-AI_ProcessPurifiers                            ovr158
-AI_ProcessRoadBuilds                           ovr158
-AI_UNIT_SetMoveOrder                           ovr158
-AI_UNIT_SettleOrder                            ovr158
-AI_UNIT_RoadBldOrder                           ovr158
-AI_UNIT_SeekTransport                          ovr158
-AI_UNIT_SetMeldOrder                           ovr158
-AI_UNIT_PurifyOrder                            ovr158
-TILE_CheckEnemyUnits                           ovr158
-AI_TILE_CheckEnemies                           ovr158
-AI_CanSettleOffPlane                           ovr158
-AI_SendToColonize                              ovr158
-AI_SeekTransportFrom                           ovr158
-AI_CheckOtherPlane                             ovr158
-AI_SingleCont_Reeval                           ovr158
 
 Draw_Help_Entry                                ovr159
 Draw_Help_Entry_Draw                           ovr159
 EMM_Map_VGAFILEH1_5                            ovr159
-
-
-
-sub_F48F0                                      ovr162
-sub_F49E3                                      ovr162
-sub_F4A9E                                      ovr162
-sub_F4B96                                      ovr162
-sub_F4C89                                      ovr162
-sub_F4D32                                      ovr162
-sub_F4E28                                      ovr162
-sub_F5025                                      ovr162
-sub_F514D                                      ovr162
-sub_F528F                                      ovr162
-sub_F5432                                      ovr162
-AI_STK_SetTarget                               ovr162
-sub_F57AF                                      ovr162
-sub_F58D2                                      ovr162
-sub_F59DA                                      ovr162
-sub_F5B56                                      ovr162
-sub_F5D73                                      ovr162
-sub_F5EBF                                      ovr162
-AI_STK_MoveTransports                          ovr162
-sub_F60F4                                      ovr162
-TILE_AI_FindLoadTile                           ovr162
-sub_F6316                                      ovr162
-TILE_AI_FindEmptyLnd                           ovr162
-sub_F64C2                                      ovr162
-sub_F671D                                      ovr162
-sub_F689A                                      ovr162
-sub_F68C9                                      ovr162
-sub_F69A6                                      ovr162
-sub_F6CAB                                      ovr162
-sub_F6E1A                                      ovr162
-sub_F6EBF                                      ovr162
-TILE_NextFreeLand                              ovr162
-EVNT_MakeRampageList                           ovr162
-AI_TILE_CanLeave                               ovr162
-AI_Continent_Reeval                            ovr162
-AI_SetEnemyStrMaps                             ovr162
-AI_Pick_Action_Conts                           ovr162
-WIZ_UNIT_ResetOrders                           ovr162
