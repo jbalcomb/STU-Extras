@@ -59,13 +59,14 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\devellib\SDL2-2.32.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)\$(Platform)\$(Configuration)\MoX.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\devellib\SDL2-2.32.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2.dll" "$(OutDir)"
@@ -82,7 +83,7 @@ xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\zlib1.dll" "$(OutDir)"</Command>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\STU\devel\STU-Extras\STU-SDL\3PL\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\STU\devel\STU-Extras\ReMoM\src\MoX;C:\STU\devel\STU-Extras\STU-SDL\3PL\imgui;C:\devellib\SDL2-2.32.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@ xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\zlib1.dll" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)\$(Platform)\$(Configuration)\MoX.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\devellib\SDL2-2.32.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /y "$(ProjectDir)\3PL\SDL2\lib\x64\SDL2.dll" "$(OutDir)"

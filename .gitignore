@@ -5,6 +5,12 @@
 
 
 
+# CMake
+/build
+/out
+
+
+
 # MoM
 
 *.GAM
