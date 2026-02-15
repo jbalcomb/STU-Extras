@@ -677,6 +677,43 @@ AI_CombatSpellList                             ovr139
 
 
 
+CMB_Disenchant                                 ovr131
+TILE_DispelMagic                               ovr131
+CMB_ApplyCracksCall                            ovr131
+CMB_BattlefieldSpell                           ovr131
+WIZ_FlameStrike                                ovr131
+WIZ_HolyWord                                   ovr131
+WIZ_DeathSpell                                 ovr131
+CMB_PlaySpellAnim                              ovr131
+CMB_RaiseDead                                  ovr131
+CMB_AnimateDead                                ovr131
+
+
+
+BU_WarpCreature                                ovr133
+WIZ_Wrack                                      ovr133
+WIZ_CallLightning                              ovr133
+BU_LifeDrain                                   ovr133
+CMB_WallRise_Anim                              ovr133
+CMB_CounterMessage                             ovr133
+WIZ_DispelAttempt                              ovr133
+TILE_CracksCall                                ovr133
+TILE_BoltFromAbove                             ovr133
+TILE_CombatSpellAnim                           ovr133
+BU_Teleport                                    ovr133
+BU_TunnelTo                                    ovr133
+BU_CombatSummon                                ovr133
+TILE_LightningBolt                             ovr133
+WIZ_CreateVortex                               ovr133
+CMB_SetVortexCursor                            ovr133
+CMB_VortexPlayerMove                           ovr133
+CMB_ProcessVortices                            ovr133
+CMB_VortexMovement                             ovr133
+CMB_CallChaos                                  ovr133
+WIZ_CallChaos                                  ovr133
+
+
+
 GAME_AutoSave                                  ovr141
 
 
