@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="C4U/C4U.vcxproj" Id="1f9a720d-76ac-4bc9-bd2d-0aa66a0e2014" />
+  <Project Path="MoX-CombatGrid/MoX-CombatGrid.vcxproj" Id="c408ce54-6b9b-4322-a222-ab4575c7e532" />
+</Solution>

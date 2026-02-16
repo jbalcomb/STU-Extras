@@ -1,0 +1,88 @@
+20250926
+
+harrand — talk from a Sea of Thieves dev
+dascandy & MarioM — factorio devs' streams fixing bugs w unit tests & Factorio Dev ( kovarex )
+
+// harrand  ~== prioritize writing integration tests for mechanics that are most likely to regress between changes
+
+
+
+JimBalcomb — Yesterday at 7:33 PM
+@harrand In your experience, when writing tests, would you use the game/engine functions to set up the game-state/data for the tests or would you make new code to manually recreate what's needed?
+e.g., if I wanted to test something like Kill_Unit(), does it make sense to run whatever is 'Init Game' and then Create_Unit() for the unit I want to kill?
+This all seems so weirdly more complicated for a game, but it seems like that perspective should workd until you get to 'new game'/'load saved game'.
+
+
+WGG — 12:09 AM
+most of the time (or maybe even all the time) you want the test to be as narrow as possible and only test one specific thing.
+in your case the approach should be creating the most basic valid "unit" object, then calling the kill_unit function, and finally observing the changes and comparing to expectations
+if you have e.g. an ecs in place and creating a unit has dependencies for that, that's when you create mocks
+
+
+dascandy — 2:00 AM
+did you see factorio devs' recent streams fixing bugs w unit tests?
+
+
+MarioM — 3:56 AM
+Factorio Dev ( kovarex ) has real cool videos on YT about it 
+
+
+
+harrand — 4:36 AM
+depending on how you have architected your tests this ranges from horrible to nightmarish
+
+for in-game functionality unit tests I have my tests as functions that assume the game is already running, so you can run them all on a single running invocation of the game
+
+if each unit test involves setting up the game from scratch not only will they become very slow your unit tests instead morph into integration tests
+
+if you have save/load states then it becomes even better
+
+
+
+dascandy — 4:38 AM
+one great setup is to create a "game state" that does all the game logic, and a "renderer" that reads from the game state to draw whatever is going on in your view. You can then write tests that use only the game state without any renderer to do game logic checks
+
+
+
+harrand — 4:39 AM
+even just a headless mode would suffice for that if you have a lil build farm to work with
+if I have time for tests I'll most likely spend it writing integration tests for mechanics that i think are most likely to regress between changes
+
+
+
+dascandy — 4:41 AM
+same, first write the tests for things that are easy to test and hard to debug/fix if they break
+
+
+harrand — 4:41 AM
+there's a talk from a Sea of Thieves dev which I remember being quite good I'll try to dig it up during my lunch break
+
+
+
+dascandy — 4:42 AM
+then write tests for things where you'd look absolutely stupid if it fails
+
+Mytherious — 4:42 AM
+Can someone tell that to the devs of total war: warhammer 3 cause they have released some hilarious bugs
+
+
+
+harrand — 4:43 AM
+the biggest advice I will give is whenever you test animation code, record it
+mainly coz when it goes wrong it's hilarious
+
+
+
+dascandy — 4:43 AM
+and that's exactly why you do that 😄
+
+
+20250926
+deiy — Yesterday at 11:41 PM
+being able to test your code also forces it to be somewhat modularized which will help keep a project maintainable
+
+20250927
+dascandy — 6:31 AM
+testing is the investment you can make now that pays of 50x in the future. Test the things that would make debugging really hard, cause impossible bugs or would create lots of impact, and that are relatively easy to test. Then, while developing, create a regression test set of things that failed once and add to it for each bug (as Kovarex demonstrated) how you reproduce it.
+
+
