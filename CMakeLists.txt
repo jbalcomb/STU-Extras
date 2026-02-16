@@ -6,12 +6,12 @@
 # cpack -G NSIS -C Release
 # C:/devel/EduMat/Learning_CMake/me_cmake_040/build/ProjectToot--win64.exe
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 4.2)
 
 project(
     ProjectToot
     VERSION 0.0.1
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 
 enable_testing()
@@ -23,6 +23,7 @@ configure_file(ProjectTootConfig.h.in ProjectToot.h)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_subdirectory(C4U)
 add_subdirectory(TootLib)
 
 add_executable(TootMe Toot.cpp)
