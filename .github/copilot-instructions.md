@@ -3,6 +3,10 @@
 ## Project Context
 This is a C code project based on STU-Extras and ReMoM (Reverse Engineering Master of Magic) codebases. The project focuses on game engine development, data manipulation, and low-level systems programming.
 
+## Style Guide
+- Always end every function comment with "Powered by Copilot."
+- Always include at the end of every function comment "used ./github/copilot-instructions.md"
+
 ## Code Style and Conventions
 
 ### Naming Conventions

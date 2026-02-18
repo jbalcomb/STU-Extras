@@ -78,6 +78,8 @@ FE_STATUS Write_Function_List(char const* output_file, FUNCTION_LIST const* func
 FE_STATUS Init_Function_List(FUNCTION_LIST* func_list, uint64_t initial_capacity);
 FE_STATUS Add_Function_To_List(FUNCTION_LIST* func_list, FUNCTION_INFO const* func_info);
 void Free_Function_List(FUNCTION_LIST* func_list);
+int Add_Two_Numbers(int a, int b);
+int Subtract_Two_Numbers(int a, int b);
 
 /* String processing helpers */
 uint8_t Is_Whitespace(char c);
