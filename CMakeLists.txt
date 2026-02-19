@@ -6,6 +6,9 @@
 # cpack -G NSIS -C Release
 # C:/devel/EduMat/Learning_CMake/me_cmake_040/build/ProjectToot--win64.exe
 
+# [kit] Successfully loaded 10 kits from C:\Users\jbalcomb\AppData\Local\CMakeTools\cmake-tools-kits.json
+# C:\Program Files\CMake\bin\cmake.exe
+
 cmake_minimum_required(VERSION 4.2)
 
 project(
