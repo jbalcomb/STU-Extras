@@ -13,13 +13,18 @@
 /* The C grammar provides this function when linked with the language library. */
 const TSLanguage *tree_sitter_c(void);
 
+static TSNode make_null_node(void) {
+    TSNode node = {0};
+    return node;
+}
+
 static bool node_is_function_definition(TSNode node) {
     const char *t = ts_node_type(node);
     return (t && strcmp(t, "function_definition") == 0);
 }
 
 static TSNode find_identifier_recursive(TSNode node) {
-    if (ts_node_is_null(node)) return ts_node_null();
+    if (ts_node_is_null(node)) return make_null_node();
 
     const char *t = ts_node_type(node);
     if (t && strcmp(t, "identifier") == 0) return node;
@@ -30,7 +35,7 @@ static TSNode find_identifier_recursive(TSNode node) {
         TSNode res = find_identifier_recursive(c);
         if (!ts_node_is_null(res)) return res;
     }
-    return ts_node_null();
+    return make_null_node();
 }
 
 static void extract_functions(TSNode node, const char *source, size_t source_len) {
@@ -55,8 +60,8 @@ static void extract_functions(TSNode node, const char *source, size_t source_len
 }
 
 static char *read_file(const char *path, size_t *out_len) {
-    FILE *f = fopen(path, "rb");
-    if (!f) return NULL;
+    FILE *f = NULL;
+    if (0 != fopen_s(&f, path, "rb") || !f) return NULL;
     if (fseek(f, 0, SEEK_END) != 0) { fclose(f); return NULL; }
     long sz = ftell(f);
     if (sz < 0) { fclose(f); return NULL; }

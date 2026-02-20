@@ -1,0 +1,52 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FuncExtract_treesitter (C4U build)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/C4U/build/FuncExtract_treesitter.exe",
+            "args": [
+                "${workspaceFolder}/C4U/FuncExtract.c"
+            ],
+            "cwd": "${workspaceFolder}/C4U/build",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "FuncExtract_treesitter (root build)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/C4U/FuncExtract_treesitter.exe",
+            "args": [
+                "${workspaceFolder}/C4U/FuncExtract.c"
+            ],
+            "cwd": "${workspaceFolder}/build/C4U",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "FuncExtract_treesitter (C4U build, LLDB)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/C4U/build/FuncExtract_treesitter.exe",
+            "args": [
+                "${workspaceFolder}/C4U/FuncExtract.c"
+            ],
+            "cwd": "${workspaceFolder}/C4U/build"
+        },
+        {
+            "name": "FuncExtract_treesitter (root build, LLDB)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/C4U/FuncExtract_treesitter.exe",
+            "args": [
+                "${workspaceFolder}/C4U/FuncExtract.c"
+            ],
+            "cwd": "${workspaceFolder}/build/C4U"
+        }
+    ]
+}

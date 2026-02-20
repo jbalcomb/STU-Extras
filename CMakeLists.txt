@@ -26,6 +26,9 @@ configure_file(ProjectTootConfig.h.in ProjectToot.h)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(PROJECTTOOT_ENABLE_C4U_TREESITTER "Enable C4U Tree-sitter parser target" ON)
+set(USE_TREESITTER ${PROJECTTOOT_ENABLE_C4U_TREESITTER} CACHE BOOL "Build Tree-sitter based parser" FORCE)
+
 add_subdirectory(C4U)
 add_subdirectory(TootLib)
 
