@@ -72,3 +72,5 @@ if(USE_TREESITTER)
 		endif()
 	endif()
 endif()
+
+add_subdirectory(tests)
