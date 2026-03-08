@@ -24,6 +24,10 @@ InstalledDir: C:\Users\jbalcomb\AppData\Local\emsdk\upstream\bin
 
 C:\Users\jbalcomb\AppData\Local\emsdk\upstream\emscripten\emcc -v
 
+C:\Users\jbalcomb\AppData\Local\emsdk\emcmdprompt.bat
+- C:\Users\jbalcomb\AppData\Local\emsdk\emsdk_env.bat
+
+
 
 
 # itch.io
