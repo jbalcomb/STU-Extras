@@ -13,15 +13,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 
 # SDL2
-set(SDL2_DIR "C:/devellib/SDL2-2.32.2")
+set(SDL2_BASE "C:/devellib/SDL2-2.32.2")
+set(SDL2_DIR "${SDL2_BASE}/cmake" CACHE PATH "" FORCE)
 find_package(SDL2 QUIET)
 if(NOT SDL2_FOUND)
     # Fallback: manual SDL2 setup
-    set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
+    set(SDL2_INCLUDE_DIRS "${SDL2_BASE}/include")
     if(MSVC)
-        set(SDL2_LIBRARIES "${SDL2_DIR}/lib/x64/SDL2.lib" "${SDL2_DIR}/lib/x64/SDL2main.lib")
+        set(SDL2_LIBRARIES "${SDL2_BASE}/lib/x64/SDL2.lib" "${SDL2_BASE}/lib/x64/SDL2main.lib")
     else()
-        set(SDL2_LIBRARIES "${SDL2_DIR}/lib/x64/SDL2.lib")
+        set(SDL2_LIBRARIES "${SDL2_BASE}/lib/x64/SDL2.lib")
     endif()
 endif()
 

@@ -6,7 +6,16 @@
       "Read(//c/STU/devel/STU-Extras/**)",
       "Bash(xargs grep -l \"SDL_\")",
       "Bash(cmake *)",
-      "Bash(ctest *)"
+      "Bash(ctest *)",
+      "Bash(cmd //C \"\"\"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat\"\" >nul 2>&1 && cmake .. -G Ninja -DSDL2_DIR=C:/devellib/SDL2-2.32.2/cmake 2>&1\")",
+      "Read(//c/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/**)",
+      "Read(//c/Program Files \\(x86\\)/Microsoft Visual Studio/**)",
+      "Read(//c/Program Files/Microsoft Visual Studio/**)",
+      "Bash(cmd /C \"call \"\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Auxiliary\\\\Build\\\\vcvars64.bat\"\" >nul 2>&1 && cd /D C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build && cmake .. -G Ninja -DSDL2_DIR=C:/devellib/SDL2-2.32.2/cmake\")",
+      "Bash(cat:*)",
+      "Bash(cmd /C \"C:\\\\tmp\\\\build_remom.bat\")",
+      "Bash(cmd.exe /C 'C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_helper.bat')",
+      "Bash(cmd //C 'C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_helper.bat')"
     ],
     "additionalDirectories": [
       "C:\\Users\\jbalcomb\\.claude\\plans"

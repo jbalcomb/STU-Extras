@@ -8,24 +8,21 @@ but, maybe we have to get to WASM, for stich.io
 also, pretty sure compiling C++ for WASM or Emscripten is straight-forward
 
 
+The Emscripten package was installed here, by Chocolatey
+C:\Users\jbalcomb\AppData\Local\emsdk
+The Emscripten package also installed Node and Python.
+EMSDK = C:/Users/jbalcomb/AppData/Local/emsdk 
+EMSDK_NODE = C:\Users\jbalcomb\AppData\Local\emsdk\node\22.16.0_64bit\bin\node.exe
+EMSDK_PYTHON = C:\Users\jbalcomb\AppData\Local\emsdk\python\3.13.3_64bit\python.exe
 
-Claude's last known Todos list...
-Update Todos
-[x] Create CMakeLists.txt with SDL2, nlohmann/json, GTest
-[x] Create MomConstants.hpp (game constants from MOM_DEF.H)
-[x] Create MomWorld data layer (terrain grid)
-[x] Create MomEntities (City/Unit/Wizard/Node/Lair structs)
-[x] Create MomGamFile (.GAM binary read/write)
-[x] Create Scenario and ScenarioIO (JSON format)
-[x] Create EditorState and UndoStack
-[x] Create Renderer (SDL2 window, camera, coords)
-[x] Create MapRenderer (tile grid rendering)
-[x] Create UIRenderer and UI panels
-[x] Create main.cpp (app entry, main loop)
-[x] Create unit tests (GamFile, Scenario, UndoStack)
-[ ] Verify CMake configure and build
+C:\Windows\system32>emcc -v
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.40 (5c27e79dd0a9c4e27ef2326841698cdd4f6b5784)
+clang version 17.0.0 (https://github.com/llvm/llvm-project 2922e7cd9334797c24a317d41275f1258ef9ddd3)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: C:\Users\jbalcomb\AppData\Local\emsdk\upstream\bin
 
-
+C:\Users\jbalcomb\AppData\Local\emsdk\upstream\emscripten\emcc -v
 
 
 
