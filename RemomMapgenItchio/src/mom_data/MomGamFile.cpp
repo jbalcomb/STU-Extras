@@ -1,0 +1,168 @@
+// Binary .GAM file read/write for Master of Magic save game compatibility.
+// Powered by Claude.
+
+#include "mom_data/MomGamFile.hpp"
+#include "scenario/Scenario.hpp"
+#include <cstring>
+#include <fstream>
+#include <vector>
+
+namespace mom {
+
+// .GAM file layout offsets (from LOADSAVE.C in ReMoM).
+// Powered by Claude.
+namespace gam_offsets {
+    constexpr int HEROES       = 0;        // 2520 bytes (35 heroes * 12 bytes * 6 players)
+    constexpr int GAME_DATA    = 2520;     // 16 bytes
+    constexpr int WIZARDS      = 2536;     // 7344 bytes (6 * 1224)
+    constexpr int WORLD_MAPS   = 9880;     // 9600 bytes (2 * 4800)
+    constexpr int UU_TBL       = 19480;    // 384 bytes (2 * 192)
+    constexpr int LANDMASSES   = 19864;    // 4800 bytes
+    constexpr int NODES        = 24664;    // 1440 bytes (30 * 48)
+    constexpr int FORTRESSES   = 26104;    // 24 bytes (6 * 4)
+    constexpr int TOWERS       = 26128;    // 24 bytes (6 * 4)
+    constexpr int LAIRS        = 26152;    // 2448 bytes (102 * 24)
+    constexpr int ITEMS        = 28600;    // 6900 bytes (138 * 50)
+    constexpr int CITIES       = 35500;    // 11400 bytes (100 * 114)
+    constexpr int UNITS        = 46900;    // 32288 bytes (1009 * 32)
+    constexpr int SPECIALS     = 79188;    // 4800 bytes
+    constexpr int EXPLORED     = 83988;    // 4800 bytes
+    constexpr int MOVE_COSTS   = 88788;    // 28800 bytes
+    constexpr int EVENTS       = 117588;   // 100 bytes
+    constexpr int MAP_FLAGS    = 117688;   // 4800 bytes
+    constexpr int GRAND_VIZIER = 122488;   // 2 bytes
+    constexpr int PREMADE_ITEMS= 122490;   // 250 bytes
+    constexpr int HERO_NAMES   = 122740;   // 560 bytes (35 * 16)
+    // Total: 123300 bytes
+}
+
+// Helper to write a block of zeros.
+// Powered by Claude.
+static void write_zeros(std::ofstream& f, int count) {
+    std::vector<uint8_t> zeros(count, 0);
+    f.write(reinterpret_cast<const char*>(zeros.data()), count);
+}
+
+bool load_gam_file(const std::string& path, Scenario& sc) {
+    std::ifstream f(path, std::ios::binary);
+    if (!f.is_open()) return false;
+
+    // Check file size
+    f.seekg(0, std::ios::end);
+    auto size = f.tellg();
+    if (size < SAVEGAM_RECORD_SIZE) return false;
+    f.seekg(0, std::ios::beg);
+
+    std::vector<uint8_t> buf(SAVEGAM_RECORD_SIZE);
+    f.read(reinterpret_cast<char*>(buf.data()), SAVEGAM_RECORD_SIZE);
+    if (!f.good()) return false;
+
+    auto at = [&](int offset) -> const uint8_t* { return buf.data() + offset; };
+
+    // Game settings
+    std::memcpy(&sc.game_data, at(gam_offsets::GAME_DATA), sizeof(GameData));
+
+    // Wizards
+    std::memcpy(sc.wizards.data(), at(gam_offsets::WIZARDS), NUM_PLAYERS * sizeof(Wizard));
+
+    // World maps (terrain)
+    std::memcpy(sc.world.terrain, at(gam_offsets::WORLD_MAPS), NUM_PLANES * WORLD_SIZE * 2);
+
+    // Landmasses
+    std::memcpy(sc.world.landmasses, at(gam_offsets::LANDMASSES), NUM_PLANES * WORLD_SIZE);
+
+    // Nodes
+    std::memcpy(sc.nodes.data(), at(gam_offsets::NODES), NUM_NODES * sizeof(Node));
+
+    // Fortresses
+    std::memcpy(sc.fortresses.data(), at(gam_offsets::FORTRESSES), NUM_FORTRESSES * sizeof(Fortress));
+
+    // Towers
+    std::memcpy(sc.towers.data(), at(gam_offsets::TOWERS), NUM_TOWERS * sizeof(Tower));
+
+    // Lairs
+    std::memcpy(sc.lairs.data(), at(gam_offsets::LAIRS), NUM_LAIRS * sizeof(Lair));
+
+    // Items
+    std::memcpy(sc.items.data(), at(gam_offsets::ITEMS), NUM_ITEMS * sizeof(Item));
+
+    // Cities
+    std::memcpy(sc.cities.data(), at(gam_offsets::CITIES), NUM_CITIES * sizeof(City));
+
+    // Units
+    std::memcpy(sc.units.data(), at(gam_offsets::UNITS), NUM_UNITS * sizeof(Unit));
+
+    // Terrain specials
+    std::memcpy(sc.world.specials, at(gam_offsets::SPECIALS), NUM_PLANES * WORLD_SIZE);
+
+    // Explored
+    std::memcpy(sc.world.explored, at(gam_offsets::EXPLORED), NUM_PLANES * WORLD_SIZE);
+
+    // Map flags
+    std::memcpy(sc.world.flags, at(gam_offsets::MAP_FLAGS), NUM_PLANES * WORLD_SIZE);
+
+    return true;
+}
+
+bool save_gam_file(const std::string& path, const Scenario& sc) {
+    std::ofstream f(path, std::ios::binary);
+    if (!f.is_open()) return false;
+
+    // Pre-allocate buffer with zeros
+    std::vector<uint8_t> buf(SAVEGAM_RECORD_SIZE, 0);
+
+    auto put = [&](int offset, const void* data, int size) {
+        std::memcpy(buf.data() + offset, data, size);
+    };
+
+    // Game settings
+    put(gam_offsets::GAME_DATA, &sc.game_data, sizeof(GameData));
+
+    // Wizards
+    put(gam_offsets::WIZARDS, sc.wizards.data(), NUM_PLAYERS * sizeof(Wizard));
+
+    // World maps (terrain)
+    put(gam_offsets::WORLD_MAPS, sc.world.terrain, NUM_PLANES * WORLD_SIZE * 2);
+
+    // Landmasses
+    put(gam_offsets::LANDMASSES, sc.world.landmasses, NUM_PLANES * WORLD_SIZE);
+
+    // Nodes
+    put(gam_offsets::NODES, sc.nodes.data(), NUM_NODES * sizeof(Node));
+
+    // Fortresses
+    put(gam_offsets::FORTRESSES, sc.fortresses.data(), NUM_FORTRESSES * sizeof(Fortress));
+
+    // Towers
+    put(gam_offsets::TOWERS, sc.towers.data(), NUM_TOWERS * sizeof(Tower));
+
+    // Lairs
+    put(gam_offsets::LAIRS, sc.lairs.data(), NUM_LAIRS * sizeof(Lair));
+
+    // Items
+    put(gam_offsets::ITEMS, sc.items.data(), NUM_ITEMS * sizeof(Item));
+
+    // Cities
+    put(gam_offsets::CITIES, sc.cities.data(), NUM_CITIES * sizeof(City));
+
+    // Units
+    put(gam_offsets::UNITS, sc.units.data(), NUM_UNITS * sizeof(Unit));
+
+    // Terrain specials
+    put(gam_offsets::SPECIALS, sc.world.specials, NUM_PLANES * WORLD_SIZE);
+
+    // Explored (set all explored by default for scenarios)
+    {
+        uint8_t explored[NUM_PLANES][WORLD_SIZE];
+        std::memcpy(explored, sc.world.explored, sizeof(explored));
+        put(gam_offsets::EXPLORED, explored, NUM_PLANES * WORLD_SIZE);
+    }
+
+    // Map flags
+    put(gam_offsets::MAP_FLAGS, sc.world.flags, NUM_PLANES * WORLD_SIZE);
+
+    f.write(reinterpret_cast<const char*>(buf.data()), SAVEGAM_RECORD_SIZE);
+    return f.good();
+}
+
+} // namespace mom

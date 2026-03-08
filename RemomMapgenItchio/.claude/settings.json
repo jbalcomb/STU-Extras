@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/STU/devel/STU-Extras/ReMoM/src/MOX/**)",
+      "Read(//c/STU/devel/STU-Extras/ReMoM/src/**)",
+      "Read(//c/STU/devel/STU-Extras/**)",
+      "Bash(xargs grep -l \"SDL_\")",
+      "Bash(cmake *)",
+      "Bash(ctest *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\jbalcomb\\.claude\\plans"
+    ]
+  }
+}
