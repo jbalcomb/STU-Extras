@@ -40,6 +40,9 @@ struct Scenario {
     // Game settings
     GameData game_data;
 
+    // Map generation parameters (editor-only, not written to .GAM)
+    MapGenParams map_gen_params;
+
     // World terrain
     MomWorld world;
 
@@ -62,6 +65,7 @@ struct Scenario {
         type = ScenarioType::SANDBOX;
         meta = ScenarioMeta{};
         game_data = GameData{};
+        map_gen_params = MapGenParams{};
         world.clear();
         world.set_all_explored();
         wizards = {};

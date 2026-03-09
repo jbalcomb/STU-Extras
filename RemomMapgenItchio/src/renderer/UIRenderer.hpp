@@ -36,6 +36,11 @@ public:
     static void draw_status_bar(Renderer& r, int window_w, int window_h,
                                 int cursor_wx, int cursor_wy, int plane,
                                 float zoom);
+
+    // Draw a temporary status message overlay above the status bar.
+    // Powered by Claude.
+    static void draw_status_message(Renderer& r, int window_w, int window_h,
+                                    const std::string& message);
 };
 
 } // namespace mom

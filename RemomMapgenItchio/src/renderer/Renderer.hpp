@@ -21,7 +21,7 @@ struct Camera {
     int tile_w() const { return static_cast<int>(tile_size * zoom); }
     int tile_h() const { return static_cast<int>(tile_size * 0.9f * zoom); }
 
-    // Convert screen coordinates to world tile coordinates.
+    // Convert screen coordinates to world tile coordinates with horizontal wrapping.
     // Powered by Claude.
     void screen_to_world(int sx, int sy, int viewport_x, int viewport_y,
                          int& wx, int& wy) const {
@@ -30,7 +30,10 @@ struct Camera {
         if (tw <= 0 || th <= 0) { wx = -1; wy = -1; return; }
         wx = static_cast<int>((sx - viewport_x + offset_x) / tw);
         wy = static_cast<int>((sy - viewport_y + offset_y) / th);
-        if (wx < 0 || wx >= WORLD_WIDTH || wy < 0 || wy >= WORLD_HEIGHT) {
+        // Wrap x horizontally for seamless map.
+        // Powered by Claude.
+        wx = ((wx % WORLD_WIDTH) + WORLD_WIDTH) % WORLD_WIDTH;
+        if (wy < 0 || wy >= WORLD_HEIGHT) {
             wx = -1; wy = -1;
         }
     }

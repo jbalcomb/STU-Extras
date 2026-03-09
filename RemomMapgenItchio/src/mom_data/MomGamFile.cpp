@@ -104,11 +104,9 @@ bool load_gam_file(const std::string& path, Scenario& sc) {
     return true;
 }
 
-bool save_gam_file(const std::string& path, const Scenario& sc) {
-    std::ofstream f(path, std::ios::binary);
-    if (!f.is_open()) return false;
-
-    // Pre-allocate buffer with zeros
+// Build the 123,300-byte .GAM buffer from a scenario (shared by file and buffer save).
+// Powered by Claude.
+static std::vector<uint8_t> build_gam_buffer(const Scenario& sc) {
     std::vector<uint8_t> buf(SAVEGAM_RECORD_SIZE, 0);
 
     auto put = [&](int offset, const void* data, int size) {
@@ -161,8 +159,75 @@ bool save_gam_file(const std::string& path, const Scenario& sc) {
     // Map flags
     put(gam_offsets::MAP_FLAGS, sc.world.flags, NUM_PLANES * WORLD_SIZE);
 
+    return buf;
+}
+
+bool save_gam_file(const std::string& path, const Scenario& sc) {
+    std::ofstream f(path, std::ios::binary);
+    if (!f.is_open()) return false;
+
+    auto buf = build_gam_buffer(sc);
     f.write(reinterpret_cast<const char*>(buf.data()), SAVEGAM_RECORD_SIZE);
     return f.good();
+}
+
+// Serialize a scenario to a .GAM byte buffer for use with platform file dialogs.
+// Powered by Claude.
+std::vector<uint8_t> serialize_gam(const Scenario& sc) {
+    return build_gam_buffer(sc);
+}
+
+// Deserialize a .GAM byte buffer into a scenario.
+// Returns true on success, false if the buffer is too small.
+// Powered by Claude.
+bool deserialize_gam(const std::vector<uint8_t>& data, Scenario& sc) {
+    if (static_cast<int>(data.size()) < SAVEGAM_RECORD_SIZE) return false;
+
+    auto at = [&](int offset) -> const uint8_t* { return data.data() + offset; };
+
+    // Game settings
+    std::memcpy(&sc.game_data, at(gam_offsets::GAME_DATA), sizeof(GameData));
+
+    // Wizards
+    std::memcpy(sc.wizards.data(), at(gam_offsets::WIZARDS), NUM_PLAYERS * sizeof(Wizard));
+
+    // World maps (terrain)
+    std::memcpy(sc.world.terrain, at(gam_offsets::WORLD_MAPS), NUM_PLANES * WORLD_SIZE * 2);
+
+    // Landmasses
+    std::memcpy(sc.world.landmasses, at(gam_offsets::LANDMASSES), NUM_PLANES * WORLD_SIZE);
+
+    // Nodes
+    std::memcpy(sc.nodes.data(), at(gam_offsets::NODES), NUM_NODES * sizeof(Node));
+
+    // Fortresses
+    std::memcpy(sc.fortresses.data(), at(gam_offsets::FORTRESSES), NUM_FORTRESSES * sizeof(Fortress));
+
+    // Towers
+    std::memcpy(sc.towers.data(), at(gam_offsets::TOWERS), NUM_TOWERS * sizeof(Tower));
+
+    // Lairs
+    std::memcpy(sc.lairs.data(), at(gam_offsets::LAIRS), NUM_LAIRS * sizeof(Lair));
+
+    // Items
+    std::memcpy(sc.items.data(), at(gam_offsets::ITEMS), NUM_ITEMS * sizeof(Item));
+
+    // Cities
+    std::memcpy(sc.cities.data(), at(gam_offsets::CITIES), NUM_CITIES * sizeof(City));
+
+    // Units
+    std::memcpy(sc.units.data(), at(gam_offsets::UNITS), NUM_UNITS * sizeof(Unit));
+
+    // Terrain specials
+    std::memcpy(sc.world.specials, at(gam_offsets::SPECIALS), NUM_PLANES * WORLD_SIZE);
+
+    // Explored
+    std::memcpy(sc.world.explored, at(gam_offsets::EXPLORED), NUM_PLANES * WORLD_SIZE);
+
+    // Map flags
+    std::memcpy(sc.world.flags, at(gam_offsets::MAP_FLAGS), NUM_PLANES * WORLD_SIZE);
+
+    return true;
 }
 
 } // namespace mom

@@ -308,3 +308,26 @@ TEST_F(ScenarioIOTest, LoadInvalidJsonFails) {
     Scenario sc;
     EXPECT_FALSE(load_scenario(tmp_path, sc));
 }
+
+// Verify MapGenParams survive JSON round-trip with non-default values.
+// Powered by Claude.
+TEST_F(ScenarioIOTest, RoundTripMapGenParams) {
+    Scenario sc1;
+    sc1.clear();
+    sc1.map_gen_params.land_proportion = 0.7f;
+    sc1.map_gen_params.roughness = ROUGHNESS_ROUGH;
+    sc1.map_gen_params.continent_count = 5;
+    sc1.map_gen_params.seed = 42;
+    sc1.map_gen_params.mirror_planes = true;
+
+    ASSERT_TRUE(save_scenario(tmp_path, sc1));
+
+    Scenario sc2;
+    ASSERT_TRUE(load_scenario(tmp_path, sc2));
+
+    EXPECT_FLOAT_EQ(sc2.map_gen_params.land_proportion, 0.7f);
+    EXPECT_EQ(sc2.map_gen_params.roughness, ROUGHNESS_ROUGH);
+    EXPECT_EQ(sc2.map_gen_params.continent_count, 5);
+    EXPECT_EQ(sc2.map_gen_params.seed, 42u);
+    EXPECT_EQ(sc2.map_gen_params.mirror_planes, true);
+}

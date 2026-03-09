@@ -32,6 +32,10 @@ stdout.txt
 
 3PL/
 
+# Deployment config (contains user-specific itch.io credentials)
+deploy.conf
+.deploy_staging/
+
 # Borland C++ v3.0 (c) 1992
 *.DSK
 *.EXE

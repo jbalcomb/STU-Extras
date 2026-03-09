@@ -68,6 +68,20 @@ struct MomWorld {
         flags[plane][y * WORLD_WIDTH + x] = f;
     }
 
+    // Get/set landmass ID at world coordinates.
+    // Powered by Claude.
+    uint8_t get_landmass(int plane, int x, int y) const {
+        if (x < 0 || x >= WORLD_WIDTH || y < 0 || y >= WORLD_HEIGHT || plane < 0 || plane >= NUM_PLANES)
+            return 0;
+        return landmasses[plane][y * WORLD_WIDTH + x];
+    }
+
+    void set_landmass(int plane, int x, int y, uint8_t id) {
+        if (x < 0 || x >= WORLD_WIDTH || y < 0 || y >= WORLD_HEIGHT || plane < 0 || plane >= NUM_PLANES)
+            return;
+        landmasses[plane][y * WORLD_WIDTH + x] = id;
+    }
+
     // Reset all terrain to ocean.
     // Powered by Claude.
     void clear() {

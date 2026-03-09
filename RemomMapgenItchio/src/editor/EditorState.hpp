@@ -4,6 +4,8 @@
 
 #include "mom_data/MomConstants.hpp"
 #include <cstdint>
+#include <string>
+#include <vector>
 
 namespace mom {
 
@@ -13,13 +15,16 @@ enum class EditorTool {
     SELECT,
     PAINT_TERRAIN,
     PAINT_SPECIAL,
+    PAINT_FLAGS,
     PLACE_CITY,
     PLACE_UNIT,
     PLACE_NODE,
     PLACE_LAIR,
     PLACE_TOWER,
     PLACE_FORTRESS,
-    ERASE
+    ERASE,
+    SETTINGS,
+    WIZARDS
 };
 
 // Editor state shared between UI, input handling, and rendering.
@@ -31,6 +36,10 @@ struct EditorState {
     // Terrain painting
     BaseTerrain paint_terrain{TERRAIN_GRASSLAND};
     TerrainSpecial paint_special{TS_NONE};
+
+    // Flag painting (default = MSF_ROAD).
+    // Powered by Claude.
+    uint8_t paint_flag{0x08};
 
     // Entity placement defaults
     int8_t  place_owner{0};
@@ -50,9 +59,27 @@ struct EditorState {
     int selected_unit{-1};
     int selected_node{-1};
     int selected_lair{-1};
+    int selected_tower{-1};
+    int selected_fortress{-1};
+
+    // Status message bar for slot limit feedback and notifications.
+    // Powered by Claude.
+    std::string status_message;
+    float status_timer{0.0f}; // seconds remaining
+
+    // Map generation parameters
+    MapGenParams map_gen_params;
+    bool generate_requested{false};
+
+    // Smoothing validation
+    std::vector<SmoothingViolation> violations;
+    bool show_all_violations{false};
 
     // Grid display
     bool show_grid{true};
+
+    // Wizard panel tab selection
+    int wizard_tab{0};
 
     // Toggle active plane.
     // Powered by Claude.
@@ -67,6 +94,15 @@ struct EditorState {
         selected_unit = -1;
         selected_node = -1;
         selected_lair = -1;
+        selected_tower = -1;
+        selected_fortress = -1;
+    }
+
+    // Set a temporary status message with a display duration.
+    // Powered by Claude.
+    void set_status(const std::string& msg, float duration = 3.0f) {
+        status_message = msg;
+        status_timer = duration;
     }
 };
 

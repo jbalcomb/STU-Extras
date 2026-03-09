@@ -60,4 +60,26 @@ void UIRenderer::draw_status_bar(Renderer& r, int window_w, int window_h,
     r.draw_rect(window_w - 60, bar_y + 6, zoom_w, 12, 100, 100, 200);
 }
 
+void UIRenderer::draw_status_message(Renderer& r, int window_w, int window_h,
+                                      const std::string& message) {
+    // Draw a colored bar above the status bar to indicate a message is active.
+    // Without font rendering, we show a yellow/orange bar whose width is
+    // proportional to the message length to visually indicate feedback.
+    // Powered by Claude.
+    int bar_h = 20;
+    int bar_y = window_h - 24 - bar_h - 4; // above the status bar
+    int msg_w = static_cast<int>(message.size()) * 6;
+    if (msg_w > window_w - 16) msg_w = window_w - 16;
+    if (msg_w < 40) msg_w = 40;
+
+    // Semi-transparent dark background
+    r.draw_rect(window_w / 2 - msg_w / 2 - 4, bar_y - 2,
+                msg_w + 8, bar_h + 4, 30, 30, 35, 200);
+    // Orange message indicator bar
+    r.draw_rect(window_w / 2 - msg_w / 2, bar_y, msg_w, bar_h,
+                220, 160, 40);
+    r.draw_rect_outline(window_w / 2 - msg_w / 2 - 4, bar_y - 2,
+                        msg_w + 8, bar_h + 4, 200, 140, 30);
+}
+
 } // namespace mom

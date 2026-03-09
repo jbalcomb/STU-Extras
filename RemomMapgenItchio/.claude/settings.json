@@ -7,6 +7,7 @@
       "Bash(xargs grep -l \"SDL_\")",
       "Bash(cmake *)",
       "Bash(ctest *)",
+      "Bash(butler *)",
       "Bash(cmd //C \"\"\"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat\"\" >nul 2>&1 && cmake .. -G Ninja -DSDL2_DIR=C:/devellib/SDL2-2.32.2/cmake 2>&1\")",
       "Read(//c/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/**)",
       "Read(//c/Program Files \\(x86\\)/Microsoft Visual Studio/**)",
@@ -15,7 +16,8 @@
       "Bash(cat:*)",
       "Bash(cmd /C \"C:\\\\tmp\\\\build_remom.bat\")",
       "Bash(cmd.exe /C 'C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_helper.bat')",
-      "Bash(cmd //C 'C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_helper.bat')"
+      "Bash(cmd //C 'C:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_helper.bat')",
+      "Bash(bash deploy_itchio.sh)"
     ],
     "additionalDirectories": [
       "C:\\Users\\jbalcomb\\.claude\\plans"

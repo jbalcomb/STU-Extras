@@ -57,6 +57,23 @@ std::vector<uint8_t> base64_decode(const std::string& encoded) {
     return out;
 }
 
+// Convert Roughness enum to string. Powered by Claude.
+std::string roughness_to_string(mom::Roughness r) {
+    switch (r) {
+        case mom::ROUGHNESS_SMOOTH: return "SMOOTH";
+        case mom::ROUGHNESS_MEDIUM: return "MEDIUM";
+        case mom::ROUGHNESS_ROUGH:  return "ROUGH";
+        default: return "MEDIUM";
+    }
+}
+
+// Convert string to Roughness enum. Powered by Claude.
+mom::Roughness string_to_roughness(const std::string& s) {
+    if (s == "SMOOTH") return mom::ROUGHNESS_SMOOTH;
+    if (s == "ROUGH")  return mom::ROUGHNESS_ROUGH;
+    return mom::ROUGHNESS_MEDIUM;
+}
+
 } // anonymous namespace
 
 namespace mom {
@@ -234,7 +251,9 @@ static Wizard wizard_from_json(const json& j) {
     return w;
 }
 
-bool save_scenario(const std::string& path, const Scenario& sc) {
+// Build the JSON object for a scenario (shared by file-based and buffer-based save).
+// Powered by Claude.
+static json scenario_to_json(const Scenario& sc) {
     json root;
     root["format_version"] = Scenario::FORMAT_VERSION;
 
@@ -261,6 +280,15 @@ bool save_scenario(const std::string& path, const Scenario& sc) {
     gs["land_size"]    = sc.game_data.Land_Size;
     gs["num_wizards"]  = sc.game_data.Total_Wizards;
     root["game_settings"] = gs;
+
+    // Map generation parameters
+    json mgp;
+    mgp["land_proportion"] = sc.map_gen_params.land_proportion;
+    mgp["roughness"]       = roughness_to_string(sc.map_gen_params.roughness);
+    mgp["continent_count"] = sc.map_gen_params.continent_count;
+    mgp["seed"]            = sc.map_gen_params.seed;
+    mgp["mirror_planes"]   = sc.map_gen_params.mirror_planes;
+    root["map_gen_params"]  = mgp;
 
     // World terrain (base64 encoded)
     json world;
@@ -332,24 +360,12 @@ bool save_scenario(const std::string& path, const Scenario& sc) {
     }
     root["lairs"] = lair_arr;
 
-    // Write
-    std::ofstream f(path);
-    if (!f.is_open()) return false;
-    f << root.dump(2);
-    return f.good();
+    return root;
 }
 
-bool load_scenario(const std::string& path, Scenario& sc) {
-    std::ifstream f(path);
-    if (!f.is_open()) return false;
-
-    json root;
-    try {
-        f >> root;
-    } catch (...) {
-        return false;
-    }
-
+// Parse a JSON object into a scenario (shared by file-based and buffer-based load).
+// Powered by Claude.
+static bool json_to_scenario(const json& root, Scenario& sc) {
     sc.clear();
 
     // Type
@@ -376,6 +392,16 @@ bool load_scenario(const std::string& path, Scenario& sc) {
         sc.game_data.Magic         = gs.value("magic", (uint16_t)1);
         sc.game_data.Land_Size     = gs.value("land_size", (uint16_t)1);
         sc.game_data.Total_Wizards = gs.value("num_wizards", (uint16_t)2);
+    }
+
+    // Map generation parameters
+    if (root.contains("map_gen_params")) {
+        auto& mgp = root["map_gen_params"];
+        sc.map_gen_params.land_proportion = mgp.value("land_proportion", 0.4f);
+        sc.map_gen_params.roughness       = string_to_roughness(mgp.value("roughness", std::string("MEDIUM")));
+        sc.map_gen_params.continent_count = mgp.value("continent_count", 3);
+        sc.map_gen_params.seed            = mgp.value("seed", (uint32_t)0);
+        sc.map_gen_params.mirror_planes   = mgp.value("mirror_planes", false);
     }
 
     // World
@@ -478,6 +504,54 @@ bool load_scenario(const std::string& path, Scenario& sc) {
     sc.game_data.Total_Units  = static_cast<uint16_t>(sc.count_active_units());
 
     return true;
+}
+
+bool save_scenario(const std::string& path, const Scenario& sc) {
+    json root = scenario_to_json(sc);
+
+    // Write
+    std::ofstream f(path);
+    if (!f.is_open()) return false;
+    f << root.dump(2);
+    return f.good();
+}
+
+bool load_scenario(const std::string& path, Scenario& sc) {
+    std::ifstream f(path);
+    if (!f.is_open()) return false;
+
+    json root;
+    try {
+        f >> root;
+    } catch (...) {
+        return false;
+    }
+
+    return json_to_scenario(root, sc);
+}
+
+// Serialize a scenario to a JSON byte buffer for use with platform file dialogs.
+// Powered by Claude.
+std::vector<uint8_t> serialize_scenario(const Scenario& sc) {
+    json root = scenario_to_json(sc);
+    std::string s = root.dump(2);
+    return std::vector<uint8_t>(s.begin(), s.end());
+}
+
+// Deserialize a scenario from a JSON byte buffer loaded via platform file dialogs.
+// Powered by Claude.
+bool deserialize_scenario(const std::vector<uint8_t>& data, Scenario& sc) {
+    if (data.empty()) return false;
+
+    json root;
+    try {
+        std::string s(data.begin(), data.end());
+        root = json::parse(s);
+    } catch (...) {
+        return false;
+    }
+
+    return json_to_scenario(root, sc);
 }
 
 } // namespace mom

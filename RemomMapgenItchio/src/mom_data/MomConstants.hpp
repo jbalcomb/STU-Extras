@@ -3,6 +3,7 @@
 // Powered by Claude.
 
 #include <cstdint>
+#include <string>
 
 namespace mom {
 
@@ -123,6 +124,50 @@ enum MapSquareFlag : uint8_t {
     MSF_ENC_ROAD     = 0x10,
     MSF_CORRUPTION   = 0x20,
     MSF_NO_ROAD      = 0x80
+};
+
+// -- Editor-only types (NOT part of packed game structs) --
+
+// Map generation roughness level. Powered by Claude.
+enum Roughness : uint8_t {
+    ROUGHNESS_SMOOTH = 0,
+    ROUGHNESS_MEDIUM = 1,
+    ROUGHNESS_ROUGH  = 2
+};
+
+// Parameters for procedural map generation. Editor-only, not serialized to .GAM.
+// Powered by Claude.
+struct MapGenParams {
+    float    land_proportion  = 0.4f;   // [0.05, 0.95]
+    Roughness roughness      = ROUGHNESS_MEDIUM;
+    int      continent_count = 3;       // [1, 6]
+    uint32_t seed            = 0;       // 0 = random
+    bool     mirror_planes   = false;   // copy Arcanus to Myrror
+};
+
+// Smoothing violation severity. Powered by Claude.
+enum ViolationSeverity : uint8_t {
+    SEVERITY_WARNING = 0,   // advisory, may render oddly in-game
+    SEVERITY_ERROR   = 1    // will definitely cause rendering artifacts
+};
+
+// Smoothing validation rule identifiers. Powered by Claude.
+enum ViolationRule : uint8_t {
+    RULE_SHORE_NO_WATER     = 0,  // shore tile has no adjacent ocean/lake
+    RULE_RIVER_ISOLATED     = 1,  // river tile has no adjacent river/shore/ocean/lake
+    RULE_VOLCANO_ISOLATED   = 2,  // volcano has no adjacent mountain/hill
+    RULE_TUNDRA_DESERT      = 3   // tundra is adjacent to desert
+};
+
+// A single smoothing rule violation. Transient, not serialized.
+// Powered by Claude.
+struct SmoothingViolation {
+    int              plane    = 0;
+    int              x        = 0;
+    int              y        = 0;
+    ViolationRule    rule     = RULE_SHORE_NO_WATER;
+    ViolationSeverity severity = SEVERITY_WARNING;
+    std::string      message;
 };
 
 } // namespace mom
