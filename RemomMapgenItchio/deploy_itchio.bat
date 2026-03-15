@@ -125,27 +125,30 @@ if "%MISSING%"=="1" (
     exit /b 1
 )
 
-REM --- Install deployment files ---
-REM Use CMake install target to copy only deployment files to a clean dist
-REM directory. This also renames RemomMapgenItchio.html to index.html as
-REM required by itch.io. Powered by Claude.
+REM --- Stage deployment files ---
+REM Copy only required files to a clean dist directory and rename
+REM RemomMapgenItchio.html to index.html (required by itch.io).
+REM Powered by Claude.
 set "DIST_DIR=%BUILD_PATH%\dist"
+if exist "%DIST_DIR%" rd /s /q "%DIST_DIR%"
+mkdir "%DIST_DIR%"
 
-echo === Installing deployment files ===
-cmake --install "%BUILD_PATH%" --prefix "%DIST_DIR%"
-if %errorlevel% neq 0 (
-    echo.
-    echo Error: cmake --install failed.
-    echo   Try rebuilding: build_wasm.bat
-    exit /b 1
+echo === Staging deployment files ===
+copy "%BUILD_PATH%\RemomMapgenItchio.html" "%DIST_DIR%\index.html" >nul
+echo   + index.html (from RemomMapgenItchio.html)
+copy "%BUILD_PATH%\RemomMapgenItchio.js" "%DIST_DIR%\" >nul
+echo   + RemomMapgenItchio.js
+copy "%BUILD_PATH%\RemomMapgenItchio.wasm" "%DIST_DIR%\" >nul
+echo   + RemomMapgenItchio.wasm
+if exist "%BUILD_PATH%\RemomMapgenItchio.data" (
+    copy "%BUILD_PATH%\RemomMapgenItchio.data" "%DIST_DIR%\" >nul
+    echo   + RemomMapgenItchio.data
+)
+if exist "%BUILD_PATH%\RemomMapgenItchio.worker.js" (
+    copy "%BUILD_PATH%\RemomMapgenItchio.worker.js" "%DIST_DIR%\" >nul
+    echo   + RemomMapgenItchio.worker.js
 )
 echo.
-
-if not exist "%DIST_DIR%\index.html" (
-    echo Error: cmake --install did not produce index.html in %BUILD_DIR%\dist\
-    echo   Try rebuilding: build_wasm.bat
-    exit /b 1
-)
 
 REM --- Deploy with Butler ---
 set "BUTLER_TARGET=%ITCHIO_USER%/%ITCHIO_GAME%:%ITCHIO_CHANNEL%"

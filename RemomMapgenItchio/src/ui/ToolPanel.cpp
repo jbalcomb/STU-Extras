@@ -4,8 +4,79 @@
 #include "ui/ToolPanel.hpp"
 #include "renderer/UIRenderer.hpp"
 #include "renderer/MapRenderer.hpp"
+#include <string>
 
 namespace mom {
+
+// Tool name lookup table.
+// Powered by Claude.
+static const char* tool_name(EditorTool t) {
+    switch (t) {
+        case EditorTool::SELECT:         return "Select";
+        case EditorTool::PAINT_TERRAIN:  return "Terrain";
+        case EditorTool::PAINT_SPECIAL:  return "Special";
+        case EditorTool::PAINT_FLAGS:    return "Flags";
+        case EditorTool::PLACE_CITY:     return "City";
+        case EditorTool::PLACE_UNIT:     return "Unit";
+        case EditorTool::PLACE_NODE:     return "Node";
+        case EditorTool::PLACE_LAIR:     return "Lair";
+        case EditorTool::PLACE_TOWER:    return "Tower";
+        case EditorTool::PLACE_FORTRESS: return "Fortress";
+        case EditorTool::ERASE:          return "Erase";
+        case EditorTool::SETTINGS:       return "Settings";
+        case EditorTool::WIZARDS:        return "Wizards";
+    }
+    return "???";
+}
+
+// Terrain type name lookup.
+// Powered by Claude.
+static const char* terrain_name(BaseTerrain t) {
+    switch (t) {
+        case TERRAIN_OCEAN:     return "Ocean";
+        case TERRAIN_SHORE:     return "Shore";
+        case TERRAIN_GRASSLAND: return "Grassland";
+        case TERRAIN_FOREST:    return "Forest";
+        case TERRAIN_MOUNTAIN:  return "Mountain";
+        case TERRAIN_DESERT:    return "Desert";
+        case TERRAIN_SWAMP:     return "Swamp";
+        case TERRAIN_TUNDRA:    return "Tundra";
+        case TERRAIN_HILL:      return "Hill";
+        case TERRAIN_RIVER:     return "River";
+        case TERRAIN_VOLCANO:   return "Volcano";
+        case TERRAIN_LAKE:      return "Lake";
+        default:                return "Unknown";
+    }
+}
+
+// Terrain special name lookup.
+// Powered by Claude.
+static const char* special_name(TerrainSpecial s) {
+    switch (s) {
+        case TS_NONE:            return "None";
+        case TS_IRON:            return "Iron";
+        case TS_COAL:            return "Coal";
+        case TS_SILVER:          return "Silver";
+        case TS_GOLD:            return "Gold";
+        case TS_GEMS:            return "Gems";
+        case TS_MITHRIL:         return "Mithril";
+        case TS_ADAMANTIUM:      return "Adamantium";
+        case TS_QUORK_CRYSTALS:  return "Quork";
+        case TS_CRYSX_CRYSTALS:  return "Crysx";
+        case TS_WILD_GAME:       return "Wild Game";
+        case TS_NIGHTSHADE:      return "Nightshade";
+        default:                 return "Unknown";
+    }
+}
+
+// Flag name lookup.
+// Powered by Claude.
+static const char* flag_name(uint8_t flag) {
+    if (flag == MSF_ROAD)       return "Road";
+    if (flag == MSF_ENC_ROAD)   return "Ench. Road";
+    if (flag == MSF_CORRUPTION) return "Corruption";
+    return "Unknown";
+}
 
 void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_h) {
     // Panel background
@@ -16,31 +87,20 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
     int btn_h = 20;
     int pad = 4;
 
-    // Tool mode buttons
-    struct ToolBtn {
-        EditorTool tool;
-        uint8_t r, g, b;
-    };
-    ToolBtn tool_buttons[] = {
-        {EditorTool::SELECT,         180, 180, 180},
-        {EditorTool::PAINT_TERRAIN,  100, 200, 100},
-        {EditorTool::PAINT_SPECIAL,  200, 200, 100},
-        {EditorTool::PAINT_FLAGS,    160, 120,  80},
-        {EditorTool::PLACE_CITY,     200, 150, 100},
-        {EditorTool::PLACE_UNIT,     100, 150, 200},
-        {EditorTool::PLACE_NODE,     150, 100, 200},
-        {EditorTool::PLACE_LAIR,     200, 100, 100},
-        {EditorTool::PLACE_TOWER,    200, 200, 220},
-        {EditorTool::PLACE_FORTRESS, 220, 180, 100},
-        {EditorTool::ERASE,          150, 150, 150},
-        {EditorTool::SETTINGS,       200, 180,  60},
-        {EditorTool::WIZARDS,        180, 100, 200},
+    // Tool mode buttons with text labels.
+    // Powered by Claude.
+    EditorTool tools[] = {
+        EditorTool::SELECT, EditorTool::PAINT_TERRAIN, EditorTool::PAINT_SPECIAL,
+        EditorTool::PAINT_FLAGS,
+        EditorTool::PLACE_CITY, EditorTool::PLACE_UNIT, EditorTool::PLACE_NODE,
+        EditorTool::PLACE_LAIR, EditorTool::PLACE_TOWER, EditorTool::PLACE_FORTRESS,
+        EditorTool::ERASE, EditorTool::SETTINGS, EditorTool::WIZARDS
     };
 
-    for (auto& tb : tool_buttons) {
-        bool sel = (state.tool == tb.tool);
-        UIRenderer::draw_button(renderer, 8, y, btn_w, btn_h, sel, false);
-        UIRenderer::draw_label_bar(renderer, 12, y, btn_w - 8, tb.r, tb.g, tb.b);
+    for (auto t : tools) {
+        bool sel = (state.tool == t);
+        UIRenderer::draw_button_with_label(renderer, 8, y, btn_w, btn_h,
+                                           tool_name(t), sel, false);
         y += btn_h + pad;
     }
 
@@ -48,8 +108,15 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
     UIRenderer::draw_separator(renderer, 8, y, btn_w);
     y += pad * 2;
 
-    // Terrain type palette (only when terrain tool is active)
+    // Terrain type palette (only when terrain tool is active).
+    // Powered by Claude.
     if (state.tool == EditorTool::PAINT_TERRAIN) {
+        // Show selected terrain name above palette.
+        // Powered by Claude.
+        UIRenderer::draw_label(renderer, 8, y, terrain_name(state.paint_terrain),
+                               120, 200, 120);
+        y += 16;
+
         int swatch_sz = 22;
         int cols = (WIDTH - 16) / (swatch_sz + 2);
         int col = 0;
@@ -76,7 +143,7 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
     UIRenderer::draw_separator(renderer, 8, y, btn_w);
     y += pad * 2;
 
-    // Land proportion bar (colored gradient, labeled by percentage).
+    // Land proportion bar with text label.
     // Powered by Claude.
     {
         int bar_w = btn_w;
@@ -85,43 +152,63 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
         int fill_w = static_cast<int>(bar_w * state.map_gen_params.land_proportion);
         renderer.draw_rect(8, y, bar_w, bar_h, 30, 60, 120);    // ocean bg
         renderer.draw_rect(8, y, fill_w, bar_h, 80, 160, 80);   // land fill
+        renderer.draw_text(10, y + 2, "Land: " + std::to_string(pct) + "%", 240, 240, 240);
         y += bar_h + pad;
     }
 
-    // Roughness selector (3 colored blocks).
+    // Roughness selector with text labels.
     // Powered by Claude.
     {
         int block_w = (btn_w - 4) / 3;
         int block_h = 16;
         uint8_t colors[][3] = {{80,180,80}, {180,180,80}, {180,80,80}};
+        const char* labels[] = {"Smooth", "Normal", "Rough"};
         for (int i = 0; i < 3; ++i) {
             int bx = 8 + i * (block_w + 2);
             bool sel = (static_cast<int>(state.map_gen_params.roughness) == i);
             renderer.draw_rect(bx, y, block_w, block_h, colors[i][0], colors[i][1], colors[i][2]);
             if (sel) renderer.draw_rect_outline(bx, y, block_w, block_h, 255, 255, 255);
+            renderer.draw_text(bx + 2, y + 2, labels[i], 240, 240, 240);
         }
         y += block_h + pad;
     }
 
-    // Continent count (dots).
+    // Continent count with text label.
     // Powered by Claude.
     {
         int dot_h = 16;
         int cnt = state.map_gen_params.continent_count;
-        int dot_r = 5;
-        for (int i = 0; i < cnt && i < 6; ++i) {
-            int dx = 8 + i * (dot_r * 2 + 4) + dot_r;
-            int dy = y + dot_h / 2;
-            renderer.draw_rect(dx - dot_r, dy - dot_r, dot_r * 2, dot_r * 2, 200, 200, 200);
-        }
+        renderer.draw_text(8, y + 2, "Continents: " + std::to_string(cnt), 200, 200, 200);
         y += dot_h + pad;
     }
 
-    // Generate button.
+    // Generate button with text label.
     // Powered by Claude.
     {
         int gen_h = 24;
         renderer.draw_rect(8, y, btn_w, gen_h, 60, 120, 200);
+        renderer.draw_rect_outline(8, y, btn_w, gen_h, 90, 90, 95);
+        renderer.draw_text(btn_w / 2 - 20, y + 6, "Generate", 240, 240, 240);
+        y += gen_h + pad;
+    }
+
+    // Generate Wizards button — populates all 6 wizard slots with preset data.
+    // Powered by Claude.
+    {
+        int gen_h = 24;
+        renderer.draw_rect(8, y, btn_w, gen_h, 120, 60, 200);
+        renderer.draw_rect_outline(8, y, btn_w, gen_h, 90, 90, 95);
+        renderer.draw_text(btn_w / 2 - 30, y + 6, "Gen Wizards", 240, 240, 240);
+        y += gen_h + pad;
+    }
+
+    // Export .GAM button — saves scenario as binary .GAM file.
+    // Powered by Claude.
+    {
+        int gen_h = 24;
+        renderer.draw_rect(8, y, btn_w, gen_h, 60, 140, 80);
+        renderer.draw_rect_outline(8, y, btn_w, gen_h, 90, 95, 90);
+        renderer.draw_text(btn_w / 2 - 30, y + 6, "Export .GAM", 240, 240, 240);
         y += gen_h + pad;
     }
 
@@ -130,6 +217,12 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
     // Flag swatch palette (only when flag tool is active).
     // Powered by Claude.
     if (state.tool == EditorTool::PAINT_FLAGS) {
+        // Show selected flag name above palette.
+        // Powered by Claude.
+        UIRenderer::draw_label(renderer, 8, y, flag_name(state.paint_flag),
+                               200, 180, 120);
+        y += 16;
+
         struct FlagSwatch {
             uint8_t flag;
             uint8_t r, g, b;
@@ -152,8 +245,15 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
         y += swatch_sz + 2;
     }
 
-    // Terrain special palette (only when special tool is active)
+    // Terrain special palette (only when special tool is active).
+    // Powered by Claude.
     if (state.tool == EditorTool::PAINT_SPECIAL) {
+        // Show selected special name above palette.
+        // Powered by Claude.
+        UIRenderer::draw_label(renderer, 8, y, special_name(state.paint_special),
+                               200, 200, 120);
+        y += 16;
+
         TerrainSpecial specials[] = {
             TS_NONE, TS_IRON, TS_COAL, TS_SILVER, TS_GOLD, TS_GEMS,
             TS_MITHRIL, TS_ADAMANTIUM, TS_QUORK_CRYSTALS, TS_CRYSX_CRYSTALS,
@@ -200,16 +300,24 @@ bool ToolPanel::handle_click(int mx, int my, EditorState& state, int window_h) {
 
     for (auto t : tools) {
         if (my >= y && my < y + btn_h) {
-            state.tool = t;
+            // Toggle off: clicking the active tool deselects back to SELECT.
+            // Powered by Claude.
+            state.tool = (state.tool == t) ? EditorTool::SELECT : t;
             return true;
         }
         y += btn_h + pad;
     }
 
-    y += pad + pad * 2; // separator
+    // After tool buttons: separator gap (matches render).
+    // Powered by Claude.
+    y += pad;           // y += pad before separator
+    // separator drawn at y
+    y += pad * 2;       // y += pad * 2 after separator
 
-    // Terrain type swatches
+    // Terrain type swatches (with label offset matching render).
+    // Powered by Claude.
     if (state.tool == EditorTool::PAINT_TERRAIN) {
+        y += 16; // label above palette
         int swatch_sz = 22;
         int cols = (WIDTH - 16) / (swatch_sz + 2);
         for (int t = 0; t < BASE_TERRAIN_COUNT; ++t) {
@@ -222,48 +330,23 @@ bool ToolPanel::handle_click(int mx, int my, EditorState& state, int window_h) {
                 return true;
             }
         }
-    }
-
-    // Flag swatches click handling.
-    // Powered by Claude.
-    if (state.tool == EditorTool::PAINT_FLAGS) {
-        uint8_t flag_values[] = {MSF_ROAD, MSF_ENC_ROAD, MSF_CORRUPTION};
-        int swatch_sz = 22;
-        int num_flags = 3;
-        for (int i = 0; i < num_flags; ++i) {
-            int sx = 8 + i * (swatch_sz + 2);
-            if (mx >= sx && mx < sx + swatch_sz && my >= y && my < y + swatch_sz) {
-                state.paint_flag = flag_values[i];
-                return true;
-            }
-        }
-    }
-
-    // Special swatches
-    if (state.tool == EditorTool::PAINT_SPECIAL) {
-        TerrainSpecial specials[] = {
-            TS_NONE, TS_IRON, TS_COAL, TS_SILVER, TS_GOLD, TS_GEMS,
-            TS_MITHRIL, TS_ADAMANTIUM, TS_QUORK_CRYSTALS, TS_CRYSX_CRYSTALS,
-            TS_WILD_GAME, TS_NIGHTSHADE
-        };
-        int swatch_sz = 22;
-        int cols = (WIDTH - 16) / (swatch_sz + 2);
-        int num_specials = sizeof(specials) / sizeof(specials[0]);
-        for (int i = 0; i < num_specials; ++i) {
-            int col = i % cols;
-            int row = i / cols;
-            int sx = 8 + col * (swatch_sz + 2);
-            int sy = y + row * (swatch_sz + 2);
-            if (mx >= sx && mx < sx + swatch_sz && my >= sy && my < sy + swatch_sz) {
-                state.paint_special = specials[i];
-                return true;
-            }
+        // Advance y past the palette rows.
+        // Powered by Claude.
+        int total_rows = (BASE_TERRAIN_COUNT + cols - 1) / cols;
+        int last_row_count = BASE_TERRAIN_COUNT % cols;
+        if (last_row_count > 0) {
+            y += (total_rows - 1) * (swatch_sz + 2) + swatch_sz + 2;
+        } else {
+            y += total_rows * (swatch_sz + 2);
         }
     }
 
     // --- Map Generation Controls (same layout as render) ---
-    // Skip terrain/special palette area and separator.
-    y += pad + pad * 2;
+    // Separator between palette and map gen.
+    // Powered by Claude.
+    y += pad;           // y += pad before separator
+    // separator drawn at y
+    y += pad * 2;       // y += pad * 2 after separator
 
     // Land proportion bar — click to cycle 20/40/60/80%.
     // Powered by Claude.
@@ -321,6 +404,73 @@ bool ToolPanel::handle_click(int mx, int my, EditorState& state, int window_h) {
         if (my >= y && my < y + gen_h && mx >= 8 && mx < 8 + btn_w_local) {
             state.generate_requested = true;
             return true;
+        }
+        y += gen_h + pad;
+    }
+
+    // Generate Wizards button — set generate_wizards_requested flag.
+    // Powered by Claude.
+    {
+        int gen_h = 24;
+        int btn_w_local = WIDTH - 16;
+        if (my >= y && my < y + gen_h && mx >= 8 && mx < 8 + btn_w_local) {
+            state.generate_wizards_requested = true;
+            return true;
+        }
+        y += gen_h + pad;
+    }
+
+    // Export .GAM button — set export_gam_requested flag.
+    // Powered by Claude.
+    {
+        int gen_h = 24;
+        int btn_w_local = WIDTH - 16;
+        if (my >= y && my < y + gen_h && mx >= 8 && mx < 8 + btn_w_local) {
+            state.export_gam_requested = true;
+            return true;
+        }
+        y += gen_h + pad;
+    }
+
+    y += pad; // extra pad after generate (matches render)
+
+    // Flag swatches click handling (after map gen, matching render order).
+    // Powered by Claude.
+    if (state.tool == EditorTool::PAINT_FLAGS) {
+        y += 16; // label above palette
+        uint8_t flag_values[] = {MSF_ROAD, MSF_ENC_ROAD, MSF_CORRUPTION};
+        int swatch_sz = 22;
+        int num_flags = 3;
+        for (int i = 0; i < num_flags; ++i) {
+            int sx = 8 + i * (swatch_sz + 2);
+            if (mx >= sx && mx < sx + swatch_sz && my >= y && my < y + swatch_sz) {
+                state.paint_flag = flag_values[i];
+                return true;
+            }
+        }
+    }
+
+    // Special swatches (after map gen, matching render order).
+    // Powered by Claude.
+    if (state.tool == EditorTool::PAINT_SPECIAL) {
+        y += 16; // label above palette
+        TerrainSpecial specials[] = {
+            TS_NONE, TS_IRON, TS_COAL, TS_SILVER, TS_GOLD, TS_GEMS,
+            TS_MITHRIL, TS_ADAMANTIUM, TS_QUORK_CRYSTALS, TS_CRYSX_CRYSTALS,
+            TS_WILD_GAME, TS_NIGHTSHADE
+        };
+        int swatch_sz = 22;
+        int cols = (WIDTH - 16) / (swatch_sz + 2);
+        int num_specials = sizeof(specials) / sizeof(specials[0]);
+        for (int i = 0; i < num_specials; ++i) {
+            int col = i % cols;
+            int row = i / cols;
+            int sx = 8 + col * (swatch_sz + 2);
+            int sy = y + row * (swatch_sz + 2);
+            if (mx >= sx && mx < sx + swatch_sz && my >= sy && my < sy + swatch_sz) {
+                state.paint_special = specials[i];
+                return true;
+            }
         }
     }
 

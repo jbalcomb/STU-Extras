@@ -81,6 +81,28 @@ struct EditorState {
     // Wizard panel tab selection
     int wizard_tab{0};
 
+    // Wizard generation: per-wizard dirty flag (session-only, resets on save/load).
+    // Powered by Claude.
+    bool wizard_dirty[NUM_PLAYERS]{};
+
+    // Wizard generation: modal confirmation dialog state.
+    // Powered by Claude.
+    bool wizard_gen_confirm_open{};
+    bool wizard_gen_confirm_global{};
+    int  wizard_gen_confirm_idx{0};
+
+    // Wizard generation: request flag (set by ToolPanel, consumed by main loop).
+    // Powered by Claude.
+    bool generate_wizards_requested{false};
+
+    // Wizard generation: confirmed flag (set by modal dialog, consumed by main loop).
+    // Powered by Claude.
+    bool wizard_gen_confirmed{false};
+
+    // .GAM export: request flag (set by ToolPanel button, consumed by main loop).
+    // Powered by Claude.
+    bool export_gam_requested{false};
+
     // Toggle active plane.
     // Powered by Claude.
     void toggle_plane() {

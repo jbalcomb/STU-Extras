@@ -40,8 +40,10 @@ void Minimap::render(Renderer& renderer, const EditorState& state,
                     static_cast<BaseTerrain>(tv & 0xFF));
                 int px = mx + static_cast<int>(wx * sx_scale);
                 int py = my + static_cast<int>(wy * sy_scale);
-                int pw = static_cast<int>(step_x * sx_scale);
-                int ph = static_cast<int>(step_y * sy_scale);
+                int next_px = mx + static_cast<int>((wx + step_x) * sx_scale);
+                int next_py = my + static_cast<int>((wy + step_y) * sy_scale);
+                int pw = next_px - px;
+                int ph = next_py - py;
                 if (pw < 1) pw = 1;
                 if (ph < 1) ph = 1;
                 renderer.draw_rect(px, py, pw, ph, tc.r, tc.g, tc.b);

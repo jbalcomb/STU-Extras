@@ -7,8 +7,12 @@ REM   - Emscripten SDK installed and emsdk_env.bat run
 REM   - CMake 4.2+ and Ninja build system
 REM
 REM Usage:
-REM   build_wasm.bat        - build only
-REM   build_wasm.bat serve  - build + serve locally for testing
+REM   build_wasm.bat               - Release build
+REM   build_wasm.bat --debug       - Debug build (DWARF info, source maps, assertions)
+REM   build_wasm.bat --serve         - Release build + serve locally
+REM   build_wasm.bat --debug --serve - Debug build + serve locally
+
+setlocal enabledelayedexpansion
 
 where emcmake >nul 2>&1
 if %errorlevel% neq 0 (
@@ -16,10 +20,22 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-set BUILD_DIR=build_wasm
+REM Parse arguments. Powered by Claude.
+set "BUILD_TYPE=Release"
+set "DO_SERVE=0"
+for %%A in (%*) do (
+    if "%%A"=="--debug" set "BUILD_TYPE=Debug"
+    if "%%A"=="--serve" set "DO_SERVE=1"
+)
 
-echo === Configuring WASM build ===
-call emcmake cmake -B %BUILD_DIR% -G Ninja -DCMAKE_BUILD_TYPE=Release
+if "%BUILD_TYPE%"=="Debug" (
+    set "BUILD_DIR=build_wasm_debug"
+) else (
+    set "BUILD_DIR=build_wasm"
+)
+
+echo === Configuring WASM %BUILD_TYPE% build ===
+call emcmake cmake -B %BUILD_DIR% -G Ninja -DCMAKE_BUILD_TYPE=%BUILD_TYPE%
 if %errorlevel% neq 0 exit /b 1
 
 echo === Building ===
@@ -27,13 +43,26 @@ cmake --build %BUILD_DIR%
 if %errorlevel% neq 0 exit /b 1
 
 echo.
-echo === Build complete ===
+echo === Build complete (%BUILD_TYPE%) ===
 dir /b %BUILD_DIR%\RemomMapgenItchio.html %BUILD_DIR%\RemomMapgenItchio.js %BUILD_DIR%\RemomMapgenItchio.wasm 2>nul
 
-if "%1"=="serve" (
+REM Stage to dist/ with index.html so local serve matches itch.io. Powered by Claude.
+set "DIST_DIR=%BUILD_DIR%\dist"
+if exist "%DIST_DIR%" rd /s /q "%DIST_DIR%"
+mkdir "%DIST_DIR%"
+copy "%BUILD_DIR%\RemomMapgenItchio.html" "%DIST_DIR%\index.html" >nul
+copy "%BUILD_DIR%\RemomMapgenItchio.js" "%DIST_DIR%\" >nul
+copy "%BUILD_DIR%\RemomMapgenItchio.wasm" "%DIST_DIR%\" >nul
+if exist "%BUILD_DIR%\RemomMapgenItchio.data" copy "%BUILD_DIR%\RemomMapgenItchio.data" "%DIST_DIR%\" >nul
+if exist "%BUILD_DIR%\RemomMapgenItchio.worker.js" copy "%BUILD_DIR%\RemomMapgenItchio.worker.js" "%DIST_DIR%\" >nul
+echo   Staged to %DIST_DIR%\
+
+if "%DO_SERVE%"=="1" (
     echo.
     echo === Serving at http://localhost:8080 ===
-    echo Open http://localhost:8080/RemomMapgenItchio.html in your browser
-    cd %BUILD_DIR%
+    echo Open http://localhost:8080 in your browser
+    cd %DIST_DIR%
     python -m http.server 8080
 )
+
+endlocal

@@ -61,61 +61,61 @@
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\main.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\main.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\main.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\main.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/main.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/main.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\Renderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\Renderer.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\Renderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\Renderer.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/renderer/Renderer.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/renderer/Renderer.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\MapRenderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\MapRenderer.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\MapRenderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\MapRenderer.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/renderer/MapRenderer.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/renderer/MapRenderer.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\UIRenderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\UIRenderer.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\renderer\\UIRenderer.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\renderer\\UIRenderer.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/renderer/UIRenderer.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/renderer/UIRenderer.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\ToolPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\ToolPanel.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\ToolPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\ToolPanel.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/ui/ToolPanel.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/ui/ToolPanel.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\PropertiesPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\PropertiesPanel.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\PropertiesPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\PropertiesPanel.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/ui/PropertiesPanel.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/ui/PropertiesPanel.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\GameOptionsPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\GameOptionsPanel.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\GameOptionsPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\GameOptionsPanel.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/ui/GameOptionsPanel.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/ui/GameOptionsPanel.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\WizardPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\WizardPanel.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\WizardPanel.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\WizardPanel.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/ui/WizardPanel.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/ui/WizardPanel.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\Minimap.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\Minimap.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\ui\\Minimap.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\ui\\Minimap.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/ui/Minimap.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/ui/Minimap.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
-  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\platform\\FileDialog.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\platform\\FileDialog.cpp",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -O3 -DNDEBUG -std=gnu++17 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -o CMakeFiles\\RemomMapgenItchio.dir\\src\\platform\\FileDialog.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\src\\platform\\FileDialog.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/src/platform/FileDialog.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomMapgenItchio.dir/src/platform/FileDialog.cpp.o"
 },
@@ -148,6 +148,12 @@
   "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -isystem C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/googletest-src/googletest/include -isystem C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/googletest-src/googletest -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles\\RemomTests.dir\\tests\\test_SmoothingValidator.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\tests\\test_SmoothingValidator.cpp",
   "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/tests/test_SmoothingValidator.cpp",
   "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomTests.dir/tests/test_SmoothingValidator.cpp.o"
+},
+{
+  "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",
+  "command": "C:\\emsdk\\upstream\\emscripten\\em++.bat -IC:/STU/devel/STU-Extras/RemomMapgenItchio/src -IC:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include -isystem C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/googletest-src/googletest/include -isystem C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/googletest-src/googletest -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles\\RemomTests.dir\\tests\\test_WizardPresets.cpp.o -c C:\\STU\\devel\\STU-Extras\\RemomMapgenItchio\\tests\\test_WizardPresets.cpp",
+  "file": "C:/STU/devel/STU-Extras/RemomMapgenItchio/tests/test_WizardPresets.cpp",
+  "output": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/CMakeFiles/RemomTests.dir/tests/test_WizardPresets.cpp.o"
 },
 {
   "directory": "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm",

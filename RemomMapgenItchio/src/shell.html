@@ -27,21 +27,19 @@
             overflow: hidden;
         }
 
-        /* Centered canvas container. */
+        /* Canvas fills the entire viewport. Powered by Claude. */
         #canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
         }
 
         canvas#canvas {
             display: block;
-            border: 1px solid #333355;
             background-color: #0f0f23;
-            max-width: 100%;
-            max-height: 100%;
+            /* Size managed by resizeCanvas() — no CSS scaling. Powered by Claude. */
         }
 
         /* Loading overlay with progress bar. */
@@ -145,6 +143,12 @@
         </div>
     </div>
 
+    <!-- Warning banner shown if browser zoom is not 100%. Powered by Claude. -->
+    <div id="zoom-warning" style="display:none;position:fixed;top:0;left:0;right:0;background:#cc6600;color:#fff;text-align:center;padding:8px;font:14px sans-serif;z-index:300;cursor:pointer;"
+         onclick="this.style.display='none'">
+        Browser zoom is not 100%. Press <strong>Ctrl+0</strong> to reset for the best experience. (Click to dismiss)
+    </div>
+
     <!-- Loading overlay with progress bar. -->
     <div id="loading-overlay">
         <div id="loading-title">MoM Scenario Editor</div>
@@ -156,7 +160,7 @@
 
     <!-- Canvas container. The canvas element is used by Emscripten/SDL2. -->
     <div id="canvas-container">
-        <canvas id="canvas" width="1280" height="720" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+        <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
     </div>
 
     <script>
@@ -169,12 +173,74 @@
             document.getElementById('canvas-container').style.display = 'none';
         }
 
+        // Show warning banner if browser zoom is not 100%.
+        // Powered by Claude.
+        if (window.devicePixelRatio && Math.abs(window.devicePixelRatio - 1) > 0.01) {
+            document.getElementById('zoom-warning').style.display = 'block';
+        }
+
+        // Size the canvas backing buffer to device-pixel resolution and CSS
+        // display to CSS-pixel resolution. This gives a 1:1 pixel mapping so
+        // UI elements render at their intended size.
+        // Called before Emscripten init and on window resize.
+        // Powered by Claude.
+        function resizeCanvas() {
+            var c = document.getElementById('canvas');
+            var dpr = window.devicePixelRatio || 1;
+            var cssW = Math.max(window.innerWidth,  1280);
+            var cssH = Math.max(window.innerHeight, 720);
+            var bufW = Math.round(cssW * dpr);
+            var bufH = Math.round(cssH * dpr);
+            if (c.width !== bufW || c.height !== bufH) {
+                c.width = bufW;
+                c.height = bufH;
+                c.style.width = cssW + 'px';
+                c.style.height = cssH + 'px';
+                console.log('[DEBUG] resizeCanvas: buffer=' + bufW + 'x' + bufH +
+                    ' css=' + cssW + 'x' + cssH + ' dpr=' + dpr);
+            }
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Remote log capture — batches printf/console output and POSTs
+        // to /api/log so the dev server can write it to a file.
+        // Powered by Claude.
+        var _logBuffer = [];
+        var _logTimer = null;
+        function _flushLogs() {
+            if (_logBuffer.length === 0) return;
+            var batch = _logBuffer.splice(0);
+            try {
+                fetch('/api/log', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({messages: batch})
+                }).catch(function() {});
+            } catch(e) {}
+        }
+        function _capturePrint(text) {
+            console.log(text);
+            _logBuffer.push(text);
+            if (!_logTimer) {
+                _logTimer = setTimeout(function() {
+                    _logTimer = null;
+                    _flushLogs();
+                }, 250);
+            }
+        }
+
         // Emscripten Module configuration.
         // Powered by Claude.
         var Module = {
             canvas: (function() {
                 return document.getElementById('canvas');
             })(),
+
+            // Capture printf output for remote logging.
+            // Powered by Claude.
+            print: _capturePrint,
+            printErr: _capturePrint,
 
             // Update loading progress bar.
             // Powered by Claude.
@@ -214,6 +280,13 @@
             // Powered by Claude.
             onRuntimeInitialized: function() {
                 console.log('MoM Scenario Editor WASM runtime initialized.');
+                // DEBUG: log canvas and container dimensions. Powered by Claude.
+                var c = document.getElementById('canvas');
+                var ct = document.getElementById('canvas-container');
+                console.log('[DEBUG] canvas element: ' + c.width + 'x' + c.height +
+                    ' (CSS: ' + c.clientWidth + 'x' + c.clientHeight + ')');
+                console.log('[DEBUG] canvas-container: ' + ct.clientWidth + 'x' + ct.clientHeight);
+                console.log('[DEBUG] window.inner: ' + window.innerWidth + 'x' + window.innerHeight);
             }
         };
     </script>

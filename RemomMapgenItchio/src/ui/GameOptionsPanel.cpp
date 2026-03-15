@@ -4,16 +4,38 @@
 #include "ui/GameOptionsPanel.hpp"
 #include "renderer/UIRenderer.hpp"
 #include "scenario/Scenario.hpp"
+#include <string>
 
 namespace mom {
 
 // Layout constants for the game options panel.
 // Powered by Claude.
 static constexpr int PANEL_X = 0;
-static constexpr int PANEL_TOP = 280; // below the tool buttons
+static constexpr int PANEL_TOP = 332; // below the tool buttons (13 tools * 24px + separator)
 static constexpr int PAD = 4;
 static constexpr int BLOCK_H = 20;
 static constexpr int INNER_X = 8;
+static constexpr int LABEL_H = 14;  // height for label/value text line
+static constexpr int DESC_H = 12;   // height for description text line
+
+// Setting value name lookup tables.
+// Powered by Claude.
+static const char* DIFFICULTY_NAMES[] = {
+    "Intro", "Easy", "Normal", "Hard", "Impossible"
+};
+static const char* MAGIC_NAMES[] = {
+    "Weak", "Normal", "Powerful", "Overwhelming"
+};
+static const char* LAND_SIZE_NAMES[] = {
+    "Small", "Medium", "Large"
+};
+
+// Setting description strings.
+// Powered by Claude.
+static const char* DIFFICULTY_DESC = "AI aggressiveness and bonuses";
+static const char* MAGIC_DESC = "Magical node power and spell frequency";
+static const char* LAND_SIZE_DESC = "Land-to-ocean ratio on the map";
+static const char* WIZARDS_DESC = "Total players (1 human + AI opponents)";
 
 void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
                                Scenario& scenario, int window_h) {
@@ -33,9 +55,18 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
     UIRenderer::draw_separator(renderer, INNER_X, y, btn_w);
     y += PAD * 2;
 
-    // (1) Difficulty selector -- 5 colored blocks (green to red).
+    // (1) Difficulty selector -- label, value, description, 5 colored blocks.
     // Powered by Claude.
     {
+        uint16_t diff = scenario.game_data.Difficulty;
+        const char* val_name = (diff < 5) ? DIFFICULTY_NAMES[diff] : "Unknown";
+        std::string label_text = std::string("Difficulty: ") + val_name;
+        renderer.draw_text(INNER_X, y, label_text);
+        y += LABEL_H + PAD;
+
+        renderer.draw_text(INNER_X, y, DIFFICULTY_DESC, 160, 160, 160);
+        y += DESC_H + PAD;
+
         int block_w = (btn_w - 8) / 5;
         uint8_t diff_colors[][3] = {
             { 80, 200,  80}, // Intro - green
@@ -46,7 +77,7 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
         };
         for (int i = 0; i < 5; ++i) {
             int bx = INNER_X + i * (block_w + 2);
-            bool sel = (scenario.game_data.Difficulty == static_cast<uint16_t>(i));
+            bool sel = (diff == static_cast<uint16_t>(i));
             renderer.draw_rect(bx, y, block_w, BLOCK_H,
                                diff_colors[i][0], diff_colors[i][1], diff_colors[i][2]);
             if (sel) {
@@ -56,10 +87,18 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (2) Magic level -- single colored bar, click cycles 0-3.
+    // (2) Magic level -- label, value, description, colored bar.
     // Powered by Claude.
     {
         uint16_t magic = scenario.game_data.Magic;
+        const char* val_name = (magic < 4) ? MAGIC_NAMES[magic] : "Unknown";
+        std::string label_text = std::string("Magic: ") + val_name;
+        renderer.draw_text(INNER_X, y, label_text);
+        y += LABEL_H + PAD;
+
+        renderer.draw_text(INNER_X, y, MAGIC_DESC, 160, 160, 160);
+        y += DESC_H + PAD;
+
         int fill_w = static_cast<int>(btn_w * (magic + 1) / 4.0f);
         renderer.draw_rect(INNER_X, y, btn_w, BLOCK_H, 40, 40, 60);
         renderer.draw_rect(INNER_X, y, fill_w, BLOCK_H, 100, 80, 200);
@@ -67,9 +106,18 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (3) Land size -- 3 colored blocks, click cycles 0-2.
+    // (3) Land size -- label, value, description, 3 colored blocks.
     // Powered by Claude.
     {
+        uint16_t land = scenario.game_data.Land_Size;
+        const char* val_name = (land < 3) ? LAND_SIZE_NAMES[land] : "Unknown";
+        std::string label_text = std::string("Land Size: ") + val_name;
+        renderer.draw_text(INNER_X, y, label_text);
+        y += LABEL_H + PAD;
+
+        renderer.draw_text(INNER_X, y, LAND_SIZE_DESC, 160, 160, 160);
+        y += DESC_H + PAD;
+
         int block_w = (btn_w - 4) / 3;
         uint8_t land_colors[][3] = {
             { 80, 140, 200}, // Small - blue
@@ -78,7 +126,7 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
         };
         for (int i = 0; i < 3; ++i) {
             int bx = INNER_X + i * (block_w + 2);
-            bool sel = (scenario.game_data.Land_Size == static_cast<uint16_t>(i));
+            bool sel = (land == static_cast<uint16_t>(i));
             renderer.draw_rect(bx, y, block_w, BLOCK_H,
                                land_colors[i][0], land_colors[i][1], land_colors[i][2]);
             if (sel) {
@@ -88,10 +136,19 @@ void GameOptionsPanel::render(Renderer& renderer, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (4) Wizard count -- dots 1-6, click cycles.
+    // (4) Wizard count -- label, value, description, dots 1-6.
     // Powered by Claude.
     {
         int wiz_count = scenario.game_data.Total_Wizards;
+        std::string val_text = std::to_string(wiz_count) +
+                               (wiz_count == 1 ? " Wizard" : " Wizards");
+        std::string label_text = std::string("Wizards: ") + val_text;
+        renderer.draw_text(INNER_X, y, label_text);
+        y += LABEL_H + PAD;
+
+        renderer.draw_text(INNER_X, y, WIZARDS_DESC, 160, 160, 160);
+        y += DESC_H + PAD;
+
         int dot_r = 8;
         for (int i = 0; i < 6; ++i) {
             int dx = INNER_X + i * (dot_r * 2 + 6) + dot_r;
@@ -122,9 +179,11 @@ bool GameOptionsPanel::handle_click(int mx, int my, EditorState& /*state*/,
     y += 16 + PAD;
     y += PAD * 2; // separator
 
-    // (1) Difficulty selector -- click cycles through 5 values.
+    // (1) Difficulty selector -- skip label, description, then check click on blocks.
     // Powered by Claude.
     {
+        y += LABEL_H + PAD; // skip label
+        y += DESC_H + PAD;  // skip description
         if (my >= y && my < y + BLOCK_H) {
             uint16_t old_val = scenario.game_data.Difficulty;
             uint16_t new_val = (old_val + 1) % 5;
@@ -138,9 +197,11 @@ bool GameOptionsPanel::handle_click(int mx, int my, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (2) Magic level -- click cycles 0-3.
+    // (2) Magic level -- skip label, description, then check click on bar.
     // Powered by Claude.
     {
+        y += LABEL_H + PAD; // skip label
+        y += DESC_H + PAD;  // skip description
         if (my >= y && my < y + BLOCK_H && mx >= INNER_X && mx < INNER_X + btn_w) {
             uint16_t old_val = scenario.game_data.Magic;
             uint16_t new_val = (old_val + 1) % 4;
@@ -154,9 +215,11 @@ bool GameOptionsPanel::handle_click(int mx, int my, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (3) Land size -- click cycles 0-2.
+    // (3) Land size -- skip label, description, then check click on blocks.
     // Powered by Claude.
     {
+        y += LABEL_H + PAD; // skip label
+        y += DESC_H + PAD;  // skip description
         if (my >= y && my < y + BLOCK_H) {
             uint16_t old_val = scenario.game_data.Land_Size;
             uint16_t new_val = (old_val + 1) % 3;
@@ -170,9 +233,11 @@ bool GameOptionsPanel::handle_click(int mx, int my, EditorState& /*state*/,
         y += BLOCK_H + PAD * 2;
     }
 
-    // (4) Wizard count -- click cycles 1-6.
+    // (4) Wizard count -- skip label, description, then check click on dots.
     // Powered by Claude.
     {
+        y += LABEL_H + PAD; // skip label
+        y += DESC_H + PAD;  // skip description
         if (my >= y && my < y + BLOCK_H) {
             uint16_t old_val = scenario.game_data.Total_Wizards;
             uint16_t new_val = (old_val % 6) + 1;

@@ -87,6 +87,27 @@ void MapGenerator::generate_plane(MomWorld& world, int plane) {
     // Clamp land proportion to [0.05, 0.95].
     float land_prop = std::clamp(params_.land_proportion, 0.05f, 0.95f);
 
+    // Place continent seed points spread across the map.
+    // Uses a simple LCG seeded from plane_seed for deterministic placement.
+    // Powered by Claude.
+    int num_continents = std::clamp(params_.continent_count, 1, 6);
+    struct ContinentSeed { float cx, cy; };
+    std::vector<ContinentSeed> seeds(num_continents);
+    {
+        uint32_t rng = plane_seed;
+        auto next_rng = [&rng]() -> float {
+            rng = rng * 1103515245u + 12345u;
+            return static_cast<float>((rng >> 16) & 0x7FFF) / 32767.0f;
+        };
+        for (int i = 0; i < num_continents; ++i) {
+            // Spread seeds evenly across x, jitter within their segment.
+            // Powered by Claude.
+            float segment = static_cast<float>(WORLD_WIDTH) / num_continents;
+            seeds[i].cx = segment * i + segment * (0.2f + 0.6f * next_rng());
+            seeds[i].cy = WORLD_HEIGHT * (0.2f + 0.6f * next_rng());
+        }
+    }
+
     // Generate height and moisture maps.
     std::vector<float> height_map(WORLD_SIZE);
     std::vector<float> moisture_map(WORLD_SIZE);
@@ -98,10 +119,31 @@ void MapGenerator::generate_plane(MomWorld& world, int plane) {
 
             // Height noise — use cylindrical mapping for horizontal wrapping.
             float angle = static_cast<float>(x) / static_cast<float>(WORLD_WIDTH) * 6.2831853f;
-            float cx = std::cos(angle) * 10.0f;
-            float cy = std::sin(angle) * 10.0f;
+            float cnx = std::cos(angle) * 10.0f;
+            float cny = std::sin(angle) * 10.0f;
 
-            float h = height_noise.octave_noise2d(cx * scale, fy + cy * scale * 0.1f, octaves, persistence);
+            float h = height_noise.octave_noise2d(cnx * scale, fy + cny * scale * 0.1f, octaves, persistence);
+
+            // Continent proximity boost: find distance to nearest seed,
+            // using wrapping distance on x. Closer = higher elevation.
+            // Powered by Claude.
+            float min_dist_sq = 1e9f;
+            for (const auto& s : seeds) {
+                float dx = static_cast<float>(x) - s.cx;
+                // Wrap distance on x axis.
+                if (dx > WORLD_WIDTH * 0.5f) dx -= WORLD_WIDTH;
+                if (dx < -WORLD_WIDTH * 0.5f) dx += WORLD_WIDTH;
+                float dy = static_cast<float>(y) - s.cy;
+                float d2 = dx * dx + dy * dy;
+                if (d2 < min_dist_sq) min_dist_sq = d2;
+            }
+            // Normalize distance relative to a continent radius based on count.
+            // Fewer continents = larger radius.
+            // Powered by Claude.
+            float avg_radius = static_cast<float>(WORLD_WIDTH) / (num_continents * 2.0f);
+            float norm_dist = std::sqrt(min_dist_sq) / avg_radius;
+            float continent_boost = 1.0f - std::clamp(norm_dist, 0.0f, 2.0f) * 0.5f;
+            h += continent_boost * 0.6f;
 
             // Push poles toward ocean (simple latitude falloff).
             float lat_factor = static_cast<float>(y) / static_cast<float>(WORLD_HEIGHT - 1);

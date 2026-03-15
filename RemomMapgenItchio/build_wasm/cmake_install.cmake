@@ -47,15 +47,15 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/googletest-build/cmake_install.cmake")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "deploy" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE FILE RENAME "index.html" FILES "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/RemomMapgenItchio.html")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "deploy" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE FILE FILES "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/RemomMapgenItchio.js")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "deploy" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE FILE FILES "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/RemomMapgenItchio.wasm")
 endif()
 

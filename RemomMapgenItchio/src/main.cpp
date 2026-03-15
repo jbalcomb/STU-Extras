@@ -11,6 +11,7 @@
 #include "scenario/ScenarioIO.hpp"
 #include "mom_data/MomGamFile.hpp"
 #include "mapgen/MapGenerator.hpp"
+#include "mom_data/WizardPresets.hpp"
 #include "validation/SmoothingValidator.hpp"
 #include "ui/ToolPanel.hpp"
 #include "ui/PropertiesPanel.hpp"
@@ -49,6 +50,172 @@ static void do_generate_map(EditorState& state, Scenario& scenario, UndoStack& u
         [&scenario, before]() { scenario.world = before; }
     );
     undo.execute(std::move(cmd));
+}
+
+// Generate all 6 wizard profiles from preset data, wrapped in an undo command.
+// Powered by Claude.
+static void do_generate_wizards(EditorState& state, Scenario& scenario, UndoStack& undo) {
+    // Capture all 6 wizard structs for undo.
+    Wizard before[NUM_PLAYERS];
+    for (int i = 0; i < NUM_PLAYERS; ++i)
+        before[i] = scenario.wizards[i];
+
+    auto cmd = std::make_unique<LambdaCommand>(
+        [&scenario, &state]() {
+            for (int i = 0; i < NUM_PLAYERS; ++i) {
+                apply_preset(scenario.wizards[i], i, WIZARD_PRESETS[i]);
+                state.wizard_dirty[i] = false;
+            }
+        },
+        [&scenario, &state, before]() {
+            for (int i = 0; i < NUM_PLAYERS; ++i) {
+                scenario.wizards[i] = before[i];
+                state.wizard_dirty[i] = false;
+            }
+        }
+    );
+    undo.execute(std::move(cmd));
+    state.set_status("Generated 6 wizard profiles");
+    printf("[main] do_generate_wizards: applied 6 presets\n");
+}
+
+// Generate a single wizard profile from preset data, wrapped in an undo command.
+// Powered by Claude.
+static void do_generate_wizard(EditorState& state, Scenario& scenario, UndoStack& undo, int idx) {
+    Wizard before = scenario.wizards[idx];
+
+    auto cmd = std::make_unique<LambdaCommand>(
+        [&scenario, &state, idx]() {
+            apply_preset(scenario.wizards[idx], idx, WIZARD_PRESETS[idx]);
+            state.wizard_dirty[idx] = false;
+        },
+        [&scenario, &state, idx, before]() {
+            scenario.wizards[idx] = before;
+            state.wizard_dirty[idx] = false;
+        }
+    );
+    undo.execute(std::move(cmd));
+}
+
+// Export the current scenario as a .GAM binary file with status feedback.
+// Updates entity counts, serializes, saves via platform dialog, and shows
+// a status message with entity summary and any warnings.
+// Powered by Claude.
+static void do_export_gam(EditorState& state, Scenario& scenario) {
+    // Update entity counts before export.
+    int city_count = scenario.count_active_cities();
+    int unit_count = scenario.count_active_units();
+    int wiz_count = 0;
+    for (auto& w : scenario.wizards) if (w.is_active()) ++wiz_count;
+
+    scenario.game_data.Total_Cities  = static_cast<uint16_t>(city_count);
+    scenario.game_data.Total_Units   = static_cast<uint16_t>(unit_count);
+    scenario.game_data.Total_Wizards = static_cast<uint16_t>(wiz_count > 1 ? wiz_count : 1);
+
+    // Smooth terrain on a temporary copy before export.
+    // Adds shore tiles between land and ocean, removes orphan shores,
+    // and fixes isolated rivers. Editor world data is unchanged.
+    // Powered by Claude.
+    Scenario export_sc = scenario;
+    int smoothed = 0;
+    auto wrap_x = [](int x) { return ((x % WORLD_WIDTH) + WORLD_WIDTH) % WORLD_WIDTH; };
+    static constexpr int dx4[] = { 0,  0, -1, 1};
+    static constexpr int dy4[] = {-1,  1,  0, 0};
+
+    for (int p = 0; p < NUM_PLANES; ++p) {
+        // Pass 1: Add shore between land and ocean.
+        // Any land tile cardinally adjacent to ocean becomes shore.
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                uint16_t tile = scenario.world.get_terrain(x, y, p);
+                if (tile == TERRAIN_OCEAN || tile == TERRAIN_SHORE ||
+                    tile == TERRAIN_LAKE || tile == TERRAIN_RIVER)
+                    continue;
+                // Land tile — check if adjacent to ocean.
+                bool adj_ocean = false;
+                for (int d = 0; d < 4; ++d) {
+                    int ny = y + dy4[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                    int nx = wrap_x(x + dx4[d]);
+                    uint16_t nb = scenario.world.get_terrain(nx, ny, p);
+                    if (nb == TERRAIN_OCEAN) { adj_ocean = true; break; }
+                }
+                if (adj_ocean) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_SHORE);
+                    ++smoothed;
+                }
+            }
+        }
+
+        // Pass 2: Remove orphan shores (shore with no adjacent water).
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_SHORE)
+                    continue;
+                bool has_water = false;
+                for (int d = 0; d < 4; ++d) {
+                    int ny = y + dy4[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                    int nx = wrap_x(x + dx4[d]);
+                    uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
+                    if (nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
+                        has_water = true; break;
+                    }
+                }
+                if (!has_water) {
+                    // Replace with grassland.
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
+                    ++smoothed;
+                }
+            }
+        }
+
+        // Pass 3: Fix isolated rivers (river with no adjacent river/shore/ocean/lake).
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_RIVER)
+                    continue;
+                bool has_conn = false;
+                for (int d = 0; d < 4; ++d) {
+                    int ny = y + dy4[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                    int nx = wrap_x(x + dx4[d]);
+                    uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
+                    if (nb == TERRAIN_RIVER || nb == TERRAIN_SHORE ||
+                        nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
+                        has_conn = true; break;
+                    }
+                }
+                if (!has_conn) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
+                    ++smoothed;
+                }
+            }
+        }
+    }
+
+    if (smoothed > 0) {
+        printf("[main] export smoothing: fixed %d tiles\n", smoothed);
+    }
+
+    // Serialize and save the smoothed copy.
+    auto gam_buf = serialize_gam(export_sc);
+    platform::save_file("scenario.GAM", "GAM Save Files", "*.GAM", gam_buf);
+
+    // Build status message with entity counts and warnings.
+    std::string msg = "Exported scenario.GAM (" +
+        std::to_string(wiz_count) + " wizards, " +
+        std::to_string(city_count) + " cities, " +
+        std::to_string(unit_count) + " units)";
+
+    if (wiz_count == 0) {
+        msg += " — no active wizards";
+    }
+    if (!state.violations.empty()) {
+        msg += " — " + std::to_string(state.violations.size()) + " violations";
+    }
+
+    state.set_status(msg);
 }
 
 // Apply the current editor tool at the cursor position.
@@ -236,24 +403,46 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
         }
         case EditorTool::PLACE_FORTRESS: {
             // Find first inactive fortress slot (active==0 means empty).
+            // Fortress index == wizard index (1:1 mapping).
+            // Auto-activates the corresponding wizard if inactive.
             // Powered by Claude.
             for (int i = 0; i < NUM_FORTRESSES; ++i) {
                 auto& f = scenario.fortresses[i];
                 if (f.active == 0) {
                     int idx = i;
+                    bool wiz_was_inactive = !scenario.wizards[idx].is_active();
+                    Wizard wiz_backup = scenario.wizards[idx];
                     auto cmd = std::make_unique<LambdaCommand>(
-                        [&scenario, idx, wx, wy, plane]() {
+                        [&scenario, idx, wx, wy, plane, wiz_was_inactive]() {
                             auto& ft = scenario.fortresses[idx];
                             ft.wx = static_cast<int8_t>(wx);
                             ft.wy = static_cast<int8_t>(wy);
                             ft.wp = static_cast<int8_t>(plane);
                             ft.active = 1;
+                            // Auto-activate wizard stub if not already active.
+                            // Powered by Claude.
+                            if (wiz_was_inactive) {
+                                std::snprintf(scenario.wizards[idx].name,
+                                              LEN_WIZARD_NAME, "Wizard %d", idx);
+                                scenario.wizards[idx].wizard_id =
+                                    static_cast<uint8_t>(idx);
+                                scenario.wizards[idx].banner_id =
+                                    static_cast<uint8_t>(idx);
+                            }
                         },
-                        [&scenario, idx]() {
+                        [&scenario, idx, wiz_backup]() {
                             scenario.fortresses[idx] = Fortress{};
+                            // Restore wizard to previous state on undo.
+                            // Powered by Claude.
+                            scenario.wizards[idx] = wiz_backup;
                         }
                     );
                     undo.execute(std::move(cmd));
+                    if (wiz_was_inactive) {
+                        state.wizard_dirty[idx] = true;
+                        state.set_status("Fortress placed — Wizard " +
+                                         std::to_string(idx) + " activated");
+                    }
                     return;
                 }
             }
@@ -440,6 +629,8 @@ struct AppState {
     MapRenderer map_renderer;
     bool running{true};
     bool mouse_down{false};
+    int prev_mouse_x{-1};  // previous mouse pixel position for drag interpolation
+    int prev_mouse_y{-1};
     Uint32 last_tick{0};
 };
 
@@ -451,6 +642,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 int main(int, char**) {
 #endif
     static AppState app;
+    printf("=== MoM Scenario Editor BUILD 2026-03-12a (map-area wizard panel) ===\n");
 
     if (!app.renderer.init("MoM Scenario Editor", 1280, 720)) {
         std::fprintf(stderr, "Failed to initialize SDL2\n");
@@ -460,9 +652,29 @@ int main(int, char**) {
     // Log renderer info for WASM builds to aid diagnostics.
     // Powered by Claude.
 #ifdef __EMSCRIPTEN__
-    EM_ASM({
-        console.log("MoM Scenario Editor loaded - WASM build");
-    });
+    // Build timestamp for diagnostics. Powered by Claude.
+    {
+        // __DATE__ = "Mar  9 2026", __TIME__ = "14:30:05"
+        // Convert to ISO 8601: 2026-03-09T14:30:05Z
+        static const char* months[] = {
+            "Jan","Feb","Mar","Apr","May","Jun",
+            "Jul","Aug","Sep","Oct","Nov","Dec"
+        };
+        const char* d = __DATE__;
+        int mon = 0;
+        for (int i = 0; i < 12; ++i) {
+            if (d[0]==months[i][0] && d[1]==months[i][1] && d[2]==months[i][2]) {
+                mon = i + 1; break;
+            }
+        }
+        int day = (d[4]==' ' ? 0 : d[4]-'0') * 10 + (d[5]-'0');
+        char ts[32];
+        std::snprintf(ts, sizeof(ts), "%.4s-%02d-%02dT%sZ", d+7, mon, day, __TIME__);
+        EM_ASM({
+            console.log("MoM Scenario Editor loaded - WASM build");
+            console.log("[DEBUG] Build timestamp (UTC): " + UTF8ToString($0));
+        }, ts);
+    }
 #endif
 
     app.scenario.clear();
@@ -502,6 +714,8 @@ static void main_loop_iteration(void* arg) {
     auto& map_renderer = a.map_renderer;
     auto& running = a.running;
     auto& mouse_down = a.mouse_down;
+    auto& prev_mouse_x = a.prev_mouse_x;
+    auto& prev_mouse_y = a.prev_mouse_y;
 
         // Calculate frame delta time for status timer.
         // Powered by Claude.
@@ -580,23 +794,9 @@ static void main_loop_iteration(void* arg) {
                     } else if (ctrl && key.sym == SDLK_n) {
                         do_generate_map(editor_state, scenario, undo_stack);
                     } else if (ctrl && key.sym == SDLK_e) {
-                        // Update entity counts before export.
+                        // Export .GAM via shared helper (Ctrl+E shortcut).
                         // Powered by Claude.
-                        scenario.game_data.Total_Cities = static_cast<uint16_t>(scenario.count_active_cities());
-                        scenario.game_data.Total_Units  = static_cast<uint16_t>(scenario.count_active_units());
-                        // Count active wizards for export.
-                        // Powered by Claude.
-                        int wiz_count = 0;
-                        for (auto& w : scenario.wizards) if (w.is_active()) ++wiz_count;
-                        scenario.game_data.Total_Wizards = static_cast<uint16_t>(wiz_count > 1 ? wiz_count : 1);
-
-                        // Export .GAM via platform file dialog.
-                        // Powered by Claude.
-                        auto gam_buf = serialize_gam(scenario);
-                        platform::save_file("scenario.GAM",
-                                            "GAM Save Files",
-                                            "*.GAM",
-                                            gam_buf);
+                        do_export_gam(editor_state, scenario);
                     }
                     // Import an external .GAM save file (Ctrl+I).
                     // Reads the binary save via file dialog, populates the scenario,
@@ -650,10 +850,14 @@ static void main_loop_iteration(void* arg) {
                         }
 
                         // Check minimap click in the properties panel.
-                        // Powered by Claude.
+                        // Clicking a minimap while the wizard editor is open
+                        // closes it so the map becomes active. Powered by Claude.
                         if (props_panel.handle_minimap_click(
                                 mx, my, renderer.camera, editor_state, scenario,
                                 renderer.window_width(), renderer.window_height())) {
+                            if (editor_state.tool == EditorTool::WIZARDS) {
+                                editor_state.tool = EditorTool::SELECT;
+                            }
                             break;
                         }
 
@@ -678,7 +882,7 @@ static void main_loop_iteration(void* arg) {
                         // Check wizard panel when WIZARDS tool is active.
                         // Powered by Claude.
                         if (editor_state.tool == EditorTool::WIZARDS) {
-                            if (wizard_panel.handle_click(mx, my, editor_state, scenario, undo_stack)) {
+                            if (wizard_panel.handle_click(mx, my, editor_state, scenario, undo_stack, renderer.window_width(), renderer.window_height())) {
                                 break;
                             }
                         }
@@ -690,7 +894,27 @@ static void main_loop_iteration(void* arg) {
                             renderer.camera.screen_to_world(
                                 mx, my, vp_x, 0,
                                 editor_state.cursor_wx, editor_state.cursor_wy);
-                            apply_tool(editor_state, scenario, undo_stack);
+
+                            // Double-click on a fortress opens the wizard editor
+                            // for that fortress's wizard. Powered by Claude.
+                            if (event.button.clicks >= 2) {
+                                int cwx = editor_state.cursor_wx;
+                                int cwy = editor_state.cursor_wy;
+                                int cplane = editor_state.current_plane;
+                                for (int i = 0; i < NUM_FORTRESSES; ++i) {
+                                    const auto& f = scenario.fortresses[i];
+                                    if (f.active != 0 && f.wx == cwx &&
+                                        f.wy == cwy && f.wp == cplane) {
+                                        editor_state.wizard_tab = i;
+                                        editor_state.tool = EditorTool::WIZARDS;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                apply_tool(editor_state, scenario, undo_stack);
+                            }
+                            prev_mouse_x = mx;
+                            prev_mouse_y = my;
                         }
                     }
                     break;
@@ -698,6 +922,8 @@ static void main_loop_iteration(void* arg) {
                 case SDL_MOUSEBUTTONUP:
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         mouse_down = false;
+                        prev_mouse_x = -1;
+                        prev_mouse_y = -1;
                     }
                     break;
 
@@ -712,13 +938,53 @@ static void main_loop_iteration(void* arg) {
                             mx, my, vp_x, 0,
                             editor_state.cursor_wx, editor_state.cursor_wy);
 
-                        // Drag-painting for terrain, special, flags, and erase tools.
+                        // Drag-painting with pixel-space interpolation to fill gaps.
+                        // Walk the pixel line from previous mouse position to current,
+                        // converting each sample to tile coords and painting new tiles.
                         // Powered by Claude.
                         if (mouse_down && (editor_state.tool == EditorTool::PAINT_TERRAIN ||
                                            editor_state.tool == EditorTool::PAINT_SPECIAL ||
                                            editor_state.tool == EditorTool::PAINT_FLAGS ||
                                            editor_state.tool == EditorTool::ERASE)) {
-                            apply_tool(editor_state, scenario, undo_stack);
+                            if (prev_mouse_x >= 0 && prev_mouse_y >= 0 &&
+                                (prev_mouse_x != mx || prev_mouse_y != my)) {
+                                // Bresenham in pixel space from prev mouse to current mouse.
+                                // Powered by Claude.
+                                int px0 = prev_mouse_x, py0 = prev_mouse_y;
+                                int px1 = mx, py1 = my;
+                                int dx = std::abs(px1 - px0);
+                                int dy = -std::abs(py1 - py0);
+                                int sx = (px0 < px1) ? 1 : -1;
+                                int sy = (py0 < py1) ? 1 : -1;
+                                int err = dx + dy;
+                                int last_painted_wx = -999, last_painted_wy = -999;
+                                while (true) {
+                                    int twx, twy;
+                                    renderer.camera.screen_to_world(
+                                        px0, py0, vp_x, 0, twx, twy);
+                                    if (twx >= 0 && twy >= 0 &&
+                                        (twx != last_painted_wx || twy != last_painted_wy)) {
+                                        editor_state.cursor_wx = twx;
+                                        editor_state.cursor_wy = twy;
+                                        apply_tool(editor_state, scenario, undo_stack);
+                                        last_painted_wx = twx;
+                                        last_painted_wy = twy;
+                                    }
+                                    if (px0 == px1 && py0 == py1) break;
+                                    int e2 = 2 * err;
+                                    if (e2 >= dy) { err += dy; px0 += sx; }
+                                    if (e2 <= dx) { err += dx; py0 += sy; }
+                                }
+                                // Restore cursor to final position.
+                                // Powered by Claude.
+                                renderer.camera.screen_to_world(
+                                    mx, my, vp_x, 0,
+                                    editor_state.cursor_wx, editor_state.cursor_wy);
+                            } else {
+                                apply_tool(editor_state, scenario, undo_stack);
+                            }
+                            prev_mouse_x = mx;
+                            prev_mouse_y = my;
                         }
                     } else {
                         editor_state.cursor_wx = -1;
@@ -735,14 +1001,22 @@ static void main_loop_iteration(void* arg) {
 
                 case SDL_MOUSEWHEEL: {
                     float old_zoom = renderer.camera.zoom;
+                    // Zoom in 10% increments (additive) for predictable steps.
+                    // Powered by Claude.
                     if (event.wheel.y > 0) {
-                        renderer.camera.zoom *= 1.15f;
+                        renderer.camera.zoom += 0.1f;
                         if (renderer.camera.zoom > 5.0f) renderer.camera.zoom = 5.0f;
                     } else if (event.wheel.y < 0) {
-                        renderer.camera.zoom /= 1.15f;
-                        if (renderer.camera.zoom < 0.3f) renderer.camera.zoom = 0.3f;
+                        renderer.camera.zoom -= 0.1f;
                     }
-                    // Adjust scroll to zoom toward mouse position
+                    // Clamp minimum zoom so map width fills the viewport.
+                    // Powered by Claude.
+                    int zvp_w = renderer.window_width() - ToolPanel::WIDTH - PropertiesPanel::WIDTH;
+                    float min_zoom = static_cast<float>(zvp_w) /
+                                     (WORLD_WIDTH * renderer.camera.tile_size);
+                    if (renderer.camera.zoom < min_zoom) renderer.camera.zoom = min_zoom;
+                    // Adjust scroll to zoom toward mouse position.
+                    // Powered by Claude.
                     int mx, my;
                     SDL_GetMouseState(&mx, &my);
                     float scale = renderer.camera.zoom / old_zoom;
@@ -767,6 +1041,47 @@ static void main_loop_iteration(void* arg) {
                 editor_state.violations.insert(
                     editor_state.violations.end(), pv.begin(), pv.end());
             }
+        }
+
+        // Handle generate wizards request from ToolPanel button.
+        // Checks dirty flags; if any wizard is dirty, opens confirmation dialog.
+        // Powered by Claude.
+        if (editor_state.generate_wizards_requested) {
+            editor_state.generate_wizards_requested = false;
+            printf("[main] generate_wizards_requested received\n");
+
+            // Check if any wizard has been manually edited.
+            bool any_dirty = false;
+            for (int i = 0; i < NUM_PLAYERS; ++i) {
+                if (editor_state.wizard_dirty[i]) { any_dirty = true; break; }
+            }
+
+            if (any_dirty) {
+                // Open confirmation dialog — generation deferred until user confirms.
+                editor_state.wizard_gen_confirm_open = true;
+                editor_state.wizard_gen_confirm_global = true;
+            } else {
+                do_generate_wizards(editor_state, scenario, undo_stack);
+            }
+        }
+
+        // Handle wizard generation confirmation (from modal dialog).
+        // Powered by Claude.
+        if (editor_state.wizard_gen_confirmed) {
+            editor_state.wizard_gen_confirmed = false;
+            if (editor_state.wizard_gen_confirm_global) {
+                do_generate_wizards(editor_state, scenario, undo_stack);
+            } else {
+                do_generate_wizard(editor_state, scenario, undo_stack,
+                                   editor_state.wizard_gen_confirm_idx);
+            }
+        }
+
+        // Handle .GAM export request from ToolPanel button.
+        // Powered by Claude.
+        if (editor_state.export_gam_requested) {
+            editor_state.export_gam_requested = false;
+            do_export_gam(editor_state, scenario);
         }
 
         // Poll for async browser file upload completion (WASM only).

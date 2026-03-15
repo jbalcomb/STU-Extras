@@ -128,21 +128,29 @@ if [ ${#MISSING[@]} -gt 0 ]; then
     exit 1
 fi
 
-# --- Install deployment files ---
-# Use CMake install target to copy only deployment files to a clean dist
-# directory. This also renames RemomMapgenItchio.html to index.html as
-# required by itch.io. Powered by Claude.
+# --- Stage deployment files ---
+# Copy only the required files to a clean dist directory and rename
+# RemomMapgenItchio.html to index.html (required by itch.io).
+# Powered by Claude.
 DIST_DIR="$BUILD_PATH/dist"
+rm -rf "$DIST_DIR"
+mkdir -p "$DIST_DIR"
 
-echo "=== Installing deployment files ==="
-cmake --install "$BUILD_PATH" --prefix "$DIST_DIR" 2>&1
+echo "=== Staging deployment files ==="
+cp "$BUILD_PATH/RemomMapgenItchio.html" "$DIST_DIR/index.html"
+echo "  + index.html (from RemomMapgenItchio.html)"
+cp "$BUILD_PATH/RemomMapgenItchio.js" "$DIST_DIR/"
+echo "  + RemomMapgenItchio.js"
+cp "$BUILD_PATH/RemomMapgenItchio.wasm" "$DIST_DIR/"
+echo "  + RemomMapgenItchio.wasm"
+# Optional files. Powered by Claude.
+for f in RemomMapgenItchio.data RemomMapgenItchio.worker.js; do
+    if [ -f "$BUILD_PATH/$f" ]; then
+        cp "$BUILD_PATH/$f" "$DIST_DIR/"
+        echo "  + $f"
+    fi
+done
 echo ""
-
-if [ ! -f "$DIST_DIR/index.html" ]; then
-    echo "Error: cmake --install failed to produce index.html in $BUILD_DIR/dist/"
-    echo "  Try rebuilding: ./build_wasm.sh"
-    exit 1
-fi
 
 # --- Deploy with Butler ---
 BUTLER_TARGET="${ITCHIO_USER}/${ITCHIO_GAME}:${ITCHIO_CHANNEL}"

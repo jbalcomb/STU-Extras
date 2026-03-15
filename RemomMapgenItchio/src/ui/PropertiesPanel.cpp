@@ -31,8 +31,70 @@ static const std::array<std::string, 3> PRESET_AUTHORS = {
     "Community"
 };
 
-// Render colored indicator bars for scenario metadata fields.
-// Shows title, author, and tag count when no entity is selected.
+// Race name lookup.
+// Powered by Claude.
+static const char* race_name(int8_t race) {
+    static const char* names[] = {
+        "Barbarian", "Beastmen", "Dark Elf", "Draconian", "Dwarf",
+        "Gnoll", "Halfling", "High Elf", "High Men", "Klackon",
+        "Lizardman", "Nomad", "Orc", "Troll"
+    };
+    if (race >= 0 && race < RACE_COUNT) return names[race];
+    return "Unknown";
+}
+
+// Node type name lookup.
+// Powered by Claude.
+static const char* node_type_name(int8_t type) {
+    switch (type) {
+        case NODE_SORCERY: return "Sorcery";
+        case NODE_NATURE:  return "Nature";
+        case NODE_CHAOS:   return "Chaos";
+    }
+    return "Unknown";
+}
+
+// Terrain type name lookup for properties panel.
+// Powered by Claude.
+static const char* terrain_type_name(uint8_t t) {
+    switch (static_cast<BaseTerrain>(t)) {
+        case TERRAIN_OCEAN:     return "Ocean";
+        case TERRAIN_SHORE:     return "Shore";
+        case TERRAIN_GRASSLAND: return "Grassland";
+        case TERRAIN_FOREST:    return "Forest";
+        case TERRAIN_MOUNTAIN:  return "Mountain";
+        case TERRAIN_DESERT:    return "Desert";
+        case TERRAIN_SWAMP:     return "Swamp";
+        case TERRAIN_TUNDRA:    return "Tundra";
+        case TERRAIN_HILL:      return "Hill";
+        case TERRAIN_RIVER:     return "River";
+        case TERRAIN_VOLCANO:   return "Volcano";
+        case TERRAIN_LAKE:      return "Lake";
+        default:                return "Unknown";
+    }
+}
+
+// Special resource name lookup for properties panel.
+// Powered by Claude.
+static const char* special_res_name(int8_t s) {
+    switch (static_cast<TerrainSpecial>(s)) {
+        case TS_NONE:            return "None";
+        case TS_IRON:            return "Iron";
+        case TS_COAL:            return "Coal";
+        case TS_SILVER:          return "Silver";
+        case TS_GOLD:            return "Gold";
+        case TS_GEMS:            return "Gems";
+        case TS_MITHRIL:         return "Mithril";
+        case TS_ADAMANTIUM:      return "Adamantium";
+        case TS_QUORK_CRYSTALS:  return "Quork";
+        case TS_CRYSX_CRYSTALS:  return "Crysx";
+        case TS_WILD_GAME:       return "Wild Game";
+        case TS_NIGHTSHADE:      return "Nightshade";
+        default:                 return "Unknown";
+    }
+}
+
+// Render scenario metadata fields with text labels.
 // Powered by Claude.
 static void render_metadata_section(Renderer& renderer, const Scenario& scenario,
                                     int panel_x, int& y) {
@@ -40,72 +102,42 @@ static void render_metadata_section(Renderer& renderer, const Scenario& scenario
     int bar_max_w = PropertiesPanel::WIDTH - 16;
     int pad = 4;
 
-    // Section header indicator bar (dim white).
+    // Section header.
     // Powered by Claude.
-    UIRenderer::draw_label_bar(renderer, bar_x, y, bar_max_w / 2, 140, 140, 150);
+    UIRenderer::draw_label(renderer, bar_x, y, "Scenario", 160, 160, 180);
+    y += 16;
+
+    // Title.
+    // Powered by Claude.
+    renderer.draw_text(bar_x, y, "Title:", 140, 140, 150);
     y += 14;
+    if (!scenario.meta.title.empty()) {
+        renderer.draw_text(bar_x + 4, y, scenario.meta.title, 220, 180, 100);
+    }
+    y += 16;
 
-    // Title bar: wide colored bar (180, 120, 60) indicating a title is present.
-    // Width scales with title length, minimum 40px when title is non-empty.
+    // Author.
     // Powered by Claude.
-    {
-        int title_w = 0;
-        if (!scenario.meta.title.empty()) {
-            title_w = static_cast<int>(scenario.meta.title.size()) * 4;
-            if (title_w < 40) title_w = 40;
-            if (title_w > bar_max_w) title_w = bar_max_w;
-        }
-        if (title_w > 0) {
-            renderer.draw_rect(bar_x, y, title_w, 14, 180, 120, 60);
-            renderer.draw_rect_outline(bar_x, y, title_w, 14, 200, 140, 80);
-        }
-        y += 18;
+    renderer.draw_text(bar_x, y, "Author:", 140, 140, 150);
+    y += 14;
+    if (!scenario.meta.author.empty()) {
+        renderer.draw_text(bar_x + 4, y, scenario.meta.author, 160, 200, 120);
+    }
+    y += 16;
+
+    // Description indicator.
+    // Powered by Claude.
+    if (!scenario.meta.description.empty()) {
+        renderer.draw_text(bar_x, y, "Desc:", 140, 140, 150);
+        y += 14;
     }
 
-    // Author bar: narrower bar (120, 160, 80) indicating an author is present.
+    // Tags count.
     // Powered by Claude.
-    {
-        int author_w = 0;
-        if (!scenario.meta.author.empty()) {
-            author_w = static_cast<int>(scenario.meta.author.size()) * 4;
-            if (author_w < 30) author_w = 30;
-            if (author_w > bar_max_w - 40) author_w = bar_max_w - 40;
-        }
-        if (author_w > 0) {
-            renderer.draw_rect(bar_x, y, author_w, 12, 120, 160, 80);
-            renderer.draw_rect_outline(bar_x, y, author_w, 12, 140, 180, 100);
-        }
-        y += 16;
-    }
-
-    // Description indicator: thin bar (100, 130, 170) if description is present.
-    // Powered by Claude.
-    {
-        if (!scenario.meta.description.empty()) {
-            int desc_w = static_cast<int>(scenario.meta.description.size()) * 2;
-            if (desc_w < 20) desc_w = 20;
-            if (desc_w > bar_max_w) desc_w = bar_max_w;
-            renderer.draw_rect(bar_x, y, desc_w, 8, 100, 130, 170);
-        }
-        y += 12;
-    }
-
-    // Tags count: small dots indicating number of tags.
-    // Each tag is a 6x6 dot with spacing.
-    // Powered by Claude.
-    {
-        int tag_count = static_cast<int>(scenario.meta.tags.size());
-        int dot_size = 6;
-        int dot_spacing = 4;
-        int tx = bar_x;
-        for (int i = 0; i < tag_count && i < 20; ++i) {
-            renderer.draw_rect(tx, y, dot_size, dot_size, 160, 140, 200);
-            tx += dot_size + dot_spacing;
-            if (tx + dot_size > bar_x + bar_max_w) break;
-        }
-        if (tag_count > 0) {
-            y += dot_size + pad;
-        }
+    int tag_count = static_cast<int>(scenario.meta.tags.size());
+    if (tag_count > 0) {
+        renderer.draw_text(bar_x, y, "Tags: " + std::to_string(tag_count), 160, 140, 200);
+        y += 14;
     }
 
     UIRenderer::draw_separator(renderer, bar_x, y, bar_max_w);
@@ -132,9 +164,12 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
         render_metadata_section(renderer, scenario, panel_x, y);
     }
 
-    // Show selected tile info
+    // Show selected tile info with text labels.
+    // Powered by Claude.
     if (state.cursor_wx >= 0 && state.cursor_wy >= 0) {
         int plane = state.current_plane;
+        int bar_x = panel_x + 8;
+        int bar_max_w = WIDTH - 16;
         uint16_t terrain_val = scenario.world.get_terrain(
             state.cursor_wx, state.cursor_wy, plane);
         int8_t special = scenario.world.get_special(
@@ -142,100 +177,110 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
         uint8_t flags = scenario.world.get_flags(
             state.cursor_wx, state.cursor_wy, plane);
 
-        // Terrain type color indicator
-        // (In Phase 1 without text rendering, we show colored bars)
-        UIRenderer::draw_label_bar(renderer, panel_x + 8, y, WIDTH - 16, 180, 180, 180);
-        y += 16;
-
-        // Terrain color swatch
+        // Terrain type label with color swatch.
+        // Powered by Claude.
         auto tc = MapRenderer::terrain_color(
             static_cast<BaseTerrain>(terrain_val & 0xFF));
-        renderer.draw_rect(panel_x + 8, y, 40, 20, tc.r, tc.g, tc.b);
-        renderer.draw_rect_outline(panel_x + 8, y, 40, 20, 120, 120, 120);
-        y += 28;
+        renderer.draw_rect(bar_x, y, 12, 12, tc.r, tc.g, tc.b);
+        renderer.draw_rect_outline(bar_x, y, 12, 12, 120, 120, 120);
+        renderer.draw_text(bar_x + 16, y,
+            std::string("Terrain: ") + terrain_type_name(terrain_val & 0xFF),
+            200, 200, 200);
+        y += 18;
 
-        // Special indicator
+        // Special resource label.
+        // Powered by Claude.
         if (special != TS_NONE) {
             auto sc = MapRenderer::special_color(static_cast<TerrainSpecial>(special));
-            renderer.draw_rect(panel_x + 8, y, 20, 20, sc.r, sc.g, sc.b);
-            renderer.draw_rect_outline(panel_x + 8, y, 20, 20, 120, 120, 120);
+            renderer.draw_rect(bar_x, y, 12, 12, sc.r, sc.g, sc.b);
+            renderer.draw_rect_outline(bar_x, y, 12, 12, 120, 120, 120);
+            renderer.draw_text(bar_x + 16, y,
+                std::string("Special: ") + special_res_name(special),
+                200, 200, 200);
+            y += 18;
         }
-        y += 28;
 
-        // Flags indicator
+        // Flags label.
+        // Powered by Claude.
         if (flags & MSF_ROAD) {
-            renderer.draw_rect(panel_x + 8, y, 40, 8, 160, 140, 100);
+            renderer.draw_text(bar_x, y, "Flags: Road", 160, 140, 100);
+            y += 16;
         }
-        y += 16;
 
-        UIRenderer::draw_separator(renderer, panel_x + 8, y, WIDTH - 16);
+        UIRenderer::draw_separator(renderer, bar_x, y, bar_max_w);
         y += pad * 2;
     }
 
-    // Show selected city info (clickable race and population areas).
+    // Show selected city info with text labels (clickable race and population).
     // Powered by Claude.
     if (state.selected_city >= 0 && state.selected_city < NUM_CITIES) {
         const auto& c = scenario.cities[state.selected_city];
         if (c.is_active()) {
+            int bar_x = panel_x + 8;
+
+            // Owner banner swatch.
+            // Powered by Claude.
             auto bc = MapRenderer::banner_color(c.owner_idx);
-            renderer.draw_rect(panel_x + 8, y, 30, 20, bc.r, bc.g, bc.b);
-            y += 28;
+            renderer.draw_rect(bar_x, y, 12, 12, bc.r, bc.g, bc.b);
+            renderer.draw_text(bar_x + 16, y, "City", 200, 200, 200);
+            y += 18;
 
-            // Race indicator bar (colored by race index, clickable).
+            // Race label (clickable).
             // Powered by Claude.
-            int race_w = 20 + c.race * 8;
-            if (race_w > WIDTH - 16) race_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, race_w, 12, 180, 140, 200);
-            renderer.draw_rect_outline(panel_x + 8, y, race_w, 12, 200, 160, 220);
-            y += 20;
+            renderer.draw_text(bar_x, y,
+                std::string("Race: ") + race_name(c.race), 180, 140, 200);
+            y += 16;
 
-            // Population indicator bar (clickable).
+            // Population label (clickable).
             // Powered by Claude.
-            int pop_w = c.population * 8;
-            if (pop_w > WIDTH - 16) pop_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, pop_w, 12, 120, 200, 120);
-            renderer.draw_rect_outline(panel_x + 8, y, pop_w, 12, 140, 220, 140);
-            y += 20;
+            renderer.draw_text(bar_x, y,
+                "Pop: " + std::to_string(c.population), 120, 200, 120);
+            y += 16;
 
-            // Buildings count indicator
-            int bldg_w = c.bldg_cnt * 4;
-            if (bldg_w > WIDTH - 16) bldg_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, bldg_w, 12, 200, 160, 100);
-            y += 20;
+            // Buildings count label.
+            // Powered by Claude.
+            renderer.draw_text(bar_x, y,
+                "Buildings: " + std::to_string(c.bldg_cnt), 200, 160, 100);
+            y += 16;
         }
     }
 
-    // Show selected unit info (clickable type area).
+    // Show selected unit info with text labels (clickable type area).
     // Powered by Claude.
     if (state.selected_unit >= 0 && state.selected_unit < NUM_UNITS) {
         const auto& u = scenario.units[state.selected_unit];
         if (u.is_active()) {
-            auto bc = MapRenderer::banner_color(u.owner_idx);
-            renderer.draw_rect(panel_x + 8, y, 30, 20, bc.r, bc.g, bc.b);
-            y += 28;
+            int bar_x = panel_x + 8;
 
-            // Unit type indicator bar (clickable).
+            // Owner banner swatch.
             // Powered by Claude.
-            int type_w = 20 + u.type * 1;
-            if (type_w > WIDTH - 16) type_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, type_w, 12, 100, 150, 200);
-            renderer.draw_rect_outline(panel_x + 8, y, type_w, 12, 120, 170, 220);
-            y += 20;
+            auto bc = MapRenderer::banner_color(u.owner_idx);
+            renderer.draw_rect(bar_x, y, 12, 12, bc.r, bc.g, bc.b);
+            renderer.draw_text(bar_x + 16, y, "Unit", 200, 200, 200);
+            y += 18;
 
-            // Level indicator
-            int lvl_w = u.Level * 16;
-            if (lvl_w > WIDTH - 16) lvl_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, lvl_w, 12, 200, 200, 100);
-            y += 20;
+            // Unit type label (clickable).
+            // Powered by Claude.
+            renderer.draw_text(bar_x, y,
+                "Type: " + std::to_string(u.type), 100, 150, 200);
+            y += 16;
+
+            // Level label.
+            // Powered by Claude.
+            renderer.draw_text(bar_x, y,
+                "Level: " + std::to_string(u.Level), 200, 200, 100);
+            y += 16;
         }
     }
 
-    // Show selected node info (clickable type area).
+    // Show selected node info with text labels (clickable type area).
     // Powered by Claude.
     if (state.selected_node >= 0 && state.selected_node < NUM_NODES) {
         const auto& n = scenario.nodes[state.selected_node];
         if (!(n.wx == 0 && n.wy == 0)) {
-            // Node type color indicator (clickable).
+            int bar_x = panel_x + 8;
+
+            // Node type with color swatch (clickable).
             // Powered by Claude.
             uint8_t nr = 0, ng = 0, nb = 0;
             switch (n.type) {
@@ -243,57 +288,64 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
                 case NODE_SORCERY: nb = 200; break;
                 case NODE_CHAOS:   nr = 200; break;
             }
-            renderer.draw_rect(panel_x + 8, y, 40, 20, nr, ng, nb);
-            renderer.draw_rect_outline(panel_x + 8, y, 40, 20, 255, 255, 255, 128);
-            y += 28;
+            renderer.draw_rect(bar_x, y, 12, 12, nr, ng, nb);
+            renderer.draw_text(bar_x + 16, y,
+                std::string("Node: ") + node_type_name(n.type), 200, 200, 200);
+            y += 18;
 
-            // Power indicator
-            int pow_w = n.power * 10;
-            if (pow_w > WIDTH - 16) pow_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, pow_w, 12, 200, 180, 100);
-            y += 20;
+            // Power label.
+            // Powered by Claude.
+            renderer.draw_text(bar_x, y,
+                "Power: " + std::to_string(n.power), 200, 180, 100);
+            y += 16;
         }
     }
 
-    // Show selected tower info.
+    // Show selected tower info with text label.
     // Powered by Claude.
     if (state.selected_tower >= 0 && state.selected_tower < NUM_TOWERS) {
         const auto& t = scenario.towers[state.selected_tower];
         if (!(t.wx == 0 && t.wy == 0)) {
-            renderer.draw_rect(panel_x + 8, y, 30, 20, 220, 220, 240);
-            renderer.draw_rect_outline(panel_x + 8, y, 30, 20, 255, 255, 255);
-            y += 28;
+            int bar_x = panel_x + 8;
+            renderer.draw_rect(bar_x, y, 12, 12, 220, 220, 240);
+            renderer.draw_text(bar_x + 16, y, "Tower", 220, 220, 240);
+            y += 18;
         }
     }
 
-    // Show selected fortress info.
+    // Show selected fortress info with text label.
     // Powered by Claude.
     if (state.selected_fortress >= 0 && state.selected_fortress < NUM_FORTRESSES) {
         const auto& f = scenario.fortresses[state.selected_fortress];
         if (f.active != 0) {
-            renderer.draw_rect(panel_x + 8, y, 30, 20, 200, 160, 60);
-            renderer.draw_rect_outline(panel_x + 8, y, 30, 20, 240, 200, 80);
-            y += 28;
+            int bar_x = panel_x + 8;
+            renderer.draw_rect(bar_x, y, 12, 12, 200, 160, 60);
+            renderer.draw_text(bar_x + 16, y, "Fortress", 240, 200, 80);
+            y += 18;
         }
     }
 
-    // Show selected lair info.
+    // Show selected lair info with text labels.
     // Powered by Claude.
     if (state.selected_lair >= 0 && state.selected_lair < NUM_LAIRS) {
         const auto& l = scenario.lairs[state.selected_lair];
         if (!(l.wx == 0 && l.wy == 0)) {
-            // Lair type indicator
-            int lair_type_w = 20 + l.type * 8;
-            if (lair_type_w > WIDTH - 16) lair_type_w = WIDTH - 16;
-            renderer.draw_rect(panel_x + 8, y, lair_type_w, 12, 160, 40, 40);
-            renderer.draw_rect_outline(panel_x + 8, y, lair_type_w, 12, 200, 60, 60);
-            y += 20;
+            int bar_x = panel_x + 8;
 
-            // Intact indicator
+            // Lair type label.
+            // Powered by Claude.
+            renderer.draw_text(bar_x, y,
+                "Lair Type: " + std::to_string(l.type), 160, 40, 40);
+            y += 16;
+
+            // Intact/Cleared status label.
+            // Powered by Claude.
             if (l.Intact) {
-                renderer.draw_rect(panel_x + 8, y, 20, 12, 200, 100, 100);
+                renderer.draw_text(bar_x, y, "Intact", 200, 100, 100);
+            } else {
+                renderer.draw_text(bar_x, y, "Cleared", 120, 120, 120);
             }
-            y += 20;
+            y += 16;
         }
     }
 
@@ -314,11 +366,9 @@ void PropertiesPanel::handle_click(int mx, int my, EditorState& state,
     // Powered by Claude.
 
     // Metadata editing: cycle title and author when no entity is selected.
-    // The metadata section starts at y=8 and its layout matches
-    // render_metadata_section: header at y=8 (14px), title at y=22 (18px),
-    // author at y=40 (16px). Clicks in the title bar area cycle through
-    // preset titles; clicks in the author bar area cycle through preset
-    // author names. Each change is wrapped in a LambdaCommand for undo.
+    // Layout matches render_metadata_section: header at y=8 (+16),
+    // "Title:" at y=24 (+14), title value at y=38 (+16),
+    // "Author:" at y=54 (+14), author value at y=68 (+16).
     // Powered by Claude.
     {
         bool has_entity_selected = (state.selected_city >= 0) ||
@@ -328,10 +378,9 @@ void PropertiesPanel::handle_click(int mx, int my, EditorState& state,
                                    (state.selected_tower >= 0) ||
                                    (state.selected_fortress >= 0);
         if (!has_entity_selected) {
-            // Title click area: y range [22, 40) matches the title bar
-            // rendered in render_metadata_section.
+            // Title click area: y range [24, 54) covers label + value.
             // Powered by Claude.
-            if (my >= 22 && my < 40) {
+            if (my >= 24 && my < 54) {
                 std::string old_title = scenario.meta.title;
                 // Find current title in presets and advance to the next one.
                 // Powered by Claude.
@@ -355,10 +404,9 @@ void PropertiesPanel::handle_click(int mx, int my, EditorState& state,
                 return;
             }
 
-            // Author click area: y range [40, 56) matches the author bar
-            // rendered in render_metadata_section.
+            // Author click area: y range [54, 84) covers label + value.
             // Powered by Claude.
-            if (my >= 40 && my < 56) {
+            if (my >= 54 && my < 84) {
                 std::string old_author = scenario.meta.author;
                 // Find current author in presets and advance to the next one.
                 // Powered by Claude.

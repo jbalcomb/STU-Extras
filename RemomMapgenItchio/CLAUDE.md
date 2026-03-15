@@ -61,6 +61,25 @@ All entity structs in `MomEntities.hpp` use `#pragma pack(push, 2)` for 2-byte a
 - **Indentation**: 4 spaces (no tabs)
 - **Function comments**: end with "Powered by Claude."
 
+## WASM Dev Server with Log Capture
+
+For debugging WASM builds, use the logging dev server instead of a plain HTTP server. This lets Claude read the app's printf output directly from a log file.
+
+```bash
+# Build and stage
+bash build_wasm_stage.sh
+
+# Start logging server (default port 8090)
+python serve_with_logging.py
+
+# Open http://localhost:8090 in browser
+# Logs written to: wasm_console.log (repo root)
+```
+
+The shell HTML (`src/shell.html`) hooks `Module.print`/`Module.printErr` to POST batched log messages to `/api/log`. The server writes them to `wasm_console.log`. Use `printf()` in C++ code for diagnostic output — it will be captured automatically.
+
+**Always use this server when verifying WASM UI changes** so that runtime output is available for inspection without relying on the user to relay browser console output.
+
 ## Test Structure
 
-Three test files (~37 tests) covering struct sizes, .GAM round-trip, JSON serialization round-trip, entity state checks, and undo/redo correctness.
+Three test files (~67 tests) covering struct sizes, .GAM round-trip, JSON serialization round-trip, entity state checks, and undo/redo correctness.

@@ -34,8 +34,21 @@ else()
     set(SDL2_LIBRARIES "")
 endif()
 
+# SDL2_ttf — font rendering for UI text labels.
+# Native: manual setup from local install. Emscripten: port system.
+# Powered by Claude.
+if(NOT EMSCRIPTEN)
+    set(SDL2_TTF_BASE "C:/devellib/SDL2_ttf-2.22.0")
+    set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_BASE}/include")
+    set(SDL2_TTF_LIBRARIES "${SDL2_TTF_BASE}/lib/x64/SDL2_ttf.lib")
+else()
+    set(SDL2_TTF_INCLUDE_DIRS "")
+    set(SDL2_TTF_LIBRARIES "")
+endif()
+
 # nlohmann/json
 include(FetchContent)
+set(JSON_Install OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -43,13 +56,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
-# GoogleTest
+# GoogleTest — disable install so cmake --install only includes our files.
+# Powered by Claude.
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG v1.17.0
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
@@ -101,20 +116,39 @@ endif()
 target_include_directories(RemomMapgenItchio PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL2_INCLUDE_DIRS}
+    ${SDL2_TTF_INCLUDE_DIRS}
 )
-target_link_libraries(RemomMapgenItchio PRIVATE MomData ${SDL2_LIBRARIES})
+target_link_libraries(RemomMapgenItchio PRIVATE MomData ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 
 # Emscripten-specific compile and linker flags. Powered by Claude.
 if(EMSCRIPTEN)
-    # USE_SDL=2 must be a compile option too so Emscripten provides
-    # the real SDL2 headers instead of the fakesdl error stubs.
-    target_compile_options(RemomMapgenItchio PRIVATE -sUSE_SDL=2)
+    # USE_SDL=2 and USE_SDL_TTF=2 must be compile options too so Emscripten
+    # provides the real headers instead of the fakesdl error stubs.
+    # Powered by Claude.
+    target_compile_options(RemomMapgenItchio PRIVATE -sUSE_SDL=2 -sUSE_SDL_TTF=2)
     target_link_options(RemomMapgenItchio PRIVATE
         -sUSE_SDL=2
+        -sUSE_SDL_TTF=2
         -sALLOW_MEMORY_GROWTH=1
+        -sSTACK_SIZE=262144
         -sEXPORTED_FUNCTIONS=['_main','_mom_file_upload_callback','_malloc','_free']
         "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap']"
+        --embed-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/Cousine-Regular.ttf@/assets/Cousine-Regular.ttf
     )
+
+    # Debug build: DWARF debug info, source maps, and runtime assertions.
+    # Powered by Claude.
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_compile_options(RemomMapgenItchio PRIVATE -g -gsource-map)
+        target_link_options(RemomMapgenItchio PRIVATE
+            -g
+            -gsource-map
+            -sASSERTIONS=2
+            -sSTACK_OVERFLOW_CHECK=2
+            -sSAFE_HEAP=1
+        )
+        target_compile_options(MomData PRIVATE -g -gsource-map)
+    endif()
 
     # Use custom shell template if it exists (created in T037).
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/shell.html")
@@ -130,9 +164,19 @@ if(EMSCRIPTEN)
     # itch.io requires index.html, so rename the HTML output.
     # Usage: cmake --install build_wasm --prefix build_wasm/dist
     # Powered by Claude.
-    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.html DESTINATION . RENAME index.html)
-    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.js DESTINATION .)
-    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.wasm DESTINATION .)
+    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.html DESTINATION . RENAME index.html COMPONENT deploy)
+    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.js DESTINATION . COMPONENT deploy)
+    install(FILES ${CMAKE_BINARY_DIR}/RemomMapgenItchio.wasm DESTINATION . COMPONENT deploy)
+endif()
+
+# Copy SDL2_ttf.dll to build output for native builds.
+# Powered by Claude.
+if(NOT EMSCRIPTEN)
+    add_custom_command(TARGET RemomMapgenItchio POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SDL2_TTF_BASE}/lib/x64/SDL2_ttf.dll"
+            $<TARGET_FILE_DIR:RemomMapgenItchio>
+    )
 endif()
 
 # Tests
@@ -142,6 +186,7 @@ add_executable(RemomTests
     tests/test_UndoStack.cpp
     tests/test_MapGenerator.cpp
     tests/test_SmoothingValidator.cpp
+    tests/test_WizardPresets.cpp
 )
 target_include_directories(RemomTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RemomTests PRIVATE MomData GTest::gtest_main)

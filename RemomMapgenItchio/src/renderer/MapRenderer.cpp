@@ -55,25 +55,36 @@ TerrainColor MapRenderer::banner_color(int owner_idx) {
 }
 
 // Map a terrain uint16 value to a base terrain type for rendering.
-// The original game uses complex tile indices with edge transitions;
-// this simplified mapping covers the base types.
+// Editor-painted tiles store the raw BaseTerrain enum (0-11).
+// Imported .GAM tiles use the original game's tile indices where each
+// base terrain type occupies a range of 4 values (edge transitions).
 // Powered by Claude.
 static BaseTerrain terrain_to_base(uint16_t terrain_val) {
-    // The low byte typically indicates the base terrain type
-    // This is a simplified mapping; exact values depend on ReMoM's terrain tables
     uint8_t base = static_cast<uint8_t>(terrain_val & 0xFF);
-    if (base <= 3)  return TERRAIN_OCEAN;
-    if (base <= 7)  return TERRAIN_SHORE;
-    if (base <= 11) return TERRAIN_GRASSLAND;
-    if (base <= 15) return TERRAIN_FOREST;
-    if (base <= 19) return TERRAIN_MOUNTAIN;
-    if (base <= 23) return TERRAIN_DESERT;
-    if (base <= 27) return TERRAIN_SWAMP;
-    if (base <= 31) return TERRAIN_TUNDRA;
-    if (base <= 35) return TERRAIN_HILL;
-    if (base <= 39) return TERRAIN_RIVER;
-    if (base <= 43) return TERRAIN_VOLCANO;
+
+    // Direct enum values from editor painting (0-11).
+    // Powered by Claude.
+    if (base < BASE_TERRAIN_COUNT) {
+        return static_cast<BaseTerrain>(base);
+    }
+
+    // Imported .GAM tile indices: each base type spans a range of 4.
+    // Powered by Claude.
+    uint8_t group = base / 4;
+    if (group < BASE_TERRAIN_COUNT) {
+        return static_cast<BaseTerrain>(group);
+    }
     return TERRAIN_GRASSLAND; // fallback
+}
+
+// Adjust a world x coordinate for horizontal wrapping so it falls
+// in the visible tile range [start_x, start_x + WORLD_WIDTH).
+// Powered by Claude.
+static int wrap_to_visible(int wx, int start_x) {
+    int wrapped = wx;
+    while (wrapped < start_x) wrapped += WORLD_WIDTH;
+    while (wrapped >= start_x + WORLD_WIDTH) wrapped -= WORLD_WIDTH;
+    return wrapped;
 }
 
 void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
@@ -150,13 +161,14 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
         }
     }
 
-    // Render smoothing violation overlays.
+    // Render smoothing violation overlays with horizontal wrapping.
     // Powered by Claude.
     if (state.show_all_violations) {
         for (const auto& v : state.violations) {
             if (v.plane != plane) continue;
+            int vx = wrap_to_visible(v.x, start_x);
             int sx, sy;
-            cam.world_to_screen(v.x, v.y, viewport.x, viewport.y, sx, sy);
+            cam.world_to_screen(vx, v.y, viewport.x, viewport.y, sx, sy);
             if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
             if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
             renderer.draw_rect_outline(sx + 2, sy + 2, tw - 4, th - 4,
@@ -164,30 +176,33 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
         }
     }
 
-    // Render cities
+    // Render cities with horizontal wrapping.
+    // Powered by Claude.
     for (int i = 0; i < NUM_CITIES; ++i) {
         const auto& c = scenario.cities[i];
         if (!c.is_active() || c.wp != plane) continue;
+        int cx_w = wrap_to_visible(c.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(c.wx, c.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(cx_w, c.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
         auto bc = banner_color(c.owner_idx);
         int inset = tw / 6;
         renderer.draw_rect(sx + inset, sy + inset, tw - inset * 2, th - inset * 2,
                            bc.r, bc.g, bc.b);
-        // Highlight selected
         if (state.selected_city == i) {
             renderer.draw_rect_outline(sx, sy, tw, th, 255, 255, 0);
         }
     }
 
-    // Render units (show as small triangles via a filled rect for now)
+    // Render units with horizontal wrapping.
+    // Powered by Claude.
     for (int i = 0; i < NUM_UNITS; ++i) {
         const auto& u = scenario.units[i];
         if (!u.is_active() || u.wp != plane) continue;
+        int ux_w = wrap_to_visible(u.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(u.wx, u.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(ux_w, u.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
         auto bc = banner_color(u.owner_idx);
@@ -197,15 +212,16 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
                            sz, sz, bc.r, bc.g, bc.b);
     }
 
-    // Render nodes
+    // Render nodes with horizontal wrapping.
+    // Powered by Claude.
     for (int i = 0; i < NUM_NODES; ++i) {
         const auto& n = scenario.nodes[i];
         if (n.wp != plane) continue;
+        int nx_w = wrap_to_visible(n.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(n.wx, n.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(nx_w, n.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
-        // Color by node type: Nature=green, Sorcery=blue, Chaos=red
         uint8_t nr = 0, ng = 0, nb = 0;
         switch (n.type) {
             case NODE_NATURE:  ng = 200; break;
@@ -219,100 +235,89 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
                                    sz, sz, 255, 255, 255, 128);
     }
 
-    // Render towers as white diamond shapes (two overlapping rotated rects).
+    // Render towers with horizontal wrapping.
     // Towers have no plane field; they appear on both planes.
-    // Active when wx != 0 || wy != 0.
     // Powered by Claude.
     for (int i = 0; i < NUM_TOWERS; ++i) {
         const auto& t = scenario.towers[i];
         if (t.wx == 0 && t.wy == 0) continue;
+        int tx_w = wrap_to_visible(t.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(t.wx, t.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(tx_w, t.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
-        // Diamond shape: draw a small horizontal bar and a small vertical bar
-        // centered on the tile to approximate a diamond/rotated square.
         int sz = tw / 3;
         if (sz < 3) sz = 3;
         int cx = sx + tw / 2;
         int cy = sy + th / 2;
-        // Horizontal bar
         renderer.draw_rect(cx - sz, cy - sz / 3, sz * 2, sz * 2 / 3,
                            220, 220, 240);
-        // Vertical bar
         renderer.draw_rect(cx - sz / 3, cy - sz, sz * 2 / 3, sz * 2,
                            220, 220, 240);
         renderer.draw_rect_outline(cx - sz, cy - sz, sz * 2, sz * 2,
                                    255, 255, 255);
-        // Selection highlight
         if (state.selected_tower == i) {
             renderer.draw_rect_outline(sx, sy, tw, th, 255, 255, 0);
         }
     }
 
-    // Render fortresses as bright colored star shapes using the wizard banner color.
-    // Uses overlapping horizontal and vertical rects to approximate a star/cross.
+    // Render fortresses with horizontal wrapping.
     // Powered by Claude.
     for (int i = 0; i < NUM_FORTRESSES; ++i) {
         const auto& f = scenario.fortresses[i];
         if (f.active == 0) continue;
         if (f.wp != plane) continue;
+        int fx_w = wrap_to_visible(f.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(f.wx, f.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(fx_w, f.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
-        auto bc = banner_color(i); // fortress index maps to wizard slot
+        auto bc = banner_color(i);
         int sz = tw / 2;
         if (sz < 3) sz = 3;
         int cx = sx + tw / 2;
         int cy = sy + th / 2;
-        // Horizontal bar of the star
         renderer.draw_rect(cx - sz, cy - sz / 3, sz * 2, sz * 2 / 3,
                            bc.r, bc.g, bc.b);
-        // Vertical bar of the star
         renderer.draw_rect(cx - sz / 3, cy - sz, sz * 2 / 3, sz * 2,
                            bc.r, bc.g, bc.b);
         renderer.draw_rect_outline(cx - sz, cy - sz, sz * 2, sz * 2,
                                    255, 255, 0);
-        // Selection highlight
         if (state.selected_fortress == i) {
             renderer.draw_rect_outline(sx, sy, tw, th, 255, 255, 0);
         }
     }
 
-    // Render lairs as dark red triangle approximations (filled rect with outline).
-    // Active when wx != 0 || wy != 0.
+    // Render lairs with horizontal wrapping.
     // Powered by Claude.
     for (int i = 0; i < NUM_LAIRS; ++i) {
         const auto& l = scenario.lairs[i];
         if (l.wx == 0 && l.wy == 0) continue;
         if (l.wp != plane) continue;
+        int lx_w = wrap_to_visible(l.wx, start_x);
         int sx, sy;
-        cam.world_to_screen(l.wx, l.wy, viewport.x, viewport.y, sx, sy);
+        cam.world_to_screen(lx_w, l.wy, viewport.x, viewport.y, sx, sy);
         if (sx + tw < viewport.x || sx > viewport.x + viewport.w) continue;
         if (sy + th < viewport.y || sy > viewport.y + viewport.h) continue;
-        // Triangle approximation: draw a tall narrow rect as the peak and
-        // a wider rect as the base to suggest a triangular shape.
         int sz = tw / 3;
         if (sz < 3) sz = 3;
         int cx = sx + tw / 2;
         int cy = sy + th / 2;
-        // Wide base
         renderer.draw_rect(cx - sz, cy, sz * 2, sz / 2 + 1, 140, 30, 30);
-        // Narrow peak
         renderer.draw_rect(cx - sz / 3, cy - sz, sz * 2 / 3, sz, 180, 40, 40);
         renderer.draw_rect_outline(cx - sz, cy - sz, sz * 2, sz + sz / 2 + 1,
                                    200, 80, 80);
-        // Selection highlight
         if (state.selected_lair == i) {
             renderer.draw_rect_outline(sx, sy, tw, th, 255, 255, 0);
         }
     }
 
-    // Cursor highlight
+    // Cursor highlight with horizontal wrapping.
+    // Powered by Claude.
     if (state.cursor_wx >= 0 && state.cursor_wy >= 0) {
+        int cur_x = wrap_to_visible(state.cursor_wx, start_x);
         int sx, sy;
-        cam.world_to_screen(state.cursor_wx, state.cursor_wy,
+        cam.world_to_screen(cur_x, state.cursor_wy,
                             viewport.x, viewport.y, sx, sy);
         renderer.draw_rect_outline(sx, sy, tw, th, 255, 255, 255);
     }

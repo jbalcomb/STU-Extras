@@ -36,6 +36,9 @@ stdout.txt
 deploy.conf
 .deploy_staging/
 
+# WASM debug builds
+build_wasm_debug/
+
 # Borland C++ v3.0 (c) 1992
 *.DSK
 *.EXE

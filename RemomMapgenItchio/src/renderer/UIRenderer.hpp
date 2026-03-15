@@ -21,11 +21,22 @@ public:
     static void draw_button(Renderer& r, int x, int y, int w, int h,
                             bool selected, bool hovered);
 
-    // Draw a label using colored rectangle "characters" (placeholder for real text).
-    // In Phase 1 we don't have font rendering, so we draw a small colored bar.
+    // Draw a label using colored rectangle (fallback for no font).
     // Powered by Claude.
     static void draw_label_bar(Renderer& r, int x, int y, int w,
                                uint8_t cr, uint8_t cg, uint8_t cb);
+
+    // Draw a text label at the given position.
+    // Falls back to draw_label_bar if font is not available.
+    // Powered by Claude.
+    static void draw_label(Renderer& r, int x, int y, const std::string& text,
+                           uint8_t cr = 224, uint8_t cg = 224, uint8_t cb = 224);
+
+    // Draw a button with a centered text label.
+    // Powered by Claude.
+    static void draw_button_with_label(Renderer& r, int x, int y, int w, int h,
+                                       const std::string& label,
+                                       bool selected, bool hovered);
 
     // Draw a horizontal separator line.
     // Powered by Claude.
