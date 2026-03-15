@@ -1,0 +1,18 @@
+# itch.io deployment configuration for RemomMapgenItchio.
+# Copy this file to deploy.conf and fill in your details:
+#   cp deploy.conf.example deploy.conf
+#
+# deploy.conf is gitignored — your credentials stay local.
+# Powered by Claude.
+
+# Your itch.io username or organization
+ITCHIO_USER=your-username
+
+# Your itch.io project slug (from the project URL)
+ITCHIO_GAME=mom-scenario-editor
+
+# Butler channel name (html5 for web/WASM builds)
+ITCHIO_CHANNEL=html5
+
+# Relative path to WASM build output directory
+BUILD_DIR=build_wasm

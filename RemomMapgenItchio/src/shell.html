@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--
+  Emscripten HTML shell template for MoM Scenario Editor.
+  Custom dark-themed page with centered canvas, loading progress bar,
+  WASM feature detection, and itch.io-friendly viewport.
+  Powered by Claude.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MoM Scenario Editor</title>
+    <style>
+        /* Dark background matching the editor aesthetic. */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Canvas fills the entire viewport. Powered by Claude. */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas#canvas {
+            display: block;
+            background-color: #0f0f23;
+            /* Size managed by resizeCanvas() — no CSS scaling. Powered by Claude. */
+        }
+
+        /* Loading overlay with progress bar. */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.4s ease-out;
+        }
+
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #c0c0e0;
+            letter-spacing: 0.05em;
+        }
+
+        #loading-status {
+            font-size: 0.9rem;
+            color: #8888aa;
+            margin-bottom: 0.75rem;
+        }
+
+        #progress-bar-container {
+            width: 320px;
+            height: 8px;
+            background-color: #0f0f23;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #333355;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #4a4a8a, #7070c0);
+            border-radius: 4px;
+            transition: width 0.2s ease-out;
+        }
+
+        /* Error overlay for missing WASM support. */
+        #error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        #error-overlay.visible {
+            display: flex;
+        }
+
+        #error-message {
+            font-size: 1.1rem;
+            color: #cc6666;
+            text-align: center;
+            max-width: 480px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fallback for browsers with JavaScript disabled. -->
+    <noscript>
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background-color:#1a1a2e;display:flex;justify-content:center;align-items:center;z-index:300;">
+            <div style="font-size:1.1rem;color:#cc6666;text-align:center;max-width:480px;line-height:1.6;font-family:sans-serif;">
+                <strong>JavaScript Required</strong><br><br>
+                This application requires JavaScript to run. Please enable
+                JavaScript in your browser settings and reload the page.
+            </div>
+        </div>
+    </noscript>
+
+    <!-- Error overlay shown if WebAssembly is not supported. -->
+    <div id="error-overlay">
+        <div id="error-message">
+            <strong>WebAssembly Required</strong><br><br>
+            This application requires WebAssembly. Please use a modern browser
+            (Chrome 57+, Firefox 52+, Safari 11+, Edge 16+).
+        </div>
+    </div>
+
+    <!-- Warning banner shown if browser zoom is not 100%. Powered by Claude. -->
+    <div id="zoom-warning" style="display:none;position:fixed;top:0;left:0;right:0;background:#cc6600;color:#fff;text-align:center;padding:8px;font:14px sans-serif;z-index:300;cursor:pointer;"
+         onclick="this.style.display='none'">
+        Browser zoom is not 100%. Press <strong>Ctrl+0</strong> to reset for the best experience. (Click to dismiss)
+    </div>
+
+    <!-- Loading overlay with progress bar. -->
+    <div id="loading-overlay">
+        <div id="loading-title">MoM Scenario Editor</div>
+        <div id="loading-status">Loading...</div>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Canvas container. The canvas element is used by Emscripten/SDL2. -->
+    <div id="canvas-container">
+        <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    </div>
+
+    <script>
+        // WASM feature detection — show error and hide canvas if unsupported.
+        // Powered by Claude.
+        if (typeof WebAssembly === 'undefined' ||
+            typeof WebAssembly.instantiate !== 'function') {
+            document.getElementById('error-overlay').classList.add('visible');
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('canvas-container').style.display = 'none';
+        }
+
+        // Show warning banner if browser zoom is not 100%.
+        // Powered by Claude.
+        if (window.devicePixelRatio && Math.abs(window.devicePixelRatio - 1) > 0.01) {
+            document.getElementById('zoom-warning').style.display = 'block';
+        }
+
+        // Size the canvas backing buffer to device-pixel resolution and CSS
+        // display to CSS-pixel resolution. This gives a 1:1 pixel mapping so
+        // UI elements render at their intended size.
+        // Called before Emscripten init and on window resize.
+        // Powered by Claude.
+        function resizeCanvas() {
+            var c = document.getElementById('canvas');
+            var dpr = window.devicePixelRatio || 1;
+            var cssW = Math.max(window.innerWidth,  1280);
+            var cssH = Math.max(window.innerHeight, 720);
+            var bufW = Math.round(cssW * dpr);
+            var bufH = Math.round(cssH * dpr);
+            if (c.width !== bufW || c.height !== bufH) {
+                c.width = bufW;
+                c.height = bufH;
+                c.style.width = cssW + 'px';
+                c.style.height = cssH + 'px';
+                console.log('[DEBUG] resizeCanvas: buffer=' + bufW + 'x' + bufH +
+                    ' css=' + cssW + 'x' + cssH + ' dpr=' + dpr);
+            }
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Remote log capture — batches printf/console output and POSTs
+        // to /api/log so the dev server can write it to a file.
+        // Powered by Claude.
+        var _logBuffer = [];
+        var _logTimer = null;
+        function _flushLogs() {
+            if (_logBuffer.length === 0) return;
+            var batch = _logBuffer.splice(0);
+            try {
+                fetch('/api/log', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({messages: batch})
+                }).catch(function() {});
+            } catch(e) {}
+        }
+        function _capturePrint(text) {
+            console.log(text);
+            _logBuffer.push(text);
+            if (!_logTimer) {
+                _logTimer = setTimeout(function() {
+                    _logTimer = null;
+                    _flushLogs();
+                }, 250);
+            }
+        }
+
+        // Emscripten Module configuration.
+        // Powered by Claude.
+        var Module = {
+            canvas: (function() {
+                return document.getElementById('canvas');
+            })(),
+
+            // Capture printf output for remote logging.
+            // Powered by Claude.
+            print: _capturePrint,
+            printErr: _capturePrint,
+
+            // Update loading progress bar.
+            // Powered by Claude.
+            setStatus: function(text) {
+                var statusEl = document.getElementById('loading-status');
+                if (statusEl) {
+                    statusEl.innerText = text;
+                }
+
+                // Parse progress from Emscripten status strings like
+                // "Downloading data... (3/5)"
+                if (text) {
+                    var match = text.match(/(\d+)\/(\d+)/);
+                    if (match) {
+                        var current = parseInt(match[1], 10);
+                        var total = parseInt(match[2], 10);
+                        var pct = Math.round((current / total) * 100);
+                        var bar = document.getElementById('progress-bar');
+                        if (bar) bar.style.width = pct + '%';
+                    }
+                }
+
+                // Hide loading overlay when status is empty (loading complete).
+                if (!text || text === '') {
+                    var overlay = document.getElementById('loading-overlay');
+                    if (overlay) {
+                        var bar = document.getElementById('progress-bar');
+                        if (bar) bar.style.width = '100%';
+                        setTimeout(function() {
+                            overlay.classList.add('hidden');
+                        }, 300);
+                    }
+                }
+            },
+
+            // Log total memory usage on start.
+            // Powered by Claude.
+            onRuntimeInitialized: function() {
+                console.log('MoM Scenario Editor WASM runtime initialized.');
+                // DEBUG: log canvas and container dimensions. Powered by Claude.
+                var c = document.getElementById('canvas');
+                var ct = document.getElementById('canvas-container');
+                console.log('[DEBUG] canvas element: ' + c.width + 'x' + c.height +
+                    ' (CSS: ' + c.clientWidth + 'x' + c.clientHeight + ')');
+                console.log('[DEBUG] canvas-container: ' + ct.clientWidth + 'x' + ct.clientHeight);
+                console.log('[DEBUG] window.inner: ' + window.innerWidth + 'x' + window.innerHeight);
+            }
+        };
+    </script>
+
+    {{{ SCRIPT }}}
+
+</body>
+</html>

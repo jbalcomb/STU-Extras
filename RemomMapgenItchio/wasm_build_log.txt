@@ -1,0 +1,25 @@
+=== Configuring WASM Release build ===
+emcmake: cmake -B build_wasm -G Ninja -DCMAKE_BUILD_TYPE=Release '-DCMAKE_TOOLCHAIN_FILE=C:\emsdk\upstream\emscripten\cmake\Modules\Platform\Emscripten.cmake' -DCMAKE_CROSSCOMPILING_EMULATOR=C:/emsdk/node/22.16.0_64bit/bin/node.exe in directory C:\STU\devel\STU-Extras\RemomMapgenItchio
+-- Using the multi-header code from C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/_deps/json-src/include/
+-- Configuring done (7.8s)
+-- Generating done (0.5s)
+-- Build files have been written to: C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm
+=== Building ===
+[1/12] Building CXX object CMakeFiles/MomData.dir/src/editor/EditorState.cpp.o
+[2/12] Linking CXX static library libMomData.a
+[3/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/ui/ToolPanel.cpp.o
+[4/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/renderer/MapRenderer.cpp.o
+[5/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/ui/GameOptionsPanel.cpp.o
+[6/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/ui/PropertiesPanel.cpp.o
+[7/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/main.cpp.o
+[8/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/ui/Minimap.cpp.o
+[9/12] Building CXX object CMakeFiles/RemomMapgenItchio.dir/src/ui/WizardPanel.cpp.o
+[10/12] Building CXX object CMakeFiles/RemomTests.dir/tests/test_WizardPresets.cpp.o
+[11/12] Linking CXX executable RemomTests.js
+[12/12] Linking CXX executable RemomMapgenItchio.html
+
+=== Build complete (Release) ===
+RemomMapgenItchio.html
+RemomMapgenItchio.js
+RemomMapgenItchio.wasm
+  Staged to build_wasm\dist\
