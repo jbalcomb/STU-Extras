@@ -194,12 +194,18 @@ void MapGenerator::generate_plane(MomWorld& world, int plane) {
 
                     if (polar) {
                         t = TERRAIN_TUNDRA;
-                    } else if (m > 0.3f) {
+                    } else if (m > 0.4f) {
                         t = TERRAIN_FOREST;
-                    } else if (m < -0.3f) {
-                        t = tropical ? TERRAIN_DESERT : TERRAIN_GRASSLAND;
-                    } else if (m > 0.0f && tropical) {
+                    } else if (m < -0.5f && tropical) {
+                        t = TERRAIN_DESERT;
+                    } else if (m < -0.4f && !polar) {
+                        // Dry non-tropical land — still grassland, not desert.
+                        t = TERRAIN_GRASSLAND;
+                    } else if (m > 0.2f && tropical && norm_h < 0.15f) {
+                        // Swamp only in low-lying wet tropics.
                         t = TERRAIN_SWAMP;
+                    } else if (m > 0.15f) {
+                        t = TERRAIN_FOREST;
                     } else {
                         t = TERRAIN_GRASSLAND;
                     }
@@ -216,53 +222,56 @@ void MapGenerator::generate_plane(MomWorld& world, int plane) {
     compute_landmasses(world, plane);
 }
 
-// Place shore tiles between ocean and land.
-// A shore replaces ocean tiles that have at least one cardinal land neighbor.
+// Place shore squares between ocean and land.
+// An ocean square with any land neighbor (cardinal or diagonal) becomes shore.
+// Matches MoM's NEWG_CreateShores which checks all 8 neighbors.
 // Powered by Claude.
 void MapGenerator::place_shores(MomWorld& world, int plane) {
-    // Cardinal neighbor offsets (accounting for wrapping on x).
-    static const int dx[] = {0, 0, -1, 1};
-    static const int dy[] = {-1, 1, 0, 0};
+    // 8-direction neighbor offsets: NW, N, NE, E, SE, S, SW, W.
+    // Powered by Claude.
+    static const int dx8[] = {-1,  0,  1, 1, 1, 0, -1, -1};
+    static const int dy8[] = {-1, -1, -1, 0, 1, 1,  1,  0};
 
-    // Mark ocean tiles adjacent to land as shore.
-    std::vector<std::pair<int, int>> shore_tiles;
+    std::vector<std::pair<int, int>> shore_squares;
 
     for (int y = 0; y < WORLD_HEIGHT; ++y) {
         for (int x = 0; x < WORLD_WIDTH; ++x) {
             if (world.get_terrain(x, y, plane) != TERRAIN_OCEAN) continue;
 
             bool has_land_neighbor = false;
-            for (int d = 0; d < 4; ++d) {
-                int nx = wrap_x(x + dx[d]);
-                int ny = y + dy[d];
+            for (int d = 0; d < 8; ++d) {
+                int nx = wrap_x(x + dx8[d]);
+                int ny = y + dy8[d];
                 if (ny < 0 || ny >= WORLD_HEIGHT) continue;
 
-                uint16_t nt = world.get_terrain(nx, ny, plane);
-                if (is_land(nt)) {
+                if (is_land(world.get_terrain(nx, ny, plane))) {
                     has_land_neighbor = true;
                     break;
                 }
             }
 
             if (has_land_neighbor) {
-                shore_tiles.emplace_back(x, y);
+                shore_squares.emplace_back(x, y);
             }
         }
     }
 
-    for (auto& [sx, sy] : shore_tiles) {
+    for (auto& [sx, sy] : shore_squares) {
         world.set_terrain(sx, sy, plane, TERRAIN_SHORE);
     }
 }
 
 // Place river tiles starting from high-elevation land tiles flowing toward coast.
+// Uses 8-directional movement and avoids placing rivers too close together.
 // Powered by Claude.
 void MapGenerator::place_rivers(MomWorld& world, int plane,
                                  const float* height_map) {
-    static const int dx[] = {0, 0, -1, 1};
-    static const int dy[] = {-1, 1, 0, 0};
+    // 8-directional neighbors (cardinal + diagonal).
+    static const int dx8[] = {0, 0, -1, 1, -1, 1, -1, 1};
+    static const int dy8[] = {-1, 1, 0, 0, -1, -1, 1, 1};
 
-    // Seed a few rivers from the highest terrain points.
+    // Collect hill/mountain tiles as river source candidates.
+    // Powered by Claude.
     struct HeightTile {
         float h;
         int x, y;
@@ -281,22 +290,40 @@ void MapGenerator::place_rivers(MomWorld& world, int plane,
 
     std::sort(candidates.rbegin(), candidates.rend());
 
-    // Place up to 8 rivers per plane.
-    int max_rivers = std::min(8, static_cast<int>(candidates.size()));
-    int river_spacing = (candidates.size() > 0) ?
-        std::max(1, static_cast<int>(candidates.size()) / max_rivers) : 1;
+    // Track tiles near existing rivers to space them out.
+    // Powered by Claude.
+    std::vector<bool> river_nearby(WORLD_SIZE, false);
+    auto mark_nearby = [&](int rx, int ry) {
+        for (int dy = -3; dy <= 3; ++dy) {
+            for (int ddx = -3; ddx <= 3; ++ddx) {
+                int nx = wrap_x(rx + ddx);
+                int ny = ry + dy;
+                if (ny >= 0 && ny < WORLD_HEIGHT) {
+                    river_nearby[ny * WORLD_WIDTH + nx] = true;
+                }
+            }
+        }
+    };
 
-    for (int r = 0; r < max_rivers; ++r) {
-        int ci = r * river_spacing;
-        if (ci >= static_cast<int>(candidates.size())) break;
+    // Place up to 6 rivers per plane, skipping sources near existing rivers.
+    // Powered by Claude.
+    int rivers_placed = 0;
+    int max_rivers = 6;
 
-        int cx = candidates[ci].x;
-        int cy = candidates[ci].y;
-        int max_length = 20;
+    for (int ci = 0; ci < static_cast<int>(candidates.size()) && rivers_placed < max_rivers; ++ci) {
+        int sx = candidates[ci].x;
+        int sy = candidates[ci].y;
+
+        // Skip if too close to an existing river.
+        if (river_nearby[sy * WORLD_WIDTH + sx]) continue;
+
+        int cx = sx, cy = sy;
+        int max_length = 30;
+        bool placed_any = false;
 
         for (int step = 0; step < max_length; ++step) {
             uint16_t cur_t = world.get_terrain(cx, cy, plane);
-            // Stop if we hit ocean, shore, or another river.
+            // Stop if we reach water or another river.
             if (cur_t == TERRAIN_OCEAN || cur_t == TERRAIN_SHORE ||
                 cur_t == TERRAIN_RIVER || cur_t == TERRAIN_LAKE) {
                 break;
@@ -305,15 +332,18 @@ void MapGenerator::place_rivers(MomWorld& world, int plane,
             // Don't overwrite mountains — start flowing from next tile.
             if (cur_t != TERRAIN_MOUNTAIN) {
                 world.set_terrain(cx, cy, plane, TERRAIN_RIVER);
+                mark_nearby(cx, cy);
+                placed_any = true;
             }
 
-            // Flow toward the lowest neighbor.
+            // Flow toward the lowest 8-directional neighbor.
+            // Powered by Claude.
             float lowest_h = height_map[cy * WORLD_WIDTH + cx];
             int best_x = -1, best_y = -1;
 
-            for (int d = 0; d < 4; ++d) {
-                int nx = wrap_x(cx + dx[d]);
-                int ny = cy + dy[d];
+            for (int d = 0; d < 8; ++d) {
+                int nx = wrap_x(cx + dx8[d]);
+                int ny = cy + dy8[d];
                 if (ny < 0 || ny >= WORLD_HEIGHT) continue;
 
                 float nh = height_map[ny * WORLD_WIDTH + nx];
@@ -328,6 +358,8 @@ void MapGenerator::place_rivers(MomWorld& world, int plane,
             cx = best_x;
             cy = best_y;
         }
+
+        if (placed_any) ++rivers_placed;
     }
 }
 

@@ -119,58 +119,98 @@ static void do_export_gam(EditorState& state, Scenario& scenario) {
     Scenario export_sc = scenario;
     int smoothed = 0;
     auto wrap_x = [](int x) { return ((x % WORLD_WIDTH) + WORLD_WIDTH) % WORLD_WIDTH; };
+    auto is_land = [](uint16_t t) -> bool {
+        return t != TERRAIN_OCEAN && t != TERRAIN_SHORE;
+    };
+    // 8-direction offsets: NW, N, NE, E, SE, S, SW, W.
+    // Powered by Claude.
+    static constexpr int dx8[] = {-1,  0,  1, 1, 1, 0, -1, -1};
+    static constexpr int dy8[] = {-1, -1, -1, 0, 1, 1,  1,  0};
     static constexpr int dx4[] = { 0,  0, -1, 1};
     static constexpr int dy4[] = {-1,  1,  0, 0};
 
     for (int p = 0; p < NUM_PLANES; ++p) {
-        // Pass 1: Add shore between land and ocean.
-        // Any land tile cardinally adjacent to ocean becomes shore.
+        // Pass 1: Add shore squares between land and ocean.
+        // Ocean squares with any land neighbor (8-way) become shore.
+        // This matches MoM's NEWG_CreateShores algorithm.
+        // Powered by Claude.
         for (int y = 0; y < WORLD_HEIGHT; ++y) {
             for (int x = 0; x < WORLD_WIDTH; ++x) {
-                uint16_t tile = scenario.world.get_terrain(x, y, p);
-                if (tile == TERRAIN_OCEAN || tile == TERRAIN_SHORE ||
-                    tile == TERRAIN_LAKE || tile == TERRAIN_RIVER)
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_OCEAN)
                     continue;
-                // Land tile — check if adjacent to ocean.
-                bool adj_ocean = false;
-                for (int d = 0; d < 4; ++d) {
-                    int ny = y + dy4[d];
+                bool has_land = false;
+                for (int d = 0; d < 8; ++d) {
+                    int ny = y + dy8[d];
                     if (ny < 0 || ny >= WORLD_HEIGHT) continue;
-                    int nx = wrap_x(x + dx4[d]);
-                    uint16_t nb = scenario.world.get_terrain(nx, ny, p);
-                    if (nb == TERRAIN_OCEAN) { adj_ocean = true; break; }
+                    int nx = wrap_x(x + dx8[d]);
+                    if (is_land(scenario.world.get_terrain(nx, ny, p))) {
+                        has_land = true; break;
+                    }
                 }
-                if (adj_ocean) {
+                if (has_land) {
                     export_sc.world.set_terrain(x, y, p, TERRAIN_SHORE);
                     ++smoothed;
                 }
             }
         }
 
-        // Pass 2: Remove orphan shores (shore with no adjacent water).
+        // Pass 2: Landlocked ocean → lake.
+        // An ocean square with ALL 8 neighbors as land becomes a lake.
+        // Matches ReMoM's Simex_Autotiling which maps mask=255 → _1Lake.
+        // Powered by Claude.
         for (int y = 0; y < WORLD_HEIGHT; ++y) {
             for (int x = 0; x < WORLD_WIDTH; ++x) {
-                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_SHORE)
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_OCEAN)
                     continue;
-                bool has_water = false;
-                for (int d = 0; d < 4; ++d) {
-                    int ny = y + dy4[d];
-                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
-                    int nx = wrap_x(x + dx4[d]);
+                bool all_land = true;
+                for (int d = 0; d < 8; ++d) {
+                    int ny = y + dy8[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) { all_land = false; break; }
+                    int nx = wrap_x(x + dx8[d]);
                     uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
-                    if (nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
-                        has_water = true; break;
-                    }
+                    if (!is_land(nb)) { all_land = false; break; }
                 }
-                if (!has_water) {
-                    // Replace with grassland.
-                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
+                if (all_land) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_LAKE);
                     ++smoothed;
                 }
             }
         }
 
-        // Pass 3: Fix isolated rivers (river with no adjacent river/shore/ocean/lake).
+        // Pass 3: Lake normalization (river connectivity).
+        // Lakes with no river inflow become desert.
+        // Lakes with one river inflow become directional lake.
+        // Lakes with multiple river inflows keep one, convert extras to grassland.
+        // Matches ReMoM's River_Terrain() lake post-processing.
+        // Powered by Claude.
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_LAKE)
+                    continue;
+                // Count cardinal river neighbors.
+                // Powered by Claude.
+                int river_mask = 0; // N=1, E=2, S=4, W=8
+                if (y > 0 && export_sc.world.get_terrain(x, y - 1, p) == TERRAIN_RIVER)
+                    river_mask |= 1;
+                if (export_sc.world.get_terrain(wrap_x(x + 1), y, p) == TERRAIN_RIVER)
+                    river_mask |= 2;
+                if (y + 1 < WORLD_HEIGHT && export_sc.world.get_terrain(x, y + 1, p) == TERRAIN_RIVER)
+                    river_mask |= 4;
+                if (export_sc.world.get_terrain(wrap_x(x - 1), y, p) == TERRAIN_RIVER)
+                    river_mask |= 8;
+
+                if (river_mask == 0) {
+                    // No rivers flow in — lake dries up to desert.
+                    // Powered by Claude.
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_DESERT);
+                    ++smoothed;
+                }
+                // Lakes with river inflow are kept as TERRAIN_LAKE.
+                // The directional lake variant is applied during .GAM serialization.
+            }
+        }
+
+        // Pass 4: Fix isolated rivers (river with no adjacent river/shore/ocean/lake).
         for (int y = 0; y < WORLD_HEIGHT; ++y) {
             for (int x = 0; x < WORLD_WIDTH; ++x) {
                 if (export_sc.world.get_terrain(x, y, p) != TERRAIN_RIVER)

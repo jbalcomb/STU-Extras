@@ -334,3 +334,196 @@ TEST_F(GamFileTest, LoadTruncatedFileFails) {
     Scenario sc;
     EXPECT_FALSE(load_gam_file(tmp_path, sc));
 }
+
+// ---- Terrain export mapping tests ----
+// Verify that serialize_gam writes correct game tile indices (from TerrType.h)
+// and that deserialize_gam converts them back to editor BaseTerrain values.
+
+TEST(TerrainMapping, ExportWritesCorrectGameValues) {
+    // Simple terrain types (not shore/river) export to fixed game values.
+    // Powered by Claude.
+    struct { BaseTerrain editor; uint16_t game; } simple_cases[] = {
+        {TERRAIN_OCEAN,     0x00},
+        {TERRAIN_GRASSLAND, 0xA2},
+        {TERRAIN_FOREST,    0xA3},
+        {TERRAIN_MOUNTAIN,  0xA4},
+        {TERRAIN_DESERT,    0x134},  // isolated → _1Desert
+        {TERRAIN_SWAMP,     0xA6},
+        {TERRAIN_TUNDRA,    0x26A},  // isolated → _1Tundra
+        {TERRAIN_HILL,      0xAB},
+        {TERRAIN_VOLCANO,   0xB3},
+        {TERRAIN_LAKE,      0x12},
+    };
+
+    for (auto& tc : simple_cases) {
+        Scenario sc;
+        sc.clear();
+        sc.world.set_terrain(5, 5, 0, tc.editor);
+
+        auto buf = serialize_gam(sc);
+        ASSERT_EQ(buf.size(), static_cast<size_t>(SAVEGAM_RECORD_SIZE));
+
+        int offset = 9880 + (5 * WORLD_WIDTH + 5) * 2;
+        uint16_t gam_val = buf[offset] | (buf[offset + 1] << 8);
+        EXPECT_EQ(gam_val, tc.game)
+            << "Editor terrain " << static_cast<int>(tc.editor)
+            << " should export as 0x" << std::hex << tc.game
+            << " but got 0x" << gam_val;
+    }
+}
+
+TEST(TerrainMapping, ExportShoreUsesAdjacency) {
+    // Shore square with land only at SE (diagonal) → bitmask 00001000 = 0x08
+    // → game value 0x02 (_Shore00001000).  Diagonal-only IS valid in MoM.
+    // Powered by Claude.
+    Scenario sc;
+    sc.clear();
+    sc.world.set_terrain(5, 5, 0, TERRAIN_SHORE);
+    sc.world.set_terrain(6, 6, 0, TERRAIN_GRASSLAND); // SE neighbor (diagonal)
+
+    auto buf = serialize_gam(sc);
+    int offset = 9880 + (5 * WORLD_WIDTH + 5) * 2;
+    uint16_t gam_val = buf[offset] | (buf[offset + 1] << 8);
+    EXPECT_EQ(gam_val, 0x02);  // SE only = bitmask 00001000 → game 0x02
+}
+
+TEST(TerrainMapping, ExportShoreDiagonalForcing) {
+    // Shore square with land at E and S → diagonal forcing sets SE too.
+    // Bitmask becomes 00011100 (E+SE+S) = 0x1C → game value 0x26.
+    // MoM requires SE when both E and S are land.
+    // Powered by Claude.
+    Scenario sc;
+    sc.clear();
+    sc.world.set_terrain(5, 5, 0, TERRAIN_SHORE);
+    sc.world.set_terrain(6, 5, 0, TERRAIN_GRASSLAND); // E (cardinal)
+    sc.world.set_terrain(5, 6, 0, TERRAIN_GRASSLAND); // S (cardinal)
+    // SE is ocean, but diagonal forcing sets it because E+S are both land.
+
+    auto buf = serialize_gam(sc);
+    int offset = 9880 + (5 * WORLD_WIDTH + 5) * 2;
+    uint16_t gam_val = buf[offset] | (buf[offset + 1] << 8);
+    EXPECT_EQ(gam_val, 0x26);  // E+SE(forced)+S = bitmask 00011100 → game 0x26
+}
+
+TEST(TerrainMapping, ExportRiverUsesConnections) {
+    // River square with river to the south → game value 0xB9 (River0010 = S).
+    // Powered by Claude.
+    Scenario sc;
+    sc.clear();
+    sc.world.set_terrain(5, 5, 0, TERRAIN_RIVER);
+    sc.world.set_terrain(5, 6, 0, TERRAIN_RIVER);  // S neighbor is river
+    // Fill other neighbors with land so they don't connect.
+    sc.world.set_terrain(5, 4, 0, TERRAIN_GRASSLAND); // N
+    sc.world.set_terrain(6, 5, 0, TERRAIN_GRASSLAND); // E
+    sc.world.set_terrain(4, 5, 0, TERRAIN_GRASSLAND); // W
+
+    auto buf = serialize_gam(sc);
+    int offset = 9880 + (5 * WORLD_WIDTH + 5) * 2;
+    uint16_t gam_val = buf[offset] | (buf[offset + 1] << 8);
+    EXPECT_EQ(gam_val, 0xB9);  // River connecting S = NESW 0010
+
+    // Check the south river square connects N only → 0xBB (River1000 = N).
+    // Must also surround it with land so E/S/W don't connect to ocean.
+    // Powered by Claude.
+    sc.world.set_terrain(6, 6, 0, TERRAIN_GRASSLAND); // E of south river
+    sc.world.set_terrain(4, 6, 0, TERRAIN_GRASSLAND); // W of south river
+    sc.world.set_terrain(5, 7, 0, TERRAIN_GRASSLAND); // S of south river
+    buf = serialize_gam(sc);
+    int offset2 = 9880 + (6 * WORLD_WIDTH + 5) * 2;
+    uint16_t gam_val2 = buf[offset2] | (buf[offset2 + 1] << 8);
+    EXPECT_EQ(gam_val2, 0xBB);  // River connecting N = NESW 1000
+}
+
+TEST(TerrainMapping, RoundTripAllBaseTerrains) {
+    // Every BaseTerrain value must survive an export→import round-trip.
+    // Shore and river squares need proper neighbors for adjacency export.
+    // Powered by Claude.
+    Scenario sc1;
+    sc1.clear();
+
+    // Place each terrain type at a known row-5 location, spaced apart.
+    for (int t = 0; t < BASE_TERRAIN_COUNT; ++t) {
+        sc1.world.set_terrain(t * 3 + 1, 5, 0, static_cast<uint16_t>(t));
+    }
+
+    // Give the shore square (TERRAIN_SHORE=1) a land neighbor so it exports
+    // as a valid shore variant that round-trips back to TERRAIN_SHORE.
+    // Powered by Claude.
+    sc1.world.set_terrain(1 * 3 + 2, 6, 0, TERRAIN_GRASSLAND); // SE of shore
+
+    // Give the river square (TERRAIN_RIVER=9) a river neighbor so it exports
+    // with a connection pattern that round-trips back to TERRAIN_RIVER.
+    // Surround both river squares with land so ocean doesn't create extra connections.
+    // Powered by Claude.
+    int rx = 9 * 3 + 1;
+    sc1.world.set_terrain(rx, 6, 0, TERRAIN_RIVER);      // S of river
+    sc1.world.set_terrain(rx - 1, 5, 0, TERRAIN_GRASSLAND); // W of river
+    sc1.world.set_terrain(rx + 1, 5, 0, TERRAIN_GRASSLAND); // E of river
+    sc1.world.set_terrain(rx, 4, 0, TERRAIN_GRASSLAND);     // N of river
+    sc1.world.set_terrain(rx - 1, 6, 0, TERRAIN_GRASSLAND); // W of S river
+    sc1.world.set_terrain(rx + 1, 6, 0, TERRAIN_GRASSLAND); // E of S river
+    sc1.world.set_terrain(rx, 7, 0, TERRAIN_GRASSLAND);     // S of S river
+
+    auto buf = serialize_gam(sc1);
+
+    Scenario sc2;
+    ASSERT_TRUE(deserialize_gam(buf, sc2));
+
+    for (int t = 0; t < BASE_TERRAIN_COUNT; ++t) {
+        EXPECT_EQ(sc2.world.get_terrain(t * 3 + 1, 5, 0), static_cast<uint16_t>(t))
+            << "BaseTerrain " << t << " did not round-trip correctly";
+    }
+}
+
+TEST(TerrainMapping, ImportGameVariantsToBaseType) {
+    // Game terrain variants (autotile indices) must import as the correct
+    // editor BaseTerrain. Verifies the gam_terrain_to_editor conversion.
+    // Powered by Claude.
+    struct { uint16_t game; BaseTerrain editor; } cases[] = {
+        // Base values
+        {0x00, TERRAIN_OCEAN},
+        {0x01, TERRAIN_OCEAN},
+        {0x02, TERRAIN_SHORE},
+        {0x12, TERRAIN_LAKE},
+        {0xA2, TERRAIN_GRASSLAND},
+        {0xA3, TERRAIN_FOREST},
+        {0xA4, TERRAIN_MOUNTAIN},
+        {0xA5, TERRAIN_DESERT},
+        {0xA6, TERRAIN_SWAMP},
+        {0xA7, TERRAIN_TUNDRA},
+        {0xAB, TERRAIN_HILL},
+        {0xB3, TERRAIN_VOLCANO},
+        {0xB9, TERRAIN_RIVER},
+        // Autotile variants
+        {0x50, TERRAIN_SHORE},     // shore variant mid-range
+        {0xA1, TERRAIN_SHORE},     // shore variant end
+        {0xC0, TERRAIN_RIVER},     // river variant
+        {0xD0, TERRAIN_SHORE},     // shore variant (0xC9-0xE8 range)
+        {0xF0, TERRAIN_RIVER},     // river variant (0xE9-0x102 range)
+        {0x110, TERRAIN_MOUNTAIN}, // mountain variant
+        {0x120, TERRAIN_HILL},     // hill variant
+        {0x150, TERRAIN_DESERT},   // desert variant
+        {0x200, TERRAIN_SHORE},    // shore variant (0x1C4-0x258 range)
+        {0x280, TERRAIN_TUNDRA},   // tundra variant
+    };
+
+    for (auto& tc : cases) {
+        // Build a .GAM buffer with the game value at tile (0,0) plane 0.
+        Scenario sc_write;
+        sc_write.clear();
+        auto buf = serialize_gam(sc_write);
+
+        // Manually poke the game terrain value into the buffer.
+        int offset = 9880; // gam_offsets::WORLD_MAPS
+        buf[offset]     = tc.game & 0xFF;
+        buf[offset + 1] = (tc.game >> 8) & 0xFF;
+
+        Scenario sc_read;
+        ASSERT_TRUE(deserialize_gam(buf, sc_read));
+        EXPECT_EQ(sc_read.world.get_terrain(0, 0, 0),
+                  static_cast<uint16_t>(tc.editor))
+            << "Game value 0x" << std::hex << tc.game
+            << " should import as BaseTerrain " << std::dec
+            << static_cast<int>(tc.editor);
+    }
+}

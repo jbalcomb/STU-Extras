@@ -1,207 +1,219 @@
 -- Using the multi-header code from C:/STU/devel/STU-Extras/RemomMapgenItchio/build/_deps/json-src/include/
--- Configuring done (0.6s)
--- Generating done (0.3s)
+-- Configuring done (0.7s)
+-- Generating done (0.4s)
 -- Build files have been written to: C:/STU/devel/STU-Extras/RemomMapgenItchio/build
-[1/2] Building CXX object CMakeFiles\RemomMapgenItchio.dir\src\main.cpp.obj
-[2/2] Linking CXX executable RemomMapgenItchio.exe
+[1/2] Building CXX object CMakeFiles\RemomTests.dir\tests\test_MomGamFile.cpp.obj
+[2/2] Linking CXX executable RemomTests.exe
 BUILD_SUCCEEDED 
 Test project C:/STU/devel/STU-Extras/RemomMapgenItchio/build
-      Start  1: StructSizes.CityIs114Bytes
- 1/97 Test  #1: StructSizes.CityIs114Bytes .................................   Passed    0.06 sec
-      Start  2: StructSizes.UnitIs32Bytes
- 2/97 Test  #2: StructSizes.UnitIs32Bytes ..................................   Passed    0.04 sec
-      Start  3: StructSizes.WizardIs1224Bytes
- 3/97 Test  #3: StructSizes.WizardIs1224Bytes ..............................   Passed    0.04 sec
-      Start  4: StructSizes.NodeIs48Bytes
- 4/97 Test  #4: StructSizes.NodeIs48Bytes ..................................   Passed    0.03 sec
-      Start  5: StructSizes.LairIs24Bytes
- 5/97 Test  #5: StructSizes.LairIs24Bytes ..................................   Passed    0.03 sec
-      Start  6: StructSizes.TowerIs4Bytes
- 6/97 Test  #6: StructSizes.TowerIs4Bytes ..................................   Passed    0.03 sec
-      Start  7: StructSizes.FortressIs4Bytes
- 7/97 Test  #7: StructSizes.FortressIs4Bytes ...............................   Passed    0.04 sec
-      Start  8: StructSizes.GameDataIs16Bytes
- 8/97 Test  #8: StructSizes.GameDataIs16Bytes ..............................   Passed    0.02 sec
-      Start  9: StructSizes.ItemIs50Bytes
- 9/97 Test  #9: StructSizes.ItemIs50Bytes ..................................   Passed    0.03 sec
-      Start 10: MomWorld.GetSetTerrain
-10/97 Test #10: MomWorld.GetSetTerrain .....................................   Passed    0.04 sec
-      Start 11: MomWorld.GetSetSpecial
-11/97 Test #11: MomWorld.GetSetSpecial .....................................   Passed    0.02 sec
-      Start 12: MomWorld.GetSetFlags
-12/97 Test #12: MomWorld.GetSetFlags .......................................   Passed    0.02 sec
-      Start 13: MomWorld.BoundsChecking
-13/97 Test #13: MomWorld.BoundsChecking ....................................   Passed    0.03 sec
-      Start 14: MomWorld.ClearResetsAll
-14/97 Test #14: MomWorld.ClearResetsAll ....................................   Passed    0.04 sec
-      Start 15: MomWorld.SetAllExplored
-15/97 Test #15: MomWorld.SetAllExplored ....................................   Passed    0.04 sec
-      Start 16: Entity.CityActiveState
-16/97 Test #16: Entity.CityActiveState .....................................   Passed    0.03 sec
-      Start 17: Entity.UnitActiveState
-17/97 Test #17: Entity.UnitActiveState .....................................   Passed    0.05 sec
-      Start 18: Entity.UnitIsHero
-18/97 Test #18: Entity.UnitIsHero ..........................................   Passed    0.03 sec
-      Start 19: Entity.WizardActiveState
-19/97 Test #19: Entity.WizardActiveState ...................................   Passed    0.05 sec
-      Start 20: Scenario.ClearResetsEverything
-20/97 Test #20: Scenario.ClearResetsEverything .............................   Passed    0.03 sec
-      Start 21: Scenario.CountActiveCities
-21/97 Test #21: Scenario.CountActiveCities .................................   Passed    0.03 sec
-      Start 22: Scenario.CountActiveUnits
-22/97 Test #22: Scenario.CountActiveUnits ..................................   Passed    0.03 sec
-      Start 23: GamFileTest.RoundTripEmptyScenario
-23/97 Test #23: GamFileTest.RoundTripEmptyScenario .........................   Passed    0.09 sec
-      Start 24: GamFileTest.RoundTripWithTerrain
-24/97 Test #24: GamFileTest.RoundTripWithTerrain ...........................   Passed    0.05 sec
-      Start 25: GamFileTest.RoundTripWithEntities
-25/97 Test #25: GamFileTest.RoundTripWithEntities ..........................   Passed    0.07 sec
-      Start 26: GamFileTest.LoadNonexistentFileFails
-26/97 Test #26: GamFileTest.LoadNonexistentFileFails .......................   Passed    0.02 sec
-      Start 27: GamFileTest.LoadTruncatedFileFails
-27/97 Test #27: GamFileTest.LoadTruncatedFileFails .........................   Passed    0.03 sec
-      Start 28: ScenarioIOTest.RoundTripEmptyScenario
-28/97 Test #28: ScenarioIOTest.RoundTripEmptyScenario ......................   Passed    0.12 sec
-      Start 29: ScenarioIOTest.RoundTripScenarioType
-29/97 Test #29: ScenarioIOTest.RoundTripScenarioType .......................   Passed    0.37 sec
-      Start 30: ScenarioIOTest.RoundTripGameSettings
-30/97 Test #30: ScenarioIOTest.RoundTripGameSettings .......................   Passed    0.09 sec
-      Start 31: ScenarioIOTest.RoundTripTerrain
-31/97 Test #31: ScenarioIOTest.RoundTripTerrain ............................   Passed    0.07 sec
-      Start 32: ScenarioIOTest.RoundTripWizards
-32/97 Test #32: ScenarioIOTest.RoundTripWizards ............................   Passed    0.07 sec
-      Start 33: ScenarioIOTest.RoundTripCities
-33/97 Test #33: ScenarioIOTest.RoundTripCities .............................   Passed    0.06 sec
-      Start 34: ScenarioIOTest.RoundTripUnits
-34/97 Test #34: ScenarioIOTest.RoundTripUnits ..............................   Passed    0.07 sec
-      Start 35: ScenarioIOTest.RoundTripNodes
-35/97 Test #35: ScenarioIOTest.RoundTripNodes ..............................   Passed    0.06 sec
-      Start 36: ScenarioIOTest.RoundTripLairs
-36/97 Test #36: ScenarioIOTest.RoundTripLairs ..............................   Passed    0.07 sec
-      Start 37: ScenarioIOTest.ActiveCountsUpdatedOnLoad
-37/97 Test #37: ScenarioIOTest.ActiveCountsUpdatedOnLoad ...................   Passed    0.07 sec
-      Start 38: ScenarioIOTest.OnlyActiveCitiesSerialized
-38/97 Test #38: ScenarioIOTest.OnlyActiveCitiesSerialized ..................   Passed    0.06 sec
-      Start 39: ScenarioIOTest.LoadNonexistentFileFails
-39/97 Test #39: ScenarioIOTest.LoadNonexistentFileFails ....................   Passed    0.02 sec
-      Start 40: ScenarioIOTest.LoadInvalidJsonFails
-40/97 Test #40: ScenarioIOTest.LoadInvalidJsonFails ........................   Passed    0.04 sec
-      Start 41: ScenarioIOTest.RoundTripMapGenParams
-41/97 Test #41: ScenarioIOTest.RoundTripMapGenParams .......................   Passed    0.06 sec
-      Start 42: UndoStack.InitiallyEmpty
-42/97 Test #42: UndoStack.InitiallyEmpty ...................................   Passed    0.02 sec
-      Start 43: UndoStack.ExecuteAddsToStack
-43/97 Test #43: UndoStack.ExecuteAddsToStack ...............................   Passed    0.02 sec
-      Start 44: UndoStack.UndoRevertsCommand
-44/97 Test #44: UndoStack.UndoRevertsCommand ...............................   Passed    0.04 sec
-      Start 45: UndoStack.RedoReappliesCommand
-45/97 Test #45: UndoStack.RedoReappliesCommand .............................   Passed    0.03 sec
-      Start 46: UndoStack.MultipleUndoRedo
-46/97 Test #46: UndoStack.MultipleUndoRedo .................................   Passed    0.03 sec
-      Start 47: UndoStack.NewCommandClearsRedoHistory
-47/97 Test #47: UndoStack.NewCommandClearsRedoHistory ......................   Passed    0.02 sec
-      Start 48: UndoStack.UndoOnEmptyReturnsFalse
-48/97 Test #48: UndoStack.UndoOnEmptyReturnsFalse ..........................   Passed    0.02 sec
-      Start 49: UndoStack.RedoOnEmptyReturnsFalse
-49/97 Test #49: UndoStack.RedoOnEmptyReturnsFalse ..........................   Passed    0.03 sec
-      Start 50: UndoStack.MaxDepthEvictsOldest
-50/97 Test #50: UndoStack.MaxDepthEvictsOldest .............................   Passed    0.02 sec
-      Start 51: UndoStack.ClearRemovesAll
-51/97 Test #51: UndoStack.ClearRemovesAll ..................................   Passed    0.02 sec
-      Start 52: UndoStack.ComplexSequence
-52/97 Test #52: UndoStack.ComplexSequence ..................................   Passed    0.02 sec
-      Start 53: MapGeneratorTest.GenerateProducesValidTerrain
-53/97 Test #53: MapGeneratorTest.GenerateProducesValidTerrain ..............   Passed    0.04 sec
-      Start 54: MapGeneratorTest.LandProportionApproximatelyMatchesInput
-54/97 Test #54: MapGeneratorTest.LandProportionApproximatelyMatchesInput ...   Passed    0.03 sec
-      Start 55: MapGeneratorTest.BothPlanesHaveTerrain
-55/97 Test #55: MapGeneratorTest.BothPlanesHaveTerrain .....................   Passed    0.03 sec
-      Start 56: MapGeneratorTest.ShoresAtLandOceanBoundaries
-56/97 Test #56: MapGeneratorTest.ShoresAtLandOceanBoundaries ...............   Passed    0.04 sec
-      Start 57: MapGeneratorTest.LandmassIDsComputedForLand
-57/97 Test #57: MapGeneratorTest.LandmassIDsComputedForLand ................   Passed    0.03 sec
-      Start 58: MapGeneratorTest.DifferentSeedsProduceDifferentMaps
-58/97 Test #58: MapGeneratorTest.DifferentSeedsProduceDifferentMaps ........   Passed    0.04 sec
-      Start 59: MapGeneratorTest.SameSeedProducesSameMap
-59/97 Test #59: MapGeneratorTest.SameSeedProducesSameMap ...................   Passed    0.04 sec
-      Start 60: SmoothingValidatorTest.ShoreNoWaterReturnsViolation
-60/97 Test #60: SmoothingValidatorTest.ShoreNoWaterReturnsViolation ........   Passed    0.02 sec
-      Start 61: SmoothingValidatorTest.ShoreWithAdjacentOceanNoViolation
-61/97 Test #61: SmoothingValidatorTest.ShoreWithAdjacentOceanNoViolation ...   Passed    0.03 sec
-      Start 62: SmoothingValidatorTest.RiverIsolatedReturnsViolation
-62/97 Test #62: SmoothingValidatorTest.RiverIsolatedReturnsViolation .......   Passed    0.03 sec
-      Start 63: SmoothingValidatorTest.RiverAdjacentToRiverNoViolation
-63/97 Test #63: SmoothingValidatorTest.RiverAdjacentToRiverNoViolation .....   Passed    0.03 sec
-      Start 64: SmoothingValidatorTest.VolcanoIsolatedReturnsViolation
-64/97 Test #64: SmoothingValidatorTest.VolcanoIsolatedReturnsViolation .....   Passed    0.02 sec
-      Start 65: SmoothingValidatorTest.TundraDesertReturnsViolation
-65/97 Test #65: SmoothingValidatorTest.TundraDesertReturnsViolation ........   Passed    0.02 sec
-      Start 66: SmoothingValidatorTest.WrapAroundCheck
-66/97 Test #66: SmoothingValidatorTest.WrapAroundCheck .....................   Passed    0.02 sec
-      Start 67: SmoothingValidatorTest.ValidatePlaneReturnsAllViolations
-67/97 Test #67: SmoothingValidatorTest.ValidatePlaneReturnsAllViolations ...   Passed    0.03 sec
-      Start 68: WizardPresets.PresetCount
-68/97 Test #68: WizardPresets.PresetCount ..................................   Passed    0.02 sec
-      Start 69: WizardPresets.Merlin_Slot0
-69/97 Test #69: WizardPresets.Merlin_Slot0 .................................   Passed    0.02 sec
-      Start 70: WizardPresets.Raven_Slot1
-70/97 Test #70: WizardPresets.Raven_Slot1 ..................................   Passed    0.02 sec
-      Start 71: WizardPresets.Sharee_Slot2
-71/97 Test #71: WizardPresets.Sharee_Slot2 .................................   Passed    0.03 sec
-      Start 72: WizardPresets.LoPan_Slot3
-72/97 Test #72: WizardPresets.LoPan_Slot3 ..................................   Passed    0.02 sec
-      Start 73: WizardPresets.Jafar_Slot4
-73/97 Test #73: WizardPresets.Jafar_Slot4 ..................................   Passed    0.03 sec
-      Start 74: WizardPresets.Oberic_Slot5
-74/97 Test #74: WizardPresets.Oberic_Slot5 .................................   Passed    0.02 sec
-      Start 75: WizardPresets.Ssra_Slot7_MyrranRace
-75/97 Test #75: WizardPresets.Ssra_Slot7_MyrranRace ........................   Passed    0.02 sec
-      Start 76: WizardPresets.ApplyPreset_Name
-76/97 Test #76: WizardPresets.ApplyPreset_Name .............................   Passed    0.02 sec
-      Start 77: WizardPresets.ApplyPreset_Identity
-77/97 Test #77: WizardPresets.ApplyPreset_Identity .........................   Passed    0.03 sec
-      Start 78: WizardPresets.ApplyPreset_Race
-78/97 Test #78: WizardPresets.ApplyPreset_Race .............................   Passed    0.02 sec
-      Start 79: WizardPresets.ApplyPreset_SpellBookMapping
-79/97 Test #79: WizardPresets.ApplyPreset_SpellBookMapping .................   Passed    0.02 sec
-      Start 80: WizardPresets.ApplyPreset_SpellBookMapping_LoPan
-80/97 Test #80: WizardPresets.ApplyPreset_SpellBookMapping_LoPan ...........   Passed    0.02 sec
-      Start 81: WizardPresets.ApplyPreset_SpellBookMapping_Sharee
-81/97 Test #81: WizardPresets.ApplyPreset_SpellBookMapping_Sharee ..........   Passed    0.02 sec
-      Start 82: WizardPresets.ApplyPreset_Retort_SageMaster
-82/97 Test #82: WizardPresets.ApplyPreset_Retort_SageMaster ................   Passed    0.04 sec
-      Start 83: WizardPresets.ApplyPreset_Retort_None
-83/97 Test #83: WizardPresets.ApplyPreset_Retort_None ......................   Passed    0.02 sec
-      Start 84: WizardPresets.ApplyPreset_Retort_Conjurer
-84/97 Test #84: WizardPresets.ApplyPreset_Retort_Conjurer ..................   Passed    0.02 sec
-      Start 85: WizardPresets.ApplyPreset_WizardIsActive
-85/97 Test #85: WizardPresets.ApplyPreset_WizardIsActive ...................   Passed    0.02 sec
-      Start 86: WizardPresets.ApplyPreset_AllSixSlots
-86/97 Test #86: WizardPresets.ApplyPreset_AllSixSlots ......................   Passed    0.03 sec
-      Start 87: WizardPresets.GetRetort_ReadsCorrectField
-87/97 Test #87: WizardPresets.GetRetort_ReadsCorrectField ..................   Passed    0.02 sec
-      Start 88: WizardPresets.RetortCost_OnePick
-88/97 Test #88: WizardPresets.RetortCost_OnePick ...........................   Passed    0.02 sec
-      Start 89: WizardPresets.RetortCost_TwoPick
-89/97 Test #89: WizardPresets.RetortCost_TwoPick ...........................   Passed    0.03 sec
-      Start 90: WizardPresets.RetortCost_ThreePick
-90/97 Test #90: WizardPresets.RetortCost_ThreePick .........................   Passed    0.04 sec
-      Start 91: WizardPresets.CalcPicksUsed_Merlin
-91/97 Test #91: WizardPresets.CalcPicksUsed_Merlin .........................   Passed    0.02 sec
-      Start 92: WizardPresets.CalcPicksUsed_Raven
-92/97 Test #92: WizardPresets.CalcPicksUsed_Raven ..........................   Passed    0.03 sec
-      Start 93: WizardPresets.CalcPicksUsed_LoPan
-93/97 Test #93: WizardPresets.CalcPicksUsed_LoPan ..........................   Passed    0.02 sec
-      Start 94: WizardPresets.CalcPicksUsed_Sharee
-94/97 Test #94: WizardPresets.CalcPicksUsed_Sharee .........................   Passed    0.03 sec
-      Start 95: WizardPresets.CalcPicksUsed_Jafar
-95/97 Test #95: WizardPresets.CalcPicksUsed_Jafar ..........................   Passed    0.03 sec
-      Start 96: WizardPresets.CalcPicksUsed_EmptyWizard
-96/97 Test #96: WizardPresets.CalcPicksUsed_EmptyWizard ....................   Passed    0.02 sec
-      Start 97: WizardPresets.CalcPicksUsed_Ssra
-97/97 Test #97: WizardPresets.CalcPicksUsed_Ssra ...........................   Passed    0.02 sec
+        Start   1: StructSizes.CityIs114Bytes
+  1/103 Test   #1: StructSizes.CityIs114Bytes .................................   Passed    0.04 sec
+        Start   2: StructSizes.UnitIs32Bytes
+  2/103 Test   #2: StructSizes.UnitIs32Bytes ..................................   Passed    0.07 sec
+        Start   3: StructSizes.WizardIs1224Bytes
+  3/103 Test   #3: StructSizes.WizardIs1224Bytes ..............................   Passed    0.05 sec
+        Start   4: StructSizes.NodeIs48Bytes
+  4/103 Test   #4: StructSizes.NodeIs48Bytes ..................................   Passed    0.06 sec
+        Start   5: StructSizes.LairIs24Bytes
+  5/103 Test   #5: StructSizes.LairIs24Bytes ..................................   Passed    0.03 sec
+        Start   6: StructSizes.TowerIs4Bytes
+  6/103 Test   #6: StructSizes.TowerIs4Bytes ..................................   Passed    0.03 sec
+        Start   7: StructSizes.FortressIs4Bytes
+  7/103 Test   #7: StructSizes.FortressIs4Bytes ...............................   Passed    0.03 sec
+        Start   8: StructSizes.GameDataIs16Bytes
+  8/103 Test   #8: StructSizes.GameDataIs16Bytes ..............................   Passed    0.03 sec
+        Start   9: StructSizes.ItemIs50Bytes
+  9/103 Test   #9: StructSizes.ItemIs50Bytes ..................................   Passed    0.05 sec
+        Start  10: MomWorld.GetSetTerrain
+ 10/103 Test  #10: MomWorld.GetSetTerrain .....................................   Passed    0.05 sec
+        Start  11: MomWorld.GetSetSpecial
+ 11/103 Test  #11: MomWorld.GetSetSpecial .....................................   Passed    0.07 sec
+        Start  12: MomWorld.GetSetFlags
+ 12/103 Test  #12: MomWorld.GetSetFlags .......................................   Passed    0.03 sec
+        Start  13: MomWorld.BoundsChecking
+ 13/103 Test  #13: MomWorld.BoundsChecking ....................................   Passed    0.03 sec
+        Start  14: MomWorld.ClearResetsAll
+ 14/103 Test  #14: MomWorld.ClearResetsAll ....................................   Passed    0.04 sec
+        Start  15: MomWorld.SetAllExplored
+ 15/103 Test  #15: MomWorld.SetAllExplored ....................................   Passed    0.04 sec
+        Start  16: Entity.CityActiveState
+ 16/103 Test  #16: Entity.CityActiveState .....................................   Passed    0.03 sec
+        Start  17: Entity.UnitActiveState
+ 17/103 Test  #17: Entity.UnitActiveState .....................................   Passed    0.04 sec
+        Start  18: Entity.UnitIsHero
+ 18/103 Test  #18: Entity.UnitIsHero ..........................................   Passed    0.04 sec
+        Start  19: Entity.WizardActiveState
+ 19/103 Test  #19: Entity.WizardActiveState ...................................   Passed    0.03 sec
+        Start  20: Scenario.ClearResetsEverything
+ 20/103 Test  #20: Scenario.ClearResetsEverything .............................   Passed    0.03 sec
+        Start  21: Scenario.CountActiveCities
+ 21/103 Test  #21: Scenario.CountActiveCities .................................   Passed    0.04 sec
+        Start  22: Scenario.CountActiveUnits
+ 22/103 Test  #22: Scenario.CountActiveUnits ..................................   Passed    0.03 sec
+        Start  23: GamFileTest.RoundTripEmptyScenario
+ 23/103 Test  #23: GamFileTest.RoundTripEmptyScenario .........................   Passed    0.12 sec
+        Start  24: GamFileTest.RoundTripWithTerrain
+ 24/103 Test  #24: GamFileTest.RoundTripWithTerrain ...........................   Passed    0.08 sec
+        Start  25: GamFileTest.RoundTripWithEntities
+ 25/103 Test  #25: GamFileTest.RoundTripWithEntities ..........................   Passed    0.10 sec
+        Start  26: GamFileTest.LoadNonexistentFileFails
+ 26/103 Test  #26: GamFileTest.LoadNonexistentFileFails .......................   Passed    0.04 sec
+        Start  27: GamFileTest.LoadTruncatedFileFails
+ 27/103 Test  #27: GamFileTest.LoadTruncatedFileFails .........................   Passed    0.04 sec
+        Start  28: TerrainMapping.ExportWritesCorrectGameValues
+ 28/103 Test  #28: TerrainMapping.ExportWritesCorrectGameValues ...............   Passed    0.04 sec
+        Start  29: TerrainMapping.ExportShoreUsesAdjacency
+ 29/103 Test  #29: TerrainMapping.ExportShoreUsesAdjacency ....................   Passed    0.03 sec
+        Start  30: TerrainMapping.ExportShoreDiagonalForcing
+ 30/103 Test  #30: TerrainMapping.ExportShoreDiagonalForcing ..................   Passed    0.03 sec
+        Start  31: TerrainMapping.ExportRiverUsesConnections
+ 31/103 Test  #31: TerrainMapping.ExportRiverUsesConnections ..................   Passed    0.03 sec
+        Start  32: TerrainMapping.RoundTripAllBaseTerrains
+ 32/103 Test  #32: TerrainMapping.RoundTripAllBaseTerrains ....................   Passed    0.04 sec
+        Start  33: TerrainMapping.ImportGameVariantsToBaseType
+ 33/103 Test  #33: TerrainMapping.ImportGameVariantsToBaseType ................   Passed    0.04 sec
+        Start  34: ScenarioIOTest.RoundTripEmptyScenario
+ 34/103 Test  #34: ScenarioIOTest.RoundTripEmptyScenario ......................   Passed    0.10 sec
+        Start  35: ScenarioIOTest.RoundTripScenarioType
+ 35/103 Test  #35: ScenarioIOTest.RoundTripScenarioType .......................   Passed    0.11 sec
+        Start  36: ScenarioIOTest.RoundTripGameSettings
+ 36/103 Test  #36: ScenarioIOTest.RoundTripGameSettings .......................   Passed    0.09 sec
+        Start  37: ScenarioIOTest.RoundTripTerrain
+ 37/103 Test  #37: ScenarioIOTest.RoundTripTerrain ............................   Passed    0.09 sec
+        Start  38: ScenarioIOTest.RoundTripWizards
+ 38/103 Test  #38: ScenarioIOTest.RoundTripWizards ............................   Passed    0.10 sec
+        Start  39: ScenarioIOTest.RoundTripCities
+ 39/103 Test  #39: ScenarioIOTest.RoundTripCities .............................   Passed    0.09 sec
+        Start  40: ScenarioIOTest.RoundTripUnits
+ 40/103 Test  #40: ScenarioIOTest.RoundTripUnits ..............................   Passed    0.11 sec
+        Start  41: ScenarioIOTest.RoundTripNodes
+ 41/103 Test  #41: ScenarioIOTest.RoundTripNodes ..............................   Passed    0.10 sec
+        Start  42: ScenarioIOTest.RoundTripLairs
+ 42/103 Test  #42: ScenarioIOTest.RoundTripLairs ..............................   Passed    0.13 sec
+        Start  43: ScenarioIOTest.ActiveCountsUpdatedOnLoad
+ 43/103 Test  #43: ScenarioIOTest.ActiveCountsUpdatedOnLoad ...................   Passed    0.09 sec
+        Start  44: ScenarioIOTest.OnlyActiveCitiesSerialized
+ 44/103 Test  #44: ScenarioIOTest.OnlyActiveCitiesSerialized ..................   Passed    0.10 sec
+        Start  45: ScenarioIOTest.LoadNonexistentFileFails
+ 45/103 Test  #45: ScenarioIOTest.LoadNonexistentFileFails ....................   Passed    0.03 sec
+        Start  46: ScenarioIOTest.LoadInvalidJsonFails
+ 46/103 Test  #46: ScenarioIOTest.LoadInvalidJsonFails ........................   Passed    0.04 sec
+        Start  47: ScenarioIOTest.RoundTripMapGenParams
+ 47/103 Test  #47: ScenarioIOTest.RoundTripMapGenParams .......................   Passed    0.11 sec
+        Start  48: UndoStack.InitiallyEmpty
+ 48/103 Test  #48: UndoStack.InitiallyEmpty ...................................   Passed    0.03 sec
+        Start  49: UndoStack.ExecuteAddsToStack
+ 49/103 Test  #49: UndoStack.ExecuteAddsToStack ...............................   Passed    0.05 sec
+        Start  50: UndoStack.UndoRevertsCommand
+ 50/103 Test  #50: UndoStack.UndoRevertsCommand ...............................   Passed    0.03 sec
+        Start  51: UndoStack.RedoReappliesCommand
+ 51/103 Test  #51: UndoStack.RedoReappliesCommand .............................   Passed    0.03 sec
+        Start  52: UndoStack.MultipleUndoRedo
+ 52/103 Test  #52: UndoStack.MultipleUndoRedo .................................   Passed    0.04 sec
+        Start  53: UndoStack.NewCommandClearsRedoHistory
+ 53/103 Test  #53: UndoStack.NewCommandClearsRedoHistory ......................   Passed    0.04 sec
+        Start  54: UndoStack.UndoOnEmptyReturnsFalse
+ 54/103 Test  #54: UndoStack.UndoOnEmptyReturnsFalse ..........................   Passed    0.03 sec
+        Start  55: UndoStack.RedoOnEmptyReturnsFalse
+ 55/103 Test  #55: UndoStack.RedoOnEmptyReturnsFalse ..........................   Passed    0.04 sec
+        Start  56: UndoStack.MaxDepthEvictsOldest
+ 56/103 Test  #56: UndoStack.MaxDepthEvictsOldest .............................   Passed    0.05 sec
+        Start  57: UndoStack.ClearRemovesAll
+ 57/103 Test  #57: UndoStack.ClearRemovesAll ..................................   Passed    0.03 sec
+        Start  58: UndoStack.ComplexSequence
+ 58/103 Test  #58: UndoStack.ComplexSequence ..................................   Passed    0.04 sec
+        Start  59: MapGeneratorTest.GenerateProducesValidTerrain
+ 59/103 Test  #59: MapGeneratorTest.GenerateProducesValidTerrain ..............   Passed    0.05 sec
+        Start  60: MapGeneratorTest.LandProportionApproximatelyMatchesInput
+ 60/103 Test  #60: MapGeneratorTest.LandProportionApproximatelyMatchesInput ...   Passed    0.05 sec
+        Start  61: MapGeneratorTest.BothPlanesHaveTerrain
+ 61/103 Test  #61: MapGeneratorTest.BothPlanesHaveTerrain .....................   Passed    0.06 sec
+        Start  62: MapGeneratorTest.ShoresAtLandOceanBoundaries
+ 62/103 Test  #62: MapGeneratorTest.ShoresAtLandOceanBoundaries ...............   Passed    0.06 sec
+        Start  63: MapGeneratorTest.LandmassIDsComputedForLand
+ 63/103 Test  #63: MapGeneratorTest.LandmassIDsComputedForLand ................   Passed    0.05 sec
+        Start  64: MapGeneratorTest.DifferentSeedsProduceDifferentMaps
+ 64/103 Test  #64: MapGeneratorTest.DifferentSeedsProduceDifferentMaps ........   Passed    0.06 sec
+        Start  65: MapGeneratorTest.SameSeedProducesSameMap
+ 65/103 Test  #65: MapGeneratorTest.SameSeedProducesSameMap ...................   Passed    0.06 sec
+        Start  66: SmoothingValidatorTest.ShoreNoWaterReturnsViolation
+ 66/103 Test  #66: SmoothingValidatorTest.ShoreNoWaterReturnsViolation ........   Passed    0.06 sec
+        Start  67: SmoothingValidatorTest.ShoreWithAdjacentOceanNoViolation
+ 67/103 Test  #67: SmoothingValidatorTest.ShoreWithAdjacentOceanNoViolation ...   Passed    0.03 sec
+        Start  68: SmoothingValidatorTest.RiverIsolatedReturnsViolation
+ 68/103 Test  #68: SmoothingValidatorTest.RiverIsolatedReturnsViolation .......   Passed    0.04 sec
+        Start  69: SmoothingValidatorTest.RiverAdjacentToRiverNoViolation
+ 69/103 Test  #69: SmoothingValidatorTest.RiverAdjacentToRiverNoViolation .....   Passed    0.03 sec
+        Start  70: SmoothingValidatorTest.VolcanoIsolatedReturnsViolation
+ 70/103 Test  #70: SmoothingValidatorTest.VolcanoIsolatedReturnsViolation .....   Passed    0.03 sec
+        Start  71: SmoothingValidatorTest.TundraDesertReturnsViolation
+ 71/103 Test  #71: SmoothingValidatorTest.TundraDesertReturnsViolation ........   Passed    0.04 sec
+        Start  72: SmoothingValidatorTest.WrapAroundCheck
+ 72/103 Test  #72: SmoothingValidatorTest.WrapAroundCheck .....................   Passed    0.05 sec
+        Start  73: SmoothingValidatorTest.ValidatePlaneReturnsAllViolations
+ 73/103 Test  #73: SmoothingValidatorTest.ValidatePlaneReturnsAllViolations ...   Passed    0.05 sec
+        Start  74: WizardPresets.PresetCount
+ 74/103 Test  #74: WizardPresets.PresetCount ..................................   Passed    0.04 sec
+        Start  75: WizardPresets.Merlin_Slot0
+ 75/103 Test  #75: WizardPresets.Merlin_Slot0 .................................   Passed    0.05 sec
+        Start  76: WizardPresets.Raven_Slot1
+ 76/103 Test  #76: WizardPresets.Raven_Slot1 ..................................   Passed    0.03 sec
+        Start  77: WizardPresets.Sharee_Slot2
+ 77/103 Test  #77: WizardPresets.Sharee_Slot2 .................................   Passed    0.04 sec
+        Start  78: WizardPresets.LoPan_Slot3
+ 78/103 Test  #78: WizardPresets.LoPan_Slot3 ..................................   Passed    0.04 sec
+        Start  79: WizardPresets.Jafar_Slot4
+ 79/103 Test  #79: WizardPresets.Jafar_Slot4 ..................................   Passed    0.06 sec
+        Start  80: WizardPresets.Oberic_Slot5
+ 80/103 Test  #80: WizardPresets.Oberic_Slot5 .................................   Passed    0.04 sec
+        Start  81: WizardPresets.Ssra_Slot7_MyrranRace
+ 81/103 Test  #81: WizardPresets.Ssra_Slot7_MyrranRace ........................   Passed    0.04 sec
+        Start  82: WizardPresets.ApplyPreset_Name
+ 82/103 Test  #82: WizardPresets.ApplyPreset_Name .............................   Passed    0.04 sec
+        Start  83: WizardPresets.ApplyPreset_Identity
+ 83/103 Test  #83: WizardPresets.ApplyPreset_Identity .........................   Passed    0.03 sec
+        Start  84: WizardPresets.ApplyPreset_Race
+ 84/103 Test  #84: WizardPresets.ApplyPreset_Race .............................   Passed    0.05 sec
+        Start  85: WizardPresets.ApplyPreset_SpellBookMapping
+ 85/103 Test  #85: WizardPresets.ApplyPreset_SpellBookMapping .................   Passed    0.04 sec
+        Start  86: WizardPresets.ApplyPreset_SpellBookMapping_LoPan
+ 86/103 Test  #86: WizardPresets.ApplyPreset_SpellBookMapping_LoPan ...........   Passed    0.03 sec
+        Start  87: WizardPresets.ApplyPreset_SpellBookMapping_Sharee
+ 87/103 Test  #87: WizardPresets.ApplyPreset_SpellBookMapping_Sharee ..........   Passed    0.03 sec
+        Start  88: WizardPresets.ApplyPreset_Retort_SageMaster
+ 88/103 Test  #88: WizardPresets.ApplyPreset_Retort_SageMaster ................   Passed    0.03 sec
+        Start  89: WizardPresets.ApplyPreset_Retort_None
+ 89/103 Test  #89: WizardPresets.ApplyPreset_Retort_None ......................   Passed    0.04 sec
+        Start  90: WizardPresets.ApplyPreset_Retort_Conjurer
+ 90/103 Test  #90: WizardPresets.ApplyPreset_Retort_Conjurer ..................   Passed    0.03 sec
+        Start  91: WizardPresets.ApplyPreset_WizardIsActive
+ 91/103 Test  #91: WizardPresets.ApplyPreset_WizardIsActive ...................   Passed    0.05 sec
+        Start  92: WizardPresets.ApplyPreset_AllSixSlots
+ 92/103 Test  #92: WizardPresets.ApplyPreset_AllSixSlots ......................   Passed    0.04 sec
+        Start  93: WizardPresets.GetRetort_ReadsCorrectField
+ 93/103 Test  #93: WizardPresets.GetRetort_ReadsCorrectField ..................   Passed    0.03 sec
+        Start  94: WizardPresets.RetortCost_OnePick
+ 94/103 Test  #94: WizardPresets.RetortCost_OnePick ...........................   Passed    0.04 sec
+        Start  95: WizardPresets.RetortCost_TwoPick
+ 95/103 Test  #95: WizardPresets.RetortCost_TwoPick ...........................   Passed    0.03 sec
+        Start  96: WizardPresets.RetortCost_ThreePick
+ 96/103 Test  #96: WizardPresets.RetortCost_ThreePick .........................   Passed    0.04 sec
+        Start  97: WizardPresets.CalcPicksUsed_Merlin
+ 97/103 Test  #97: WizardPresets.CalcPicksUsed_Merlin .........................   Passed    0.04 sec
+        Start  98: WizardPresets.CalcPicksUsed_Raven
+ 98/103 Test  #98: WizardPresets.CalcPicksUsed_Raven ..........................   Passed    0.05 sec
+        Start  99: WizardPresets.CalcPicksUsed_LoPan
+ 99/103 Test  #99: WizardPresets.CalcPicksUsed_LoPan ..........................   Passed    0.04 sec
+        Start 100: WizardPresets.CalcPicksUsed_Sharee
+100/103 Test #100: WizardPresets.CalcPicksUsed_Sharee .........................   Passed    0.04 sec
+        Start 101: WizardPresets.CalcPicksUsed_Jafar
+101/103 Test #101: WizardPresets.CalcPicksUsed_Jafar ..........................   Passed    0.04 sec
+        Start 102: WizardPresets.CalcPicksUsed_EmptyWizard
+102/103 Test #102: WizardPresets.CalcPicksUsed_EmptyWizard ....................   Passed    0.04 sec
+        Start 103: WizardPresets.CalcPicksUsed_Ssra
+103/103 Test #103: WizardPresets.CalcPicksUsed_Ssra ...........................   Passed    0.04 sec
 
-100% tests passed, 0 tests failed out of 97
+100% tests passed, 0 tests failed out of 103
 
-Total Test time (real) =   3.98 sec
+Total Test time (real) =   5.45 sec
 TESTS_PASSED 

@@ -74,7 +74,15 @@
       "Bash(cmd /C \"c:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\run_build3.bat\")",
       "Bash(cmd /C \"echo hello world >> c:\\\\STU\\\\devel\\\\STU-Extras\\\\RemomMapgenItchio\\\\build_log.txt\")",
       "Bash(cmd //C \".\\\\run_build.bat\")",
-      "Bash(echo \"EXIT=$?\")"
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(curl -s http://localhost:8090/)",
+      "Read(//c/STU/devel/ReMoM/MoM/src/**)",
+      "Read(//c/STU/devel/ReMoM/MoX/**)",
+      "Bash(find /c/STU/devel/STU-Extras/ReMoM/src -type f \\\\\\(-name *.H -o -name *.C -o -name *.c -o -name *.h \\\\\\))",
+      "Bash(find /c/STU/devel/STU-Extras/ReMoM/src -type f \\\\\\(-name *.H -o -name *.C -o -name *.h -o -name *.c \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(node RemomTests.js)",
+      "Bash(node RemomTests.js --gtest_filter=\"GamFile*:TerrainMapping*:GamRoundTrip*\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\jbalcomb\\.claude\\plans",
