@@ -134,7 +134,8 @@ int main(int argc, char * argv[])
 		// printf("%02X\n", lbx_entry_data[(itr * 36)]);
 		// printf("%s\n", spell_data[itr].name);
 		// printf("%d\n", spell_data[itr].type);
-		printf("\"%s\", %d\n", spell_data[itr].name, spell_data[itr].type);
+		// printf("\"%s\", %d\n", spell_data[itr].name, spell_data[itr].type);
+        printf("\"%s\", %d\n", spell_data[itr].name, spell_data[itr].research_cost);
 	}
 
 	printf("END\n");

@@ -9,13 +9,18 @@
 # [kit] Successfully loaded 10 kits from C:\Users\jbalcomb\AppData\Local\CMakeTools\cmake-tools-kits.json
 # C:\Program Files\CMake\bin\cmake.exe
 
-cmake_minimum_required(VERSION 4.2)
+# cmake_minimum_required(VERSION 4.2)
+cmake_minimum_required(VERSION 3.25)  # workflow presets
 
-project(
-    ProjectToot
-    VERSION 0.0.1
-    LANGUAGES C CXX
-)
+set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_C_COMPILER "gcc")
+
+# project(
+#     ProjectToot
+#     VERSION 0.0.1
+#     LANGUAGES C CXX
+# )
+project(ProjectToot)
 
 enable_testing()
 # GoogleTest requires at least C++17

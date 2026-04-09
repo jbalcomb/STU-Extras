@@ -4,7 +4,7 @@ include(GoogleTest)
 add_executable(
     func_extract_parse_test
     func_extract_parse_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../C4U/FuncExtract.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../FuncExtract.c
 )
 
 target_include_directories(func_extract_parse_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../C4U)
