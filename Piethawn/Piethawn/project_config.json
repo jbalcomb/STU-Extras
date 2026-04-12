@@ -1,0 +1,68 @@
+{
+  "ida55_database_timestamps": {
+    "captured_utc": "2026-03-12T18:16:01.095465Z",
+    "ida_directory": "C:\\STU_DASM\\IDA55_MOM131",
+    "databases": {
+      "MAGIC": {
+        "name": "MAGIC",
+        "all_files_present": true,
+        "missing_files": [],
+        "files": [
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\MAGIC.idb",
+            "file_name": "MAGIC.idb",
+            "size_bytes": 7853250,
+            "modified_timestamp": 1773336447.2359393,
+            "modified_utc": "2026-03-12T17:27:27.235939Z"
+          },
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\MAGIC.id0",
+            "file_name": "MAGIC.id0",
+            "size_bytes": 6176768,
+            "modified_timestamp": 1773338793.1156113,
+            "modified_utc": "2026-03-12T18:06:33.115611Z"
+          },
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\MAGIC.id1",
+            "file_name": "MAGIC.id1",
+            "size_bytes": 1499136,
+            "modified_timestamp": 1773336476.4836307,
+            "modified_utc": "2026-03-12T17:27:56.483631Z"
+          }
+        ],
+        "latest_modified_timestamp": 1773338793.1156113,
+        "latest_modified_utc": "2026-03-12T18:06:33.115611Z"
+      },
+      "WIZARDS": {
+        "name": "WIZARDS",
+        "all_files_present": true,
+        "missing_files": [],
+        "files": [
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\WIZARDS.idb",
+            "file_name": "WIZARDS.idb",
+            "size_bytes": 42234521,
+            "modified_timestamp": 1773336815.197253,
+            "modified_utc": "2026-03-12T17:33:35.197253Z"
+          },
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\WIZARDS.id0",
+            "file_name": "WIZARDS.id0",
+            "size_bytes": 36167680,
+            "modified_timestamp": 1773336815.2176912,
+            "modified_utc": "2026-03-12T17:33:35.217691Z"
+          },
+          {
+            "path": "C:\\STU_DASM\\IDA55_MOM131\\WIZARDS.id1",
+            "file_name": "WIZARDS.id1",
+            "size_bytes": 5660672,
+            "modified_timestamp": 1773336814.0769465,
+            "modified_utc": "2026-03-12T17:33:34.076946Z"
+          }
+        ],
+        "latest_modified_timestamp": 1773336815.2176912,
+        "latest_modified_utc": "2026-03-12T17:33:35.217691Z"
+      }
+    }
+  }
+}
