@@ -277,7 +277,7 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
     // Powered by Claude.
     if (state.selected_node >= 0 && state.selected_node < NUM_NODES) {
         const auto& n = scenario.nodes[state.selected_node];
-        if (!(n.wx == 0 && n.wy == 0)) {
+        if (!(n.owner_idx <= -1)) {
             int bar_x = panel_x + 8;
 
             // Node type with color swatch (clickable).
@@ -305,7 +305,7 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
     // Powered by Claude.
     if (state.selected_tower >= 0 && state.selected_tower < NUM_TOWERS) {
         const auto& t = scenario.towers[state.selected_tower];
-        if (!(t.wx == 0 && t.wy == 0)) {
+        if (!(t.owner_idx <= -1)) {
             int bar_x = panel_x + 8;
             renderer.draw_rect(bar_x, y, 12, 12, 220, 220, 240);
             renderer.draw_text(bar_x + 16, y, "Tower", 220, 220, 240);
@@ -329,7 +329,7 @@ void PropertiesPanel::render(Renderer& renderer, const EditorState& state,
     // Powered by Claude.
     if (state.selected_lair >= 0 && state.selected_lair < NUM_LAIRS) {
         const auto& l = scenario.lairs[state.selected_lair];
-        if (!(l.wx == 0 && l.wy == 0)) {
+        if (!(l.Intact <= -1)) {
             int bar_x = panel_x + 8;
 
             // Lair type label.
@@ -488,7 +488,7 @@ void PropertiesPanel::handle_click(int mx, int my, EditorState& state,
     // Powered by Claude.
     if (state.selected_node >= 0 && state.selected_node < NUM_NODES) {
         auto& n = scenario.nodes[state.selected_node];
-        if (!(n.wx == 0 && n.wy == 0)) {
+        if (!(n.owner_idx <= -1)) {
             int8_t old_type = n.type;
             int8_t new_type = static_cast<int8_t>((old_type + 1) % 3);
             int idx = state.selected_node;

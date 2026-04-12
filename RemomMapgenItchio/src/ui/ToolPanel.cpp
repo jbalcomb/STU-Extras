@@ -279,6 +279,33 @@ void ToolPanel::render(Renderer& renderer, const EditorState& state, int window_
             }
         }
     }
+
+    // Node type palette (only when node tool is active).
+    // Powered by Claude.
+    if (state.tool == EditorTool::PLACE_NODE) {
+        static const char* node_names[] = {"Sorcery", "Nature", "Chaos"};
+        UIRenderer::draw_label(renderer, 8, y, node_names[state.place_node_type],
+                               200, 200, 120);
+        y += 16;
+
+        struct NodeSwatch { int8_t type; uint8_t r, g, b; };
+        NodeSwatch swatches[] = {
+            {NODE_SORCERY, 60,  60, 200},
+            {NODE_NATURE,  60, 200,  60},
+            {NODE_CHAOS,  200,  60,  60},
+        };
+        int swatch_sz = 22;
+        int sx = 8;
+        for (auto& ns : swatches) {
+            bool sel = (state.place_node_type == ns.type);
+            renderer.draw_rect(sx, y, swatch_sz, swatch_sz, ns.r, ns.g, ns.b);
+            if (sel) {
+                renderer.draw_rect_outline(sx, y, swatch_sz, swatch_sz, 255, 255, 255);
+            }
+            sx += swatch_sz + 2;
+        }
+        y += swatch_sz + 2;
+    }
 }
 
 bool ToolPanel::handle_click(int mx, int my, EditorState& state, int window_h) {
@@ -469,6 +496,21 @@ bool ToolPanel::handle_click(int mx, int my, EditorState& state, int window_h) {
             int sy = y + row * (swatch_sz + 2);
             if (mx >= sx && mx < sx + swatch_sz && my >= sy && my < sy + swatch_sz) {
                 state.paint_special = specials[i];
+                return true;
+            }
+        }
+    }
+
+    // Node type swatches (matching render order).
+    // Powered by Claude.
+    if (state.tool == EditorTool::PLACE_NODE) {
+        y += 16; // label above palette
+        int8_t node_types[] = {NODE_SORCERY, NODE_NATURE, NODE_CHAOS};
+        int swatch_sz = 22;
+        for (int i = 0; i < 3; ++i) {
+            int sx = 8 + i * (swatch_sz + 2);
+            if (mx >= sx && mx < sx + swatch_sz && my >= y && my < y + swatch_sz) {
+                state.place_node_type = node_types[i];
                 return true;
             }
         }

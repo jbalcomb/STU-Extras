@@ -216,6 +216,7 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
     // Powered by Claude.
     for (int i = 0; i < NUM_NODES; ++i) {
         const auto& n = scenario.nodes[i];
+        if (n.owner_idx <= -1) continue;
         if (n.wp != plane) continue;
         int nx_w = wrap_to_visible(n.wx, start_x);
         int sx, sy;
@@ -240,7 +241,7 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
     // Powered by Claude.
     for (int i = 0; i < NUM_TOWERS; ++i) {
         const auto& t = scenario.towers[i];
-        if (t.wx == 0 && t.wy == 0) continue;
+        if (t.owner_idx <= -1) continue;
         int tx_w = wrap_to_visible(t.wx, start_x);
         int sx, sy;
         cam.world_to_screen(tx_w, t.wy, viewport.x, viewport.y, sx, sy);
@@ -292,7 +293,7 @@ void MapRenderer::render(Renderer& renderer, const Scenario& scenario,
     // Powered by Claude.
     for (int i = 0; i < NUM_LAIRS; ++i) {
         const auto& l = scenario.lairs[i];
-        if (l.wx == 0 && l.wy == 0) continue;
+        if (l.Intact <= -1) continue;
         if (l.wp != plane) continue;
         int lx_w = wrap_to_visible(l.wx, start_x);
         int sx, sy;

@@ -3,6 +3,7 @@
 
 #include "mom_data/MomGamFile.hpp"
 #include "scenario/Scenario.hpp"
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -386,9 +387,18 @@ static std::vector<uint8_t> build_gam_buffer(const Scenario& sc) {
                         }
 
                         if (val == TERRAIN_SHORE) {
-                            // No valid shore pattern → export as ocean.
+                            // Valid shore pattern → use it. No match with adj=0
+                            // (no land neighbors) → ocean. adj=0xFF (all land,
+                            // no ocean) means fully enclosed water — use tt_Lake
+                            // (0x12), matching ReMoM's single-square inland water.
                             // Powered by Claude.
-                            gam_terrain[p][i] = (base_val != 0) ? base_val : 0x00;
+                            if (base_val != 0) {
+                                gam_terrain[p][i] = base_val;
+                            } else if (adj == 0xFF) {
+                                gam_terrain[p][i] = 0x12; // tt_Lake
+                            } else {
+                                gam_terrain[p][i] = 0x00; // ocean
+                            }
                         } else if (val == TERRAIN_TUNDRA) {
                             // Tundra variants are shore values + 0x258.
                             // Bitmask 0 (all neighbors tundra) → base tundra 0xA7.
@@ -526,6 +536,18 @@ static std::vector<uint8_t> build_gam_buffer(const Scenario& sc) {
     // Map flags
     put(gam_offsets::MAP_FLAGS, sc.world.flags, NUM_PLANES * WORLD_SIZE);
 
+    // Editor signature in UU_TBL[0] (192 bytes, unused by game engine).
+    // Format: "MKED" magic, then null-terminated version and build timestamp.
+    // Allows verifying which editor version produced a .GAM file.
+    // Powered by Claude.
+    {
+        char sig[192] = {};
+        std::snprintf(sig, sizeof(sig),
+                      "MKED|%s|%s %s",
+                      EDITOR_VERSION, __DATE__, __TIME__);
+        put(gam_offsets::UU_TBL, sig, sizeof(sig));
+    }
+
     return buf;
 }
 
@@ -603,6 +625,130 @@ bool deserialize_gam(const std::vector<uint8_t>& data, Scenario& sc) {
     std::memcpy(sc.world.flags, at(gam_offsets::MAP_FLAGS), NUM_PLANES * WORLD_SIZE);
 
     return true;
+}
+
+// ---------------------------------------------------------------------------
+// Export terrain smoothing — adds shores, removes orphan ocean/rivers.
+// Powered by Claude.
+// ---------------------------------------------------------------------------
+
+int smooth_terrain_for_export(Scenario& export_sc, const Scenario& original) {
+    int smoothed = 0;
+    auto wrap_x = [](int x) { return ((x % WORLD_WIDTH) + WORLD_WIDTH) % WORLD_WIDTH; };
+    auto is_land = [](uint16_t t) -> bool {
+        return t != TERRAIN_OCEAN && t != TERRAIN_SHORE;
+    };
+    // 8-direction offsets: NW, N, NE, E, SE, S, SW, W.
+    // Powered by Claude.
+    static constexpr int dx8[] = {-1,  0,  1, 1, 1, 0, -1, -1};
+    static constexpr int dy8[] = {-1, -1, -1, 0, 1, 1,  1,  0};
+    static constexpr int dx4[] = { 0,  0, -1, 1};
+    static constexpr int dy4[] = {-1,  1,  0, 0};
+
+    for (int p = 0; p < NUM_PLANES; ++p) {
+        // Pass 1: Ocean squares with any land neighbor (8-way) become shore.
+        // Matches MoM's NEWG_CreateShores algorithm.
+        // Powered by Claude.
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_OCEAN)
+                    continue;
+                bool has_land = false;
+                for (int d = 0; d < 8; ++d) {
+                    int ny = y + dy8[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                    int nx = wrap_x(x + dx8[d]);
+                    if (is_land(original.world.get_terrain(nx, ny, p))) {
+                        has_land = true; break;
+                    }
+                }
+                if (has_land) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_SHORE);
+                    ++smoothed;
+                }
+            }
+        }
+
+        // Pass 2: Landlocked ocean → shore.
+        // After Pass 1, inner ocean squares in multi-square pockets may
+        // remain. Peel inward: any ocean with no ocean neighbor becomes
+        // shore. Repeat until stable.
+        // Powered by Claude.
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (int y = 0; y < WORLD_HEIGHT; ++y) {
+                for (int x = 0; x < WORLD_WIDTH; ++x) {
+                    if (export_sc.world.get_terrain(x, y, p) != TERRAIN_OCEAN)
+                        continue;
+                    bool has_ocean_neighbor = false;
+                    for (int d = 0; d < 8; ++d) {
+                        int ny = y + dy8[d];
+                        if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                        int nx = wrap_x(x + dx8[d]);
+                        if (export_sc.world.get_terrain(nx, ny, p) == TERRAIN_OCEAN) {
+                            has_ocean_neighbor = true; break;
+                        }
+                    }
+                    if (!has_ocean_neighbor) {
+                        export_sc.world.set_terrain(x, y, p, TERRAIN_SHORE);
+                        ++smoothed;
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        // Pass 3: Lake normalization — lakes with no river inflow become desert.
+        // Matches ReMoM's River_Terrain() lake post-processing.
+        // Powered by Claude.
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_LAKE)
+                    continue;
+                int river_mask = 0;
+                if (y > 0 && export_sc.world.get_terrain(x, y - 1, p) == TERRAIN_RIVER)
+                    river_mask |= 1;
+                if (export_sc.world.get_terrain(wrap_x(x + 1), y, p) == TERRAIN_RIVER)
+                    river_mask |= 2;
+                if (y + 1 < WORLD_HEIGHT && export_sc.world.get_terrain(x, y + 1, p) == TERRAIN_RIVER)
+                    river_mask |= 4;
+                if (export_sc.world.get_terrain(wrap_x(x - 1), y, p) == TERRAIN_RIVER)
+                    river_mask |= 8;
+
+                if (river_mask == 0) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_DESERT);
+                    ++smoothed;
+                }
+            }
+        }
+
+        // Pass 4: Fix isolated rivers (no adjacent river/shore/ocean/lake).
+        // Powered by Claude.
+        for (int y = 0; y < WORLD_HEIGHT; ++y) {
+            for (int x = 0; x < WORLD_WIDTH; ++x) {
+                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_RIVER)
+                    continue;
+                bool has_conn = false;
+                for (int d = 0; d < 4; ++d) {
+                    int ny = y + dy4[d];
+                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+                    int nx = wrap_x(x + dx4[d]);
+                    uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
+                    if (nb == TERRAIN_RIVER || nb == TERRAIN_SHORE ||
+                        nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
+                        has_conn = true; break;
+                    }
+                }
+                if (!has_conn) {
+                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
+                    ++smoothed;
+                }
+            }
+        }
+    }
+
+    return smoothed;
 }
 
 } // namespace mom

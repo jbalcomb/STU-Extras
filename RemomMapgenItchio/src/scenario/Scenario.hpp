@@ -76,6 +76,16 @@ struct Scenario {
         towers = {};
         fortresses = {};
         items = {};
+        // Set all entity positions to (1,1,1) so nothing appears at (0,0).
+        // Mark units/towers inactive with owner_idx=-1.
+        // City slot 0 is required by ReMoM so leave owner_idx=0.
+        // Powered by Claude.
+        for (auto& c : cities)     { c.wx = 1; c.wy = 1; c.wp = 1; }
+        for (auto& u : units)      { u.wx = 1; u.wy = 1; u.wp = 1; u.owner_idx = -1; }
+        for (auto& t : towers)     { t.wx = 1; t.wy = 1; t.owner_idx = -1; }
+        for (auto& f : fortresses) { f.wx = 1; f.wy = 1; f.wp = 1; }
+        for (auto& n : nodes)      { n.wx = 1; n.wy = 1; n.wp = 1; n.owner_idx = -1; }
+        for (auto& l : lairs)      { l.wx = 1; l.wy = 1; l.wp = 1; l.Intact = -1; }
         std::memset(hero_names, 0, sizeof(hero_names));
     }
 

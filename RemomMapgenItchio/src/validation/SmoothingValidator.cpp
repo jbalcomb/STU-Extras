@@ -130,6 +130,34 @@ std::vector<SmoothingViolation> SmoothingValidator::validate_tile(
         }
     }
 
+    // V-013: OCEAN_LANDLOCKED (SEVERITY_ERROR)
+    // Ocean square with no ocean neighbor (8-way) is landlocked inside land.
+    // Powered by Claude.
+    if (tile == TERRAIN_OCEAN) {
+        static constexpr int dx8[] = {-1,  0,  1, 1, 1, 0, -1, -1};
+        static constexpr int dy8[] = {-1, -1, -1, 0, 1, 1,  1,  0};
+        bool has_ocean_neighbor = false;
+        for (int d = 0; d < 8; ++d) {
+            int ny = y + dy8[d];
+            if (ny < 0 || ny >= WORLD_HEIGHT) continue;
+            int nx = wrap_x(x + dx8[d]);
+            if (world.get_terrain(nx, ny, plane) == TERRAIN_OCEAN) {
+                has_ocean_neighbor = true;
+                break;
+            }
+        }
+        if (!has_ocean_neighbor) {
+            SmoothingViolation v;
+            v.plane    = plane;
+            v.x        = x;
+            v.y        = y;
+            v.rule     = RULE_OCEAN_LANDLOCKED;
+            v.severity = SEVERITY_ERROR;
+            v.message  = "Ocean square is landlocked — no adjacent ocean";
+            violations.push_back(v);
+        }
+    }
+
     return violations;
 }
 

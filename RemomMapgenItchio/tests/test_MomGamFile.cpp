@@ -405,6 +405,25 @@ TEST(TerrainMapping, ExportShoreDiagonalForcing) {
     EXPECT_EQ(gam_val, 0x26);  // E+SE(forced)+S = bitmask 00011100 → game 0x26
 }
 
+TEST(TerrainMapping, ExportShoreAllLandBecomesLake) {
+    // Shore square surrounded entirely by land is fully enclosed water —
+    // must export as tt_Lake (0x12), not ocean (0x00).
+    // Powered by Claude.
+    Scenario sc;
+    sc.clear();
+    // Fill all neighbors of (5,5) with grassland.
+    for (int dy = -1; dy <= 1; ++dy)
+        for (int dx = -1; dx <= 1; ++dx)
+            sc.world.set_terrain(5 + dx, 5 + dy, 0, TERRAIN_GRASSLAND);
+    sc.world.set_terrain(5, 5, 0, TERRAIN_SHORE);
+
+    auto buf = serialize_gam(sc);
+    int offset = 9880 + (5 * WORLD_WIDTH + 5) * 2;
+    uint16_t gam_val = buf[offset] | (buf[offset + 1] << 8);
+    EXPECT_EQ(gam_val, 0x12)
+        << "Shore with all land neighbors must become tt_Lake (0x12)";
+}
+
 TEST(TerrainMapping, ExportRiverUsesConnections) {
     // River square with river to the south → game value 0xB9 (River0010 = S).
     // Powered by Claude.
@@ -526,4 +545,156 @@ TEST(TerrainMapping, ImportGameVariantsToBaseType) {
             << " should import as BaseTerrain " << std::dec
             << static_cast<int>(tc.editor);
     }
+}
+
+// -- Export smoothing validation tests --
+
+// Helper: fill entire plane with a base terrain type.
+// Powered by Claude.
+static void fill_plane(Scenario& sc, int plane, uint16_t terrain) {
+    for (int y = 0; y < WORLD_HEIGHT; ++y)
+        for (int x = 0; x < WORLD_WIDTH; ++x)
+            sc.world.set_terrain(x, y, plane, terrain);
+}
+
+TEST(ExportSmoothing, NoOrphanedOceanInsideLand) {
+    // A single ocean square surrounded by forest on all 8 sides must
+    // not remain as ocean after smoothing — it should become shore.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_FOREST);
+    original.world.set_terrain(5, 5, 0, TERRAIN_OCEAN);
+
+    Scenario export_sc = original;
+    int changed = smooth_terrain_for_export(export_sc, original);
+
+    EXPECT_NE(export_sc.world.get_terrain(5, 5, 0), TERRAIN_OCEAN)
+        << "Orphaned ocean square inside landmass must not survive smoothing";
+    EXPECT_EQ(export_sc.world.get_terrain(5, 5, 0), TERRAIN_SHORE);
+    EXPECT_GT(changed, 0);
+}
+
+TEST(ExportSmoothing, NoOrphanedOceanIn2x2Pocket) {
+    // A 2x2 ocean pocket inside land: all 4 squares should become shore.
+    // This tests the iterative peeling in Pass 2.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_GRASSLAND);
+    original.world.set_terrain(10, 10, 0, TERRAIN_OCEAN);
+    original.world.set_terrain(11, 10, 0, TERRAIN_OCEAN);
+    original.world.set_terrain(10, 11, 0, TERRAIN_OCEAN);
+    original.world.set_terrain(11, 11, 0, TERRAIN_OCEAN);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    for (int dy = 0; dy < 2; ++dy) {
+        for (int dx = 0; dx < 2; ++dx) {
+            EXPECT_NE(export_sc.world.get_terrain(10 + dx, 10 + dy, 0), TERRAIN_OCEAN)
+                << "Ocean at (" << 10 + dx << "," << 10 + dy
+                << ") in 2x2 pocket must not survive smoothing";
+        }
+    }
+}
+
+TEST(ExportSmoothing, NoOrphanedOceanIn3x3Pocket) {
+    // A 3x3 ocean pocket: the center square has all ocean neighbors
+    // initially, but after peeling it should also become shore.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_FOREST);
+    for (int dy = 0; dy < 3; ++dy)
+        for (int dx = 0; dx < 3; ++dx)
+            original.world.set_terrain(20 + dx, 20 + dy, 0, TERRAIN_OCEAN);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    for (int dy = 0; dy < 3; ++dy) {
+        for (int dx = 0; dx < 3; ++dx) {
+            EXPECT_NE(export_sc.world.get_terrain(20 + dx, 20 + dy, 0), TERRAIN_OCEAN)
+                << "Ocean at (" << 20 + dx << "," << 20 + dy
+                << ") in 3x3 pocket must not survive smoothing";
+        }
+    }
+}
+
+TEST(ExportSmoothing, ShoresAddedAtLandOceanBoundary) {
+    // Ocean squares adjacent to land become shore; land squares stay land.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_OCEAN);
+    // Place a single land square at (30, 20).
+    original.world.set_terrain(30, 20, 0, TERRAIN_GRASSLAND);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    // The land square stays grassland.
+    EXPECT_EQ(export_sc.world.get_terrain(30, 20, 0), TERRAIN_GRASSLAND);
+
+    // All 8 neighbors should now be shore.
+    static constexpr int dx8[] = {-1,  0,  1, 1, 1, 0, -1, -1};
+    static constexpr int dy8[] = {-1, -1, -1, 0, 1, 1,  1,  0};
+    for (int d = 0; d < 8; ++d) {
+        int nx = 30 + dx8[d];
+        int ny = 20 + dy8[d];
+        EXPECT_EQ(export_sc.world.get_terrain(nx, ny, 0), TERRAIN_SHORE)
+            << "Ocean neighbor at (" << nx << "," << ny
+            << ") of land square should become shore";
+    }
+}
+
+TEST(ExportSmoothing, IsolatedRiverBecomesGrassland) {
+    // A river square with no adjacent water connection becomes grassland.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_FOREST);
+    original.world.set_terrain(15, 15, 0, TERRAIN_RIVER);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    EXPECT_EQ(export_sc.world.get_terrain(15, 15, 0), TERRAIN_GRASSLAND)
+        << "Isolated river with no water neighbors should become grassland";
+}
+
+TEST(ExportSmoothing, ConnectedRiverSurvives) {
+    // A river connected to shore should survive smoothing.
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_FOREST);
+    original.world.set_terrain(25, 15, 0, TERRAIN_RIVER);
+    original.world.set_terrain(25, 16, 0, TERRAIN_SHORE);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    EXPECT_EQ(export_sc.world.get_terrain(25, 15, 0), TERRAIN_RIVER)
+        << "River connected to shore should survive smoothing";
+}
+
+TEST(ExportSmoothing, BothPlanesSmoothed) {
+    // Smoothing applies to both Arcanus (0) and Myrror (1).
+    // Powered by Claude.
+    Scenario original;
+    original.clear();
+    fill_plane(original, 0, TERRAIN_FOREST);
+    fill_plane(original, 1, TERRAIN_FOREST);
+    original.world.set_terrain(5, 5, 0, TERRAIN_OCEAN);
+    original.world.set_terrain(5, 5, 1, TERRAIN_OCEAN);
+
+    Scenario export_sc = original;
+    smooth_terrain_for_export(export_sc, original);
+
+    EXPECT_NE(export_sc.world.get_terrain(5, 5, 0), TERRAIN_OCEAN)
+        << "Orphaned ocean on Arcanus must be fixed";
+    EXPECT_NE(export_sc.world.get_terrain(5, 5, 1), TERRAIN_OCEAN)
+        << "Orphaned ocean on Myrror must be fixed";
 }

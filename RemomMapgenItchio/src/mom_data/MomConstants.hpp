@@ -7,6 +7,10 @@
 
 namespace mom {
 
+// Editor version embedded in .GAM exports (UU_TBL signature).
+// Powered by Claude.
+constexpr const char* EDITOR_VERSION = "0.7.0";
+
 // World dimensions
 constexpr int WORLD_WIDTH  = 60;
 constexpr int WORLD_HEIGHT = 40;
@@ -156,7 +160,8 @@ enum ViolationRule : uint8_t {
     RULE_SHORE_NO_WATER     = 0,  // shore tile has no adjacent ocean/lake
     RULE_RIVER_ISOLATED     = 1,  // river tile has no adjacent river/shore/ocean/lake
     RULE_VOLCANO_ISOLATED   = 2,  // volcano has no adjacent mountain/hill
-    RULE_TUNDRA_DESERT      = 3   // tundra is adjacent to desert
+    RULE_TUNDRA_DESERT      = 3,  // tundra is adjacent to desert
+    RULE_OCEAN_LANDLOCKED   = 4   // ocean square has no ocean neighbor (landlocked)
 };
 
 // A single smoothing rule violation. Transient, not serialized.
