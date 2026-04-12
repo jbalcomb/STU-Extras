@@ -1,5 +1,0 @@
-if(EXISTS "C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/RemomTests[1]_tests.cmake")
-  include("C:/STU/devel/STU-Extras/RemomMapgenItchio/build_wasm/RemomTests[1]_tests.cmake")
-else()
-  add_test(RemomTests_NOT_BUILT RemomTests_NOT_BUILT)
-endif()
