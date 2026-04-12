@@ -190,4 +190,12 @@ add_executable(RemomTests
 )
 target_include_directories(RemomTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RemomTests PRIVATE MomData GTest::gtest_main)
+if(EMSCRIPTEN)
+    # Tests copy full Scenario objects — need more stack and growable memory.
+    # Powered by Claude.
+    target_link_options(RemomTests PRIVATE
+        -sALLOW_MEMORY_GROWTH=1
+        -sSTACK_SIZE=1048576
+    )
+endif()
 gtest_discover_tests(RemomTests)

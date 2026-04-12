@@ -35,4 +35,11 @@ std::vector<uint8_t> serialize_gam(const Scenario& scenario);
 // Powered by Claude.
 bool deserialize_gam(const std::vector<uint8_t>& data, Scenario& scenario);
 
+// Smooth terrain for export: add shores between land and ocean,
+// convert landlocked ocean to shore, normalize lakes, fix isolated rivers.
+// Operates on export_sc in-place; reads original for neighbor lookups.
+// Returns the number of squares modified.
+// Powered by Claude.
+int smooth_terrain_for_export(Scenario& export_sc, const Scenario& original);
+
 } // namespace mom

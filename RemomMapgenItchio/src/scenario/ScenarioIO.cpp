@@ -349,7 +349,7 @@ static json scenario_to_json(const Scenario& sc) {
     // Lairs (only populated)
     json lair_arr = json::array();
     for (auto& l : sc.lairs) {
-        if (l.type == 0 && l.wx == 0 && l.wy == 0) continue;
+        if (l.Intact <= -1) continue;
         json lj;
         lj["x"] = l.wx; lj["y"] = l.wy; lj["plane"] = l.wp;
         lj["type"] = l.type; lj["intact"] = l.Intact;

@@ -116,6 +116,39 @@ TEST_F(SmoothingValidatorTest, WrapAroundCheck) {
     EXPECT_EQ(violations.size(), 0u);
 }
 
+// Ocean square with no adjacent ocean (landlocked) should produce a violation.
+// Powered by Claude.
+TEST_F(SmoothingValidatorTest, OceanLandlockedReturnsViolation) {
+    // Single ocean square surrounded by grassland on all 8 sides.
+    world.set_terrain(15, 15, 0, mom::TERRAIN_OCEAN);
+    for (int dy = -1; dy <= 1; ++dy) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            if (dx == 0 && dy == 0) continue;
+            world.set_terrain(15 + dx, 15 + dy, 0, mom::TERRAIN_GRASSLAND);
+        }
+    }
+
+    auto violations = mom::SmoothingValidator::validate_tile(world, 0, 15, 15);
+
+    EXPECT_EQ(violations.size(), 1u);
+    EXPECT_EQ(violations[0].rule, mom::RULE_OCEAN_LANDLOCKED);
+}
+
+// Ocean square with at least one adjacent ocean should produce no violation.
+// Powered by Claude.
+TEST_F(SmoothingValidatorTest, OceanWithOceanNeighborNoViolation) {
+    world.set_terrain(15, 15, 0, mom::TERRAIN_OCEAN);
+    world.set_terrain(16, 15, 0, mom::TERRAIN_OCEAN);
+    // Other neighbors are land.
+    world.set_terrain(14, 15, 0, mom::TERRAIN_GRASSLAND);
+    world.set_terrain(15, 14, 0, mom::TERRAIN_GRASSLAND);
+    world.set_terrain(15, 16, 0, mom::TERRAIN_GRASSLAND);
+
+    auto violations = mom::SmoothingValidator::validate_tile(world, 0, 15, 15);
+
+    EXPECT_EQ(violations.size(), 0u);
+}
+
 // validate_plane should collect violations from all tiles on the plane.
 // Powered by Claude.
 TEST_F(SmoothingValidatorTest, ValidatePlaneReturnsAllViolations) {

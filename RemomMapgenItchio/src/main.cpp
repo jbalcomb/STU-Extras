@@ -112,90 +112,34 @@ static void do_export_gam(EditorState& state, Scenario& scenario) {
     scenario.game_data.Total_Units   = static_cast<uint16_t>(unit_count);
     scenario.game_data.Total_Wizards = static_cast<uint16_t>(wiz_count > 1 ? wiz_count : 1);
 
-    // Smooth terrain on a temporary copy before export.
-    // Adds shore tiles between land and ocean, removes orphan shores,
-    // and fixes isolated rivers. Editor world data is unchanged.
+    // Log entity state before export for diagnostics.
     // Powered by Claude.
-    Scenario export_sc = scenario;
-    int smoothed = 0;
-    auto wrap_x = [](int x) { return ((x % WORLD_WIDTH) + WORLD_WIDTH) % WORLD_WIDTH; };
-    static constexpr int dx4[] = { 0,  0, -1, 1};
-    static constexpr int dy4[] = {-1,  1,  0, 0};
-
-    for (int p = 0; p < NUM_PLANES; ++p) {
-        // Pass 1: Add shore between land and ocean.
-        // Any land tile cardinally adjacent to ocean becomes shore.
-        for (int y = 0; y < WORLD_HEIGHT; ++y) {
-            for (int x = 0; x < WORLD_WIDTH; ++x) {
-                uint16_t tile = scenario.world.get_terrain(x, y, p);
-                if (tile == TERRAIN_OCEAN || tile == TERRAIN_SHORE ||
-                    tile == TERRAIN_LAKE || tile == TERRAIN_RIVER)
-                    continue;
-                // Land tile — check if adjacent to ocean.
-                bool adj_ocean = false;
-                for (int d = 0; d < 4; ++d) {
-                    int ny = y + dy4[d];
-                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
-                    int nx = wrap_x(x + dx4[d]);
-                    uint16_t nb = scenario.world.get_terrain(nx, ny, p);
-                    if (nb == TERRAIN_OCEAN) { adj_ocean = true; break; }
-                }
-                if (adj_ocean) {
-                    export_sc.world.set_terrain(x, y, p, TERRAIN_SHORE);
-                    ++smoothed;
-                }
-            }
-        }
-
-        // Pass 2: Remove orphan shores (shore with no adjacent water).
-        for (int y = 0; y < WORLD_HEIGHT; ++y) {
-            for (int x = 0; x < WORLD_WIDTH; ++x) {
-                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_SHORE)
-                    continue;
-                bool has_water = false;
-                for (int d = 0; d < 4; ++d) {
-                    int ny = y + dy4[d];
-                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
-                    int nx = wrap_x(x + dx4[d]);
-                    uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
-                    if (nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
-                        has_water = true; break;
-                    }
-                }
-                if (!has_water) {
-                    // Replace with grassland.
-                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
-                    ++smoothed;
-                }
-            }
-        }
-
-        // Pass 3: Fix isolated rivers (river with no adjacent river/shore/ocean/lake).
-        for (int y = 0; y < WORLD_HEIGHT; ++y) {
-            for (int x = 0; x < WORLD_WIDTH; ++x) {
-                if (export_sc.world.get_terrain(x, y, p) != TERRAIN_RIVER)
-                    continue;
-                bool has_conn = false;
-                for (int d = 0; d < 4; ++d) {
-                    int ny = y + dy4[d];
-                    if (ny < 0 || ny >= WORLD_HEIGHT) continue;
-                    int nx = wrap_x(x + dx4[d]);
-                    uint16_t nb = export_sc.world.get_terrain(nx, ny, p);
-                    if (nb == TERRAIN_RIVER || nb == TERRAIN_SHORE ||
-                        nb == TERRAIN_OCEAN || nb == TERRAIN_LAKE) {
-                        has_conn = true; break;
-                    }
-                }
-                if (!has_conn) {
-                    export_sc.world.set_terrain(x, y, p, TERRAIN_GRASSLAND);
-                    ++smoothed;
-                }
-            }
+    printf("[export] %d wizards, %d cities, %d units\n",
+           wiz_count, city_count, unit_count);
+    for (int i = 0; i < NUM_TOWERS; ++i) {
+        auto& t = scenario.towers[i];
+        printf("[export] tower[%d]: wx=%d wy=%d owner=%d\n",
+               i, t.wx, t.wy, t.owner_idx);
+    }
+    for (int i = 0; i < NUM_FORTRESSES; ++i) {
+        auto& f = scenario.fortresses[i];
+        printf("[export] fortress[%d]: wx=%d wy=%d wp=%d active=%d\n",
+               i, f.wx, f.wy, f.wp, f.active);
+    }
+    for (int i = 0; i < NUM_CITIES; ++i) {
+        auto& c = scenario.cities[i];
+        if (c.is_active()) {
+            printf("[export] city[%d]: \"%s\" wx=%d wy=%d wp=%d owner=%d size=%d\n",
+                   i, c.name, c.wx, c.wy, c.wp, c.owner_idx, c.size);
         }
     }
 
+    // Smooth terrain on a temporary copy before export.
+    // Powered by Claude.
+    Scenario export_sc = scenario;
+    int smoothed = smooth_terrain_for_export(export_sc, scenario);
     if (smoothed > 0) {
-        printf("[main] export smoothing: fixed %d tiles\n", smoothed);
+        printf("[main] export smoothing: fixed %d squares\n", smoothed);
     }
 
     // Serialize and save the smoothed copy.
@@ -354,34 +298,49 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             break;
         }
         case EditorTool::PLACE_NODE: {
+            // Find first inactive node slot (owner_idx <= -1 means empty).
+            // Powered by Claude.
             for (int i = 0; i < NUM_NODES; ++i) {
-                if (scenario.nodes[i].power == 0 && scenario.nodes[i].wx == 0 && scenario.nodes[i].wy == 0) {
+                if (scenario.nodes[i].owner_idx <= -1) {
                     int idx = i;
+                    int8_t node_type = state.place_node_type;
                     auto cmd = std::make_unique<LambdaCommand>(
-                        [&scenario, &state, idx, wx, wy, plane]() {
+                        [&scenario, idx, wx, wy, plane, node_type]() {
                             auto& n = scenario.nodes[idx];
                             n.wx = static_cast<int8_t>(wx);
                             n.wy = static_cast<int8_t>(wy);
                             n.wp = static_cast<int8_t>(plane);
-                            n.type = state.place_node_type;
+                            n.type = node_type;
                             n.power = 5;
+                            n.owner_idx = 0; // mark active
                         },
                         [&scenario, idx]() {
                             scenario.nodes[idx] = Node{};
+                            scenario.nodes[idx].wx = 1;
+                            scenario.nodes[idx].wy = 1;
+                            scenario.nodes[idx].wp = 1;
+                            scenario.nodes[idx].owner_idx = -1;
                         }
                     );
                     undo.execute(std::move(cmd));
-                    break;
+                    return;
                 }
+            }
+            {
+                int used = 0;
+                for (int i = 0; i < NUM_NODES; ++i)
+                    if (!(scenario.nodes[i].owner_idx <= -1)) ++used;
+                printf("[DEBUG] node slots: %d/%d used\n", used, NUM_NODES);
+                state.set_status("All 30 node slots are full");
             }
             break;
         }
         case EditorTool::PLACE_TOWER: {
-            // Find first inactive tower slot (wx==0 && wy==0 means empty).
+            // Find first inactive tower slot (owner_idx <= -1 means empty).
             // Powered by Claude.
             for (int i = 0; i < NUM_TOWERS; ++i) {
                 auto& t = scenario.towers[i];
-                if (t.wx == 0 && t.wy == 0) {
+                if (t.owner_idx <= -1) {
                     int idx = i;
                     auto cmd = std::make_unique<LambdaCommand>(
                         [&scenario, idx, wx, wy]() {
@@ -392,6 +351,9 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
                         },
                         [&scenario, idx]() {
                             scenario.towers[idx] = Tower{};
+                            scenario.towers[idx].wx = 1;
+                            scenario.towers[idx].wy = 1;
+                            scenario.towers[idx].owner_idx = -1;
                         }
                     );
                     undo.execute(std::move(cmd));
@@ -450,11 +412,11 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             break;
         }
         case EditorTool::PLACE_LAIR: {
-            // Find first inactive lair slot (wx==0 && wy==0 means empty).
+            // Find first inactive lair slot (Intact <= -1 means empty).
             // Powered by Claude.
             for (int i = 0; i < NUM_LAIRS; ++i) {
                 auto& l = scenario.lairs[i];
-                if (l.wx == 0 && l.wy == 0) {
+                if (l.Intact <= -1) {
                     int idx = i;
                     auto cmd = std::make_unique<LambdaCommand>(
                         [&scenario, idx, wx, wy, plane]() {
@@ -467,6 +429,10 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
                         },
                         [&scenario, idx]() {
                             scenario.lairs[idx] = Lair{};
+                            scenario.lairs[idx].wx = 1;
+                            scenario.lairs[idx].wy = 1;
+                            scenario.lairs[idx].wp = 1;
+                            scenario.lairs[idx].Intact = -1;
                         }
                     );
                     undo.execute(std::move(cmd));
@@ -505,15 +471,41 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
                     return;
                 }
             }
+            // Erase nodes at cursor.
+            // Powered by Claude.
+            for (int i = 0; i < NUM_NODES; ++i) {
+                auto& n = scenario.nodes[i];
+                if (!(n.owner_idx <= -1) && n.wx == wx && n.wy == wy && n.wp == plane) {
+                    Node backup = n;
+                    int idx = i;
+                    auto cmd = std::make_unique<LambdaCommand>(
+                        [&scenario, idx]() {
+                            scenario.nodes[idx] = Node{};
+                            scenario.nodes[idx].wx = 1;
+                            scenario.nodes[idx].wy = 1;
+                            scenario.nodes[idx].wp = 1;
+                            scenario.nodes[idx].owner_idx = -1;
+                        },
+                        [&scenario, idx, backup]() { scenario.nodes[idx] = backup; }
+                    );
+                    undo.execute(std::move(cmd));
+                    return;
+                }
+            }
             // Erase towers at cursor.
             // Powered by Claude.
             for (int i = 0; i < NUM_TOWERS; ++i) {
                 auto& t = scenario.towers[i];
-                if (!(t.wx == 0 && t.wy == 0) && t.wx == wx && t.wy == wy) {
+                if (!(t.owner_idx <= -1) && t.wx == wx && t.wy == wy) {
                     Tower backup = t;
                     int idx = i;
                     auto cmd = std::make_unique<LambdaCommand>(
-                        [&scenario, idx]() { scenario.towers[idx] = Tower{}; },
+                        [&scenario, idx]() {
+                            scenario.towers[idx] = Tower{};
+                            scenario.towers[idx].wx = 1;
+                            scenario.towers[idx].wy = 1;
+                            scenario.towers[idx].owner_idx = -1;
+                        },
                         [&scenario, idx, backup]() { scenario.towers[idx] = backup; }
                     );
                     undo.execute(std::move(cmd));
@@ -539,11 +531,17 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             // Powered by Claude.
             for (int i = 0; i < NUM_LAIRS; ++i) {
                 auto& l = scenario.lairs[i];
-                if (!(l.wx == 0 && l.wy == 0) && l.wx == wx && l.wy == wy && l.wp == plane) {
+                if (!(l.Intact <= -1) && l.wx == wx && l.wy == wy && l.wp == plane) {
                     Lair backup = l;
                     int idx = i;
                     auto cmd = std::make_unique<LambdaCommand>(
-                        [&scenario, idx]() { scenario.lairs[idx] = Lair{}; },
+                        [&scenario, idx]() {
+                            scenario.lairs[idx] = Lair{};
+                            scenario.lairs[idx].wx = 1;
+                            scenario.lairs[idx].wy = 1;
+                            scenario.lairs[idx].wp = 1;
+                            scenario.lairs[idx].Intact = -1;
+                        },
                         [&scenario, idx, backup]() { scenario.lairs[idx] = backup; }
                     );
                     undo.execute(std::move(cmd));
@@ -576,7 +574,7 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             // Powered by Claude.
             for (int i = 0; i < NUM_NODES; ++i) {
                 auto& n = scenario.nodes[i];
-                if (!(n.wx == 0 && n.wy == 0) && n.wx == wx && n.wy == wy && n.wp == plane) {
+                if (!(n.owner_idx <= -1) && n.wx == wx && n.wy == wy && n.wp == plane) {
                     state.selected_node = i;
                     return;
                 }
@@ -585,7 +583,7 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             // Powered by Claude.
             for (int i = 0; i < NUM_TOWERS; ++i) {
                 auto& t = scenario.towers[i];
-                if (!(t.wx == 0 && t.wy == 0) && t.wx == wx && t.wy == wy) {
+                if (!(t.owner_idx <= -1) && t.wx == wx && t.wy == wy) {
                     state.selected_tower = i;
                     return;
                 }
@@ -603,7 +601,7 @@ static void apply_tool(EditorState& state, Scenario& scenario, UndoStack& undo) 
             // Powered by Claude.
             for (int i = 0; i < NUM_LAIRS; ++i) {
                 auto& l = scenario.lairs[i];
-                if (!(l.wx == 0 && l.wy == 0) && l.wx == wx && l.wy == wy && l.wp == plane) {
+                if (!(l.Intact <= -1) && l.wx == wx && l.wy == wy && l.wp == plane) {
                     state.selected_lair = i;
                     return;
                 }
@@ -642,7 +640,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 int main(int, char**) {
 #endif
     static AppState app;
-    printf("=== MoM Scenario Editor BUILD 2026-03-12a (map-area wizard panel) ===\n");
+    printf("=== MoM Scenario Editor v%s (%s %s) ===\n",
+           EDITOR_VERSION, __DATE__, __TIME__);
 
     if (!app.renderer.init("MoM Scenario Editor", 1280, 720)) {
         std::fprintf(stderr, "Failed to initialize SDL2\n");
@@ -678,6 +677,27 @@ int main(int, char**) {
 #endif
 
     app.scenario.clear();
+
+    // Debug: dump entity state at startup for diagnostics.
+    printf("[DEBUG] cursor: wx=%d wy=%d\n",
+           app.editor_state.cursor_wx, app.editor_state.cursor_wy);
+    for (int i = 0; i < NUM_TOWERS; ++i) {
+        auto& t = app.scenario.towers[i];
+        if (t.wx != 0 || t.wy != 0)
+            printf("[DEBUG] tower[%d]: wx=%d wy=%d owner=%d\n",
+                   i, t.wx, t.wy, t.owner_idx);
+    }
+    for (int i = 0; i < NUM_FORTRESSES; ++i) {
+        auto& f = app.scenario.fortresses[i];
+        if (f.active != 0)
+            printf("[DEBUG] fortress[%d]: wx=%d wy=%d active=%d\n",
+                   i, f.wx, f.wy, f.active);
+    }
+    for (int i = 0; i < NUM_NODES; ++i) {
+        auto& n = app.scenario.nodes[i];
+        if (n.wx != 0 || n.wy != 0)
+            printf("[DEBUG] node[%d]: wx=%d wy=%d\n", i, n.wx, n.wy);
+    }
 
     // Fill with grassland by default
     for (int p = 0; p < NUM_PLANES; ++p) {
