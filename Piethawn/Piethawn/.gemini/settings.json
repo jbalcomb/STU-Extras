@@ -1,0 +1,8 @@
+{
+  "context": {
+    "includeDirectoryTree": false
+  },
+  "ui": {
+    "errorVerbosity": "low"
+  }
+}

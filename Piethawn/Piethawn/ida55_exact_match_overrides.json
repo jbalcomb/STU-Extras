@@ -1,0 +1,194 @@
+{
+  "description": "Known cross-game segment mappings that should be treated as exact-match domains by ordinal function position.",
+  "games": [
+    "MAGIC",
+    "WIZARDS"
+  ],
+  "segment_pairs": [
+    {
+      "magic_segment": "seg002",
+      "wizards_segment": "seg002",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg003",
+      "wizards_segment": "seg003",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg004",
+      "wizards_segment": "seg004",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg005",
+      "wizards_segment": "seg005",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg006",
+      "wizards_segment": "seg006",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg007",
+      "wizards_segment": "seg007",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg008",
+      "wizards_segment": "seg008",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg009",
+      "wizards_segment": "seg009",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg010",
+      "wizards_segment": "seg010",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg011",
+      "wizards_segment": "seg011",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg012",
+      "wizards_segment": "seg012",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg013",
+      "wizards_segment": "seg013",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg014",
+      "wizards_segment": "seg014",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg015",
+      "wizards_segment": "seg015",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg016",
+      "wizards_segment": "seg016",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg017",
+      "wizards_segment": "seg017",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg018",
+      "wizards_segment": "seg018",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg019",
+      "wizards_segment": "seg019",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg020",
+      "wizards_segment": "seg020",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg021",
+      "wizards_segment": "seg021",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg022",
+      "wizards_segment": "seg022",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg023",
+      "wizards_segment": "seg023",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg024",
+      "wizards_segment": "seg024",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg025",
+      "wizards_segment": "seg025",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg026",
+      "wizards_segment": "seg028",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg027",
+      "wizards_segment": "seg029",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg028",
+      "wizards_segment": "seg030",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg029",
+      "wizards_segment": "seg031",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg030",
+      "wizards_segment": "seg032",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg031",
+      "wizards_segment": "seg033",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg032",
+      "wizards_segment": "seg034",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg033",
+      "wizards_segment": "seg035",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "seg034",
+      "wizards_segment": "seg036",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "_AIL_",
+      "wizards_segment": "_AIL_",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "SOUND",
+      "wizards_segment": "SOUND",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "stub048",
+      "wizards_segment": "stub050",
+      "pairing": "by_position"
+    },
+    {
+      "magic_segment": "ovr048",
+      "wizards_segment": "ovr050",
+      "pairing": "by_position"
+    }
+  ]
+}

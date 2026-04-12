@@ -1,0 +1,100 @@
+{
+  "app_paths_keys": [],
+  "likely_install_locations": [],
+  "likely_setting_values": [
+    {
+      "hive": "HKCU",
+      "name": "InputDirectory",
+      "path": "Software\\Hex-Rays\\IDA",
+      "value": "C:\\STU_DASM\\IDA55\\idc",
+      "value_type": 1
+    },
+    {
+      "hive": "HKCU",
+      "name": "0",
+      "path": "Software\\Hex-Rays\\IDA\\History",
+      "value": "C:\\STU_DASM\\IDA55_MOM131\\MAGIC.idb",
+      "value_type": 1
+    }
+  ],
+  "platform": "win32",
+  "uninstall_keys": [],
+  "vendor_keys": [
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays",
+      "subkeys": [
+        "IDA"
+      ],
+      "values": []
+    },
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays\\IDA",
+      "subkeys": [
+        "Hidden Messages",
+        "History",
+        "History64",
+        "ScriptBar"
+      ],
+      "values": [
+        {
+          "name": "License Valued Client",
+          "value": 1,
+          "value_type": 4
+        },
+        {
+          "name": "InputDirectory",
+          "value": "C:\\STU_DASM\\IDA55\\idc",
+          "value_type": 1
+        },
+        {
+          "name": "SupportExpiredDisplayed_1.1.0.090909",
+          "value": 1773244846,
+          "value_type": 4
+        },
+        {
+          "name": "SplashWindow",
+          "value": 0,
+          "value_type": 4
+        }
+      ]
+    },
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays\\IDA\\Hidden Messages",
+      "subkeys": [],
+      "values": [
+        {
+          "name": "The technical support period of the Hex Rays decompiler has expired  You have 3 month grace period t",
+          "value": 0,
+          "value_type": 4
+        }
+      ]
+    },
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays\\IDA\\History",
+      "subkeys": [],
+      "values": [
+        {
+          "name": "0",
+          "value": "C:\\STU_DASM\\IDA55_MOM131\\MAGIC.idb",
+          "value_type": 1
+        }
+      ]
+    },
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays\\IDA\\History64",
+      "subkeys": [],
+      "values": []
+    },
+    {
+      "hive": "HKCU",
+      "path": "Software\\Hex-Rays\\IDA\\ScriptBar",
+      "subkeys": [],
+      "values": []
+    }
+  ]
+}

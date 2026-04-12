@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gemini skills:*)",
+      "Read(//c/Users/jbalcomb/.gemini/**)",
+      "WebSearch",
+      "WebFetch(domain:geminicli.com)",
+      "WebFetch(domain:codelabs.developers.google.com)",
+      "Read(//c/Users/jbalcomb/.agents/**)",
+      "WebFetch(domain:danicat.dev)",
+      "Read(//c/Users/jbalcomb/**)"
+    ]
+  }
+}
