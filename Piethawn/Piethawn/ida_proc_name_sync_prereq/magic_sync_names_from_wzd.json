@@ -1,0 +1,1150 @@
+{
+  "schema_version": 1,
+  "artifact": "magic_proc_name_sync_handoff",
+  "renames": [
+    {
+      "old_name": "UU_SND_SetMIDIVol",
+      "new_name": "Set_Music_Volume__STUB"
+    },
+    {
+      "old_name": "UU_SND_GetMIDIVol",
+      "new_name": "Get_Music_Volume__STUB"
+    },
+    {
+      "old_name": "UU_SND_Silence",
+      "new_name": "Stop_All_Sounds__STUB"
+    },
+    {
+      "old_name": "SND_Get_Seq_Status",
+      "new_name": "Midi_Sequence_Status"
+    },
+    {
+      "old_name": "UU_SND_LegacyFn",
+      "new_name": "NX_UU_SND_LegacyFn"
+    },
+    {
+      "old_name": "_AIL_start_digi_play",
+      "new_name": "_AIL_start_digital_playback"
+    },
+    {
+      "old_name": "_AIL_stop_digi_play",
+      "new_name": "_AIL_stop_digital_playback"
+    },
+    {
+      "old_name": "_AIL_register_seq",
+      "new_name": "_AIL_register_sequence"
+    },
+    {
+      "old_name": "_AIL_t_cache_size",
+      "new_name": "_AIL_default_timbre_cache_size"
+    },
+    {
+      "old_name": "_AIL_define_t_cache",
+      "new_name": "_AIL_define_timbre_cache"
+    },
+    {
+      "old_name": "_AIL_timbre_req",
+      "new_name": "_AIL_timbre_request"
+    },
+    {
+      "old_name": "UU_AIL_set_rel_volume",
+      "new_name": "_AIL_set_rel_volume"
+    },
+    {
+      "old_name": "RP_CLK_ExtWait",
+      "new_name": "UU_CLK_ExtWait"
+    },
+    {
+      "old_name": "Wait_For_Vsync_",
+      "new_name": "VGA_WaitSync"
+    },
+    {
+      "old_name": "RP_Return_Ignore",
+      "new_name": "UU_Return_Ignore"
+    },
+    {
+      "old_name": "RP_DISK_GetSpace",
+      "new_name": "UU_Botched_DISK_GetSpace"
+    },
+    {
+      "old_name": "RP_DISK_GetDefaultDrive",
+      "new_name": "UU_DISK_GetDefaultDrive"
+    },
+    {
+      "old_name": "UU_Exit_With_Value",
+      "new_name": "Exit_With_Value"
+    },
+    {
+      "old_name": "Update_MemFreeWorst_KB",
+      "new_name": "Check_Free"
+    },
+    {
+      "old_name": "RP_VGA_B800Dump",
+      "new_name": "UU_VGA_B800Dump"
+    },
+    {
+      "old_name": "RP_VGA_TextModeString",
+      "new_name": "UU_VGA_TextModeString"
+    },
+    {
+      "old_name": "UU_DOS_PrintString",
+      "new_name": "Print_Message"
+    },
+    {
+      "old_name": "dos_memfree_kb",
+      "new_name": "Dos_Free"
+    },
+    {
+      "old_name": "UU_DOS_Allocate_Space",
+      "new_name": "UU_SAMB_DOS_Allocate_Memory"
+    },
+    {
+      "old_name": "UU_DOS_MemBlk_Alloc",
+      "new_name": "UU_DOS_MemAlloc"
+    },
+    {
+      "old_name": "UU_DOS_MemBlk_Free",
+      "new_name": "UU_DOS_MemFree"
+    },
+    {
+      "old_name": "UU_farpokedw",
+      "new_name": "farpokedw"
+    },
+    {
+      "old_name": "UU_Near_Allocate_Reset",
+      "new_name": "Near_Allocate_Reset"
+    },
+    {
+      "old_name": "SA_Allocate_MemBlk_EntrySize",
+      "new_name": "Allocate_Space_No_Header__EntrySize"
+    },
+    {
+      "old_name": "UU_SA_Alloc_Reset",
+      "new_name": "Reset_First_Block"
+    },
+    {
+      "old_name": "UU_SA_MK_FP_Norm",
+      "new_name": "UU_combine_32"
+    },
+    {
+      "old_name": "UU_SA_Deallocate_Space",
+      "new_name": "UU_LBX_Alloc_Free"
+    },
+    {
+      "old_name": "RP_LBXR_LoadReplace",
+      "new_name": "UU_LBXR_LoadReplace"
+    },
+    {
+      "old_name": "RP_LBXR_LoadAppend",
+      "new_name": "UU_LBXR_LoadAppend"
+    },
+    {
+      "old_name": "LBX_Load_Library",
+      "new_name": "LBX_Load_Entry"
+    },
+    {
+      "old_name": "LBX_Load_Record",
+      "new_name": "LBX_Load_Library_Data"
+    },
+    {
+      "old_name": "LBX_GetEntryData",
+      "new_name": "LBX_Get_Entry_Data"
+    },
+    {
+      "old_name": "EMM_GetActiveHandleCount",
+      "new_name": "EMM_Number_Of_Handles"
+    },
+    {
+      "old_name": "EMM_GetFreePageCount",
+      "new_name": "EMM_Get_Free_Page_Count"
+    },
+    {
+      "old_name": "EMS_GetHandlePageCount",
+      "new_name": "EMM_GetPageCount"
+    },
+    {
+      "old_name": "EMS_MakeNamedHandle",
+      "new_name": "EMM_MakeNamedHandle"
+    },
+    {
+      "old_name": "EMS_GetHandleName",
+      "new_name": "EMM_Get_Handle_Name"
+    },
+    {
+      "old_name": "EMM_ReleaseHandle",
+      "new_name": "EMM_Release_Handle"
+    },
+    {
+      "old_name": "EMM_GetPageFrame",
+      "new_name": "EMM_Get_Page_Frame"
+    },
+    {
+      "old_name": "EMM_Map4",
+      "new_name": "EMM_MapFourPages"
+    },
+    {
+      "old_name": "UU_EMM_Load_LBX_0",
+      "new_name": "EMM_Load_LBX_File_0"
+    },
+    {
+      "old_name": "UU_EMM_LoadLBX2Hnd",
+      "new_name": "RP_EMM_LoadLBX2Hnd"
+    },
+    {
+      "old_name": "UU_EMM_LoadLBX2Hnd2",
+      "new_name": "RP_EMM_LoadLBX2Hnd2"
+    },
+    {
+      "old_name": "EMM_LBX_Load_Entry",
+      "new_name": "EMM_LBX_EntryLoader"
+    },
+    {
+      "old_name": "EMM_LBX_Load_FLIC_Header",
+      "new_name": "EMM_LBX_Load_Picture_Header"
+    },
+    {
+      "old_name": "EMM_LBX_Load_Record",
+      "new_name": "EMM_LBX_RecLoader"
+    },
+    {
+      "old_name": "EMM_ReleaseAll__STUB",
+      "new_name": "EMM_Release_All"
+    },
+    {
+      "old_name": "UU_Get_EMM_OK",
+      "new_name": "UU_EMM_Available"
+    },
+    {
+      "old_name": "UU_EMM_VGAWrite_fP5",
+      "new_name": "RP_EMM_VGAWrite_fP5"
+    },
+    {
+      "old_name": "UU_EMM_VGARead_fP5",
+      "new_name": "RP_EMM_VGARead_fP5"
+    },
+    {
+      "old_name": "UU_EMM_VGAWrite_P5",
+      "new_name": "RP_EMM_VGAWrite_P5"
+    },
+    {
+      "old_name": "UU_EMM_VGARead_P5",
+      "new_name": "RP_EMM_VGARead_P5"
+    },
+    {
+      "old_name": "EMM_Map4_EMMDATAH",
+      "new_name": "EMMDATAH_Map"
+    },
+    {
+      "old_name": "EMM_EMMDATAH_AllocFirst",
+      "new_name": "EMMDATAH_Allocate_First"
+    },
+    {
+      "old_name": "EMM_EMMDATAH_AllocNext",
+      "new_name": "EMMDATAH_Allocate_Next"
+    },
+    {
+      "old_name": "UU_EMM_Data_Mark",
+      "new_name": "EMMDATAH_Save_Last_Offset"
+    },
+    {
+      "old_name": "UU_EMM_Data_Undo",
+      "new_name": "EMMDATAH_Restore_Last_Offset"
+    },
+    {
+      "old_name": "RP_EMM_LBX_Load2Hnd",
+      "new_name": "UU_EMM_LBX_Load2Hnd"
+    },
+    {
+      "old_name": "EMS_BuildEmsErrStr",
+      "new_name": "EMM_Error_Message"
+    },
+    {
+      "old_name": "VGA_WndDrawFilldRect",
+      "new_name": "Clipped_Fill"
+    },
+    {
+      "old_name": "UU_VGA_WndPutPixel",
+      "new_name": "Clipped_Dot"
+    },
+    {
+      "old_name": "VGA_WndDrawLine",
+      "new_name": "Clipped_Line"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawPtrnLine",
+      "new_name": "Clipped_Multi_Colored_Line"
+    },
+    {
+      "old_name": "VGA_WndDrawLineBase",
+      "new_name": "Clipped_Line_Base"
+    },
+    {
+      "old_name": "UU_VGA_DrawBiColorRect",
+      "new_name": "UU_Interlaced_Fill"
+    },
+    {
+      "old_name": "VGA_DrawDblRect",
+      "new_name": "UU_VGA_DrawDblRect"
+    },
+    {
+      "old_name": "RP_VGA_DiagColumns",
+      "new_name": "UU_VGA_DiagColumns"
+    },
+    {
+      "old_name": "RNG_Direct_LFSR",
+      "new_name": "rnd_bitfiddle__1oom"
+    },
+    {
+      "old_name": "VGA_Shade_Rect",
+      "new_name": "Tint_Fill"
+    },
+    {
+      "old_name": "VGA_Grayscale_Rect",
+      "new_name": "Gray_Scale_Fill"
+    },
+    {
+      "old_name": "RP_VGA_Columns",
+      "new_name": "UU_VGA_Columns"
+    },
+    {
+      "old_name": "RP_VGA_ScrambleRect",
+      "new_name": "UU_VGA_ScrambleRect"
+    },
+    {
+      "old_name": "VGA_SetFont_Style2",
+      "new_name": "Set_Font_Style_Shadow_Up"
+    },
+    {
+      "old_name": "UU_VGA_SetFont_Style3",
+      "new_name": "Set_Font_Style_Shadow_Heavy"
+    },
+    {
+      "old_name": "UU_VGA_SetFont_Style4",
+      "new_name": "Set_Font_Style_Outline"
+    },
+    {
+      "old_name": "UU_VGA_SetFont_Style5",
+      "new_name": "Set_Font_Style_Outline_Heavy"
+    },
+    {
+      "old_name": "UU_VGA_SetSpaceWidth",
+      "new_name": "Set_Font_Spacing_Width"
+    },
+    {
+      "old_name": "UU_VGA_SetHorzSpacing",
+      "new_name": "Set_Font_Spacing"
+    },
+    {
+      "old_name": "UU_VGA_BotchedFColor",
+      "new_name": "Set_Font_Highlight_Colors"
+    },
+    {
+      "old_name": "VGA_SetAAColor",
+      "new_name": "Set_Alias_Color"
+    },
+    {
+      "old_name": "VGA_SaveAAColors",
+      "new_name": "Save_Alias_Colors"
+    },
+    {
+      "old_name": "VGA_RestoreAAColors",
+      "new_name": "Restore_Alias_Colors"
+    },
+    {
+      "old_name": "UU_VGA_DrawCenteredFar",
+      "new_name": "Print_Centered_Far"
+    },
+    {
+      "old_name": "UU_VGA_DrawRtAlgFar",
+      "new_name": "Print_Right_Far"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawFarString",
+      "new_name": "Clipped_Print_Far"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawCntrdFar",
+      "new_name": "Clipped_Print_Centered_Far"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawRtAlgFar",
+      "new_name": "Clipped_Print_Right_Far"
+    },
+    {
+      "old_name": "UU_VGA_DrawNumber",
+      "new_name": "Print_Integer"
+    },
+    {
+      "old_name": "UU_VGA_DrawLongNumber",
+      "new_name": "Print_Long"
+    },
+    {
+      "old_name": "UU_VGA_DrawCntrdNumber",
+      "new_name": "Print_Integer_Centered"
+    },
+    {
+      "old_name": "UU_VGA_DrawRtAlgLongN",
+      "new_name": "Print_Long_Right"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawNumber",
+      "new_name": "Clipped_Print_Integer"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawLongN",
+      "new_name": "Clipped_Print_Long"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawRtAligned",
+      "new_name": "Clipped_Print_Right"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawCentered",
+      "new_name": "Clipped_Print_Centered"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawRtAlgNum",
+      "new_name": "Clipped_Print_Integer_Right"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawRtAlgLong",
+      "new_name": "Clipped_Print_Long_Right"
+    },
+    {
+      "old_name": "VGA_DrawJustified",
+      "new_name": "Print_Full"
+    },
+    {
+      "old_name": "VGA_DrawString",
+      "new_name": "Print_String"
+    },
+    {
+      "old_name": "UU_VGA_DisableAAPixels",
+      "new_name": "No_Print_Alias"
+    },
+    {
+      "old_name": "FNT_FontColorSelect_0",
+      "new_name": "Set_Normal_Colors_On"
+    },
+    {
+      "old_name": "FNT_FontColorSelect_0or1",
+      "new_name": "Set_Highlight_Colors_On"
+    },
+    {
+      "old_name": "FNT_FontColorSelect_0or2",
+      "new_name": "Set_Special_Colors_On"
+    },
+    {
+      "old_name": "FNT_FontColorSelect",
+      "new_name": "Set_Color_Set"
+    },
+    {
+      "old_name": "UU_DBG_TblDrawValue",
+      "new_name": "PSTRM"
+    },
+    {
+      "old_name": "UU_DBG_TblCellWrapper",
+      "new_name": "Disp_PSTR_Wrapper"
+    },
+    {
+      "old_name": "UU_DBG_TblDrawString",
+      "new_name": "PSTRS"
+    },
+    {
+      "old_name": "UU_DBG_TblDrawS16",
+      "new_name": "PSTR"
+    },
+    {
+      "old_name": "UU_DBG_TblDrawS32",
+      "new_name": "PSTRL"
+    },
+    {
+      "old_name": "UU_DBG_TblDrawU32",
+      "new_name": "PSTRU"
+    },
+    {
+      "old_name": "UU_DBG_DrawTableCell",
+      "new_name": "Disp_PSTR"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawSString",
+      "new_name": "Clipped_Print"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawString",
+      "new_name": "Clipped_Print_String"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawChar",
+      "new_name": "Clipped_Print_Character"
+    },
+    {
+      "old_name": "VGA_GetFontIndex",
+      "new_name": "Get_Current_Font_Style"
+    },
+    {
+      "old_name": "VGA_GetFontColor1",
+      "new_name": "Get_Current_Normal_Color"
+    },
+    {
+      "old_name": "VGA_GetFontColor2",
+      "new_name": "Get_Current_Highlight_Color"
+    },
+    {
+      "old_name": "UU_VGA_GetFontColor3",
+      "new_name": "Get_Current_Special_Color"
+    },
+    {
+      "old_name": "UU_STR_CopyToNearLBX",
+      "new_name": "String_Copy_Far_To_Near"
+    },
+    {
+      "old_name": "VGA_GetVertSpacing",
+      "new_name": "Get_Font_Vertical_Spacing"
+    },
+    {
+      "old_name": "UU_LBX_DrawRightAligned",
+      "new_name": "Print_Right_To_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_DrawCentered",
+      "new_name": "Print_Centered_To_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_DrawJustified",
+      "new_name": "Print_Full_To_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_DrawFarString",
+      "new_name": "Print_To_Bitmap_Far"
+    },
+    {
+      "old_name": "UU_LBX_DrawRtAlgFar",
+      "new_name": "UU_Print_Right_To_Bitmap_Far"
+    },
+    {
+      "old_name": "UU_LBX_DrawCenteredFar",
+      "new_name": "UU_Print_Centered_To_Bitmap_Far"
+    },
+    {
+      "old_name": "UU_LBX_DrawJustifiedFar",
+      "new_name": "UU_Print_Full_To_Bitmap_Far"
+    },
+    {
+      "old_name": "VGA_DrawChar_NoAA",
+      "new_name": "Print_Character_No_Alias"
+    },
+    {
+      "old_name": "LBX_DrawGlyph",
+      "new_name": "Print_Character_To_Bitmap"
+    },
+    {
+      "old_name": "VGA_DrawGlyph_NoAA",
+      "new_name": "Print_Character_No_Alias_ASM_"
+    },
+    {
+      "old_name": "VGA_DrawPartialChar",
+      "new_name": "Print_Clipped_Character"
+    },
+    {
+      "old_name": "VGA_DrawPartialGlyph",
+      "new_name": "Print_Clipped_Letter"
+    },
+    {
+      "old_name": "VGA_TextSetup",
+      "new_name": "Mark_Paragraph"
+    },
+    {
+      "old_name": "VGA_GetTextHeight",
+      "new_name": "Get_Paragraph_Max_Height"
+    },
+    {
+      "old_name": "VGA_GetTextWidth",
+      "new_name": "Get_Paragraph_Max_Width"
+    },
+    {
+      "old_name": "UU_VGA_ResetFltBlocks",
+      "new_name": "Reset_Paragraph_Exclusions"
+    },
+    {
+      "old_name": "UU_VGA_AddFloatingBlock",
+      "new_name": "Set_Paragraph_Exclusion_Area"
+    },
+    {
+      "old_name": "UU_VGA_AddFltIMGSpace",
+      "new_name": "UU_Set_Paragraph_Exclusion_Picture"
+    },
+    {
+      "old_name": "STR_RemoveLBSPs",
+      "new_name": "Remove_Paragraph_Marks"
+    },
+    {
+      "old_name": "VGA_GetFontHeight",
+      "new_name": "Get_Font_Height"
+    },
+    {
+      "old_name": "UU_LBX_DrawText",
+      "new_name": "Print_Paragraph_To_Bitmap"
+    },
+    {
+      "old_name": "UU_VGA_ResetShade0",
+      "new_name": "Update_Remap_Gray_Palette"
+    },
+    {
+      "old_name": "VGA_SetShades_Grey0",
+      "new_name": "Calculate_Remap_Colors"
+    },
+    {
+      "old_name": "UU_VGA_SetShades_Range",
+      "new_name": "Update_Remap_Color_Range"
+    },
+    {
+      "old_name": "UU_PAL_ClearPalette",
+      "new_name": "NX_VGA_ClearDAC"
+    },
+    {
+      "old_name": "UU_PAL_SavePalette",
+      "new_name": "NX_VGA_SaveDAC"
+    },
+    {
+      "old_name": "UU_PAL_RestorePalette",
+      "new_name": "NX_VGA_RestoreDAC"
+    },
+    {
+      "old_name": "UU_Set_Palette_Colors",
+      "new_name": "NX_VGA_LoadDAC"
+    },
+    {
+      "old_name": "UU_Reset_Cycle_Palette_Color",
+      "new_name": "Reset_Cycle_Palette_Color"
+    },
+    {
+      "old_name": "UU_Cycle_Palette_Color",
+      "new_name": "Cycle_Palette_Color__STUB"
+    },
+    {
+      "old_name": "UU_Update_Cycle",
+      "new_name": "Update_Cycle"
+    },
+    {
+      "old_name": "UU_Set_Palette_Gradient",
+      "new_name": "NX_VGA_CreateHues"
+    },
+    {
+      "old_name": "UU_VGA_ShadeScreen",
+      "new_name": "Tint_Palette"
+    },
+    {
+      "old_name": "UU_VGA_SlideColors",
+      "new_name": "VGA_SlideColors__STUB"
+    },
+    {
+      "old_name": "UU_VGA_ColorWave",
+      "new_name": "NX_VGA_ColorWave"
+    },
+    {
+      "old_name": "VGA_ShadeColorMatch",
+      "new_name": "Create_Remap_Palette"
+    },
+    {
+      "old_name": "RP_MEM_Copy",
+      "new_name": "Copy_Memory_Near"
+    },
+    {
+      "old_name": "RP_MEM_CopyIfLess",
+      "new_name": "UU_MEM_CopyIfLess"
+    },
+    {
+      "old_name": "RP_MEM_Clear_Near",
+      "new_name": "UU_MEM_Clear_Near"
+    },
+    {
+      "old_name": "RP_MEM_Set_Near",
+      "new_name": "UU_MEM_Set_Near"
+    },
+    {
+      "old_name": "RP_MEM_PullRecord",
+      "new_name": "Clear_Structure"
+    },
+    {
+      "old_name": "RP_MEM_PullDynRecord",
+      "new_name": "Delete_Structure"
+    },
+    {
+      "old_name": "RP_MEM_CopyIfLess_Far",
+      "new_name": "Copy_Memory_Less"
+    },
+    {
+      "old_name": "RP_MEM_Clear_Far",
+      "new_name": "Clear_Memory"
+    },
+    {
+      "old_name": "RP_MEM_Set_Far",
+      "new_name": "Set_Memory"
+    },
+    {
+      "old_name": "RP_MEM_SwapWord",
+      "new_name": "Swap_Short"
+    },
+    {
+      "old_name": "RP_MEM_SwapBytes",
+      "new_name": "MEM_SwapBytes"
+    },
+    {
+      "old_name": "RP_MEM_TestBit_Far",
+      "new_name": "Test_Bit_Field"
+    },
+    {
+      "old_name": "RP_MEM_SetBit_Far",
+      "new_name": "Set_Bit_Field"
+    },
+    {
+      "old_name": "RP_MEM_ClearBit_Far",
+      "new_name": "Clear_Bit_Field"
+    },
+    {
+      "old_name": "RP_MEM_TestBit_Near",
+      "new_name": "MEM_TestBit_Near"
+    },
+    {
+      "old_name": "UU_MEM_SetBit_Near",
+      "new_name": "Set_Bit_Field_Near"
+    },
+    {
+      "old_name": "UU_VGA_GrowOutFlip",
+      "new_name": "Draw_Expanding_Bitmap"
+    },
+    {
+      "old_name": "PageFlip_GrowOut_CopyScreen",
+      "new_name": "Copy_Screen_To_Bitmap"
+    },
+    {
+      "old_name": "UU_Tile_PlotLine",
+      "new_name": "Path"
+    },
+    {
+      "old_name": "DBG_Quit",
+      "new_name": "F11_Key__WIP"
+    },
+    {
+      "old_name": "DBG_ScreenDump",
+      "new_name": "Screen_Flic_Capture"
+    },
+    {
+      "old_name": "UU_VGA_SaveDrawSection",
+      "new_name": "Screen_Picture_Capture"
+    },
+    {
+      "old_name": "UU_VGA_CopyToLBX",
+      "new_name": "Capture_Screen_Block"
+    },
+    {
+      "old_name": "VGA_FILEH_Draw",
+      "new_name": "Draw_File_Animation_Frame_ASM"
+    },
+    {
+      "old_name": "VGA_MapNextEMMPage",
+      "new_name": "Map_File_Animation_Frame_ASM"
+    },
+    {
+      "old_name": "VGA_FILEH_Draw_R",
+      "new_name": "Remap_Draw_File_Animation_Frame_ASM"
+    },
+    {
+      "old_name": "VGA_SaveDraw_Frame4",
+      "new_name": "Copy_Off_To_Page4"
+    },
+    {
+      "old_name": "VGA_LoadDraw_Frame4",
+      "new_name": "Copy_Page4_To_Off"
+    },
+    {
+      "old_name": "FLIC_Draw_Frame",
+      "new_name": "Draw_Frame_ASM"
+    },
+    {
+      "old_name": "FLIC_Remap_Draw_Frame",
+      "new_name": "Remap_Draw_Frame_ASM"
+    },
+    {
+      "old_name": "FLIC_Draw_EMM",
+      "new_name": "EMM_Draw_Frame_ASM"
+    },
+    {
+      "old_name": "FLIC_EMM_MapNextPages",
+      "new_name": "Map_Frame_ASM"
+    },
+    {
+      "old_name": "FLIC_Draw_Frame_EMM_Remap",
+      "new_name": "EMM_Remap_Draw_Frame_ASM"
+    },
+    {
+      "old_name": "UU_LBX_Image_Copy",
+      "new_name": "Copy_Bitmap_To_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_IMG_VShiftRect",
+      "new_name": "LBX_IMG_VShiftRect"
+    },
+    {
+      "old_name": "UU_LBX_IMG_VertWarp",
+      "new_name": "LBX_IMG_VertWarp"
+    },
+    {
+      "old_name": "UU_LBX_IMG_HorzWarp",
+      "new_name": "LBX_IMG_HorzWarp"
+    },
+    {
+      "old_name": "UU_LBX_IMG_PrepFill",
+      "new_name": "Create_Blank_Picture"
+    },
+    {
+      "old_name": "UU_LBX_IMG_ClearGraphic",
+      "new_name": "Replace_Color_All"
+    },
+    {
+      "old_name": "UU_LBX_IMG_LoadPalette",
+      "new_name": "Load_Palette_From_Animation"
+    },
+    {
+      "old_name": "FLIC_Draw_XY_Wnd",
+      "new_name": "Clipped_Draw"
+    },
+    {
+      "old_name": "FLIC_Set_CurrentFrame",
+      "new_name": "Set_Animation_Frame"
+    },
+    {
+      "old_name": "FLIC_ResetFrame",
+      "new_name": "Reset_Animation_Frame"
+    },
+    {
+      "old_name": "UU_LBX_IMG_GetFrameCnt",
+      "new_name": "FLIC_Get_FrameCount"
+    },
+    {
+      "old_name": "LBX_IMG_GetWidth",
+      "new_name": "FLIC_Get_Width"
+    },
+    {
+      "old_name": "LBX_IMG_GetHeight",
+      "new_name": "FLIC_Get_Height"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawRotateImg",
+      "new_name": "VGA_WndDrawRotateImg"
+    },
+    {
+      "old_name": "UU_VGA_WndDrawImageRect",
+      "new_name": "VGA_WndDrawImageRect"
+    },
+    {
+      "old_name": "UU_VGA_RotateRect",
+      "new_name": "VGA_RotateRect"
+    },
+    {
+      "old_name": "UU_LBX_IMG_CopyInto",
+      "new_name": "Clipped_Copy_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_IMG_Overlay",
+      "new_name": "Clipped_Copy_Mask"
+    },
+    {
+      "old_name": "UU_LBX_IMG_StripColors",
+      "new_name": "Transparent_Color_Range"
+    },
+    {
+      "old_name": "UU_LBX_IMG_ClearRect",
+      "new_name": "Clear_Bitmap_Region"
+    },
+    {
+      "old_name": "UU_LBX_IMG_Resize",
+      "new_name": "Scale_Bitmap"
+    },
+    {
+      "old_name": "Open_File_Animation__HACK",
+      "new_name": "Open_File_Animation"
+    },
+    {
+      "old_name": "Draw_File_Animation__HACK",
+      "new_name": "Draw_File_Animation"
+    },
+    {
+      "old_name": "VGA_FILEH_Loader",
+      "new_name": "Load_File_Animation_Frame"
+    },
+    {
+      "old_name": "UU_VGA_FILEH_GetFrame",
+      "new_name": "Get_File_Animation_Frame"
+    },
+    {
+      "old_name": "UU_VGA_FILEH_SetFrame",
+      "new_name": "Set_File_Animation_Frame"
+    },
+    {
+      "old_name": "LBX_IMG_IsFullFramed",
+      "new_name": "Get_Full_Store_Flag"
+    },
+    {
+      "old_name": "LBX_IMG_SetLoop1",
+      "new_name": "FLIC_Set_LoopFrame_1"
+    },
+    {
+      "old_name": "UU_LBX_IMG_OutlineOvr",
+      "new_name": "Outline_Bitmap_Pixels"
+    },
+    {
+      "old_name": "UU_LBX_IMG_OutlineOvr_R",
+      "new_name": "Outline_Bitmap_Pixels_No_Glass"
+    },
+    {
+      "old_name": "UU_LBX_IMG_ColorScrmblr",
+      "new_name": "Bitmap_Aura_Pixels"
+    },
+    {
+      "old_name": "LBX_IMG_GetGFXSize",
+      "new_name": "Get_Bitmap_Actual_Size"
+    },
+    {
+      "old_name": "VGA_DrawPartialImage",
+      "new_name": "Clipped_Draw_Frame"
+    },
+    {
+      "old_name": "VGA_DrawPartImage_R",
+      "new_name": "Clipped_Remap_Draw_Frame__NOP"
+    },
+    {
+      "old_name": "VGA_DrawPartEmsImg",
+      "new_name": "EMS_Clipped_Draw"
+    },
+    {
+      "old_name": "EMM_MapNextIMGPages",
+      "new_name": "EMS_Clipped_Draw_Map4Pages"
+    },
+    {
+      "old_name": "VGA_DrawPartEmsImg_R",
+      "new_name": "EMS_Clipped_Remap_Draw"
+    },
+    {
+      "old_name": "FLIC_DecPrepare",
+      "new_name": "Create_Multi_Frame_Blank_Bitmap"
+    },
+    {
+      "old_name": "FLIC_LoadFrame",
+      "new_name": "Add_Picture_To_Bitmap"
+    },
+    {
+      "old_name": "FLIC_LoadEMSFrame",
+      "new_name": "Add_Picture_To_Bitmap_EMM"
+    },
+    {
+      "old_name": "VGA_CopyLBXImage_R",
+      "new_name": "Remap_Draw_Picture_ASM"
+    },
+    {
+      "old_name": "UU_LBX_IMG_RawOverlay",
+      "new_name": "Mask_Bitmap_Pixels"
+    },
+    {
+      "old_name": "UU_LBX_IMG_HorzFlip",
+      "new_name": "Flip_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_IMG_ColorReplace",
+      "new_name": "Replace_Color"
+    },
+    {
+      "old_name": "UU_LBX_IMG_PartialCopy",
+      "new_name": "Mask_Bitmap_Pixels_Inverse"
+    },
+    {
+      "old_name": "UU_MEM_Clear_Far2",
+      "new_name": "Clear_Bitmap_Pixels"
+    },
+    {
+      "old_name": "UU_LBX_IMG_Shrink",
+      "new_name": "Reduce_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_IMG_Stretch",
+      "new_name": "Enlarge_Bitmap"
+    },
+    {
+      "old_name": "Vanish_Bitmap",
+      "new_name": "Vanish_Bitmap__WIP"
+    },
+    {
+      "old_name": "Grayscale_Bitmap",
+      "new_name": "Gray_Scale_Bitmap"
+    },
+    {
+      "old_name": "UU_LBX_IMG_RevGrayscale",
+      "new_name": "LBX_IMG_RevGrayscale"
+    },
+    {
+      "old_name": "UU_RNG_GFX_Random",
+      "new_name": "RNG_GFX_Random__WIP"
+    },
+    {
+      "old_name": "UU_MATH_Inverse_Tangent",
+      "new_name": "Get_Angle"
+    },
+    {
+      "old_name": "UU_MATH_Inverse_Tan_QI",
+      "new_name": "Get_Base_Angle"
+    },
+    {
+      "old_name": "UU_MATH_Int_Cos",
+      "new_name": "Cos"
+    },
+    {
+      "old_name": "UU_MATH_Int_Sin",
+      "new_name": "Sin"
+    },
+    {
+      "old_name": "UU_VGA_DrawTexture",
+      "new_name": "VGA_DrawTexture"
+    },
+    {
+      "old_name": "UU_VGA_DrawTexture_R",
+      "new_name": "VGA_DrawTexture_R"
+    },
+    {
+      "old_name": "MD_WaitRelease",
+      "new_name": "Mouse_Wait"
+    },
+    {
+      "old_name": "MD_Init",
+      "new_name": "Init_Mouse_Driver"
+    },
+    {
+      "old_name": "CRP_MD_EnableEmu",
+      "new_name": "RP_MOUSE_SetUsable"
+    },
+    {
+      "old_name": "MD_INT_Handler",
+      "new_name": "User_Mouse_Handler"
+    },
+    {
+      "old_name": "UU_MOUSE_GetHwOrEmu",
+      "new_name": "UU_MOUSE_Usable"
+    },
+    {
+      "old_name": "MD_MoveCursor",
+      "new_name": "Set_Pointer_Position"
+    },
+    {
+      "old_name": "MD_MoveCursorINT",
+      "new_name": "Set_Mouse_Position"
+    },
+    {
+      "old_name": "MD_GetClickX",
+      "new_name": "Mouse_Buffer_X"
+    },
+    {
+      "old_name": "MD_GetClickY",
+      "new_name": "Mouse_Buffer_Y"
+    },
+    {
+      "old_name": "MD_GetClickedBtns",
+      "new_name": "Mouse_Buffer_Button"
+    },
+    {
+      "old_name": "CRP_MD_SetClick_CilckRec2",
+      "new_name": "Set_Buffer_2"
+    },
+    {
+      "old_name": "UU_MD_SetClick_All",
+      "new_name": "Set_Mouse_Buffer"
+    },
+    {
+      "old_name": "MD_ISR_SaveClick",
+      "new_name": "Check_Mouse_Buffer"
+    },
+    {
+      "old_name": "UU_CRL_Restore_SP3",
+      "new_name": "UU_VGA_RestoreToFrame3"
+    },
+    {
+      "old_name": "CRP_GUI_KeyInputOnly",
+      "new_name": "RP_GUI_KeyInputOnly"
+    },
+    {
+      "old_name": "GUI_MouseEmuMove",
+      "new_name": "UU_GUI_MouseEMUMoveTo"
+    },
+    {
+      "old_name": "G_GUI_ClearInput",
+      "new_name": "Reset_Wait_For_Input"
+    },
+    {
+      "old_name": "G_GUI_PressAnyKey",
+      "new_name": "Wait_For_Input"
+    },
+    {
+      "old_name": "GUI_ProcessDirKey",
+      "new_name": "Process_Direction_Key__STUB"
+    },
+    {
+      "old_name": "GUI_EditBoxRedraw",
+      "new_name": "Draw_Input_Box_Popup"
+    },
+    {
+      "old_name": "UU_GUI_CreateEditSelect",
+      "new_name": "Add_Continuous_String_Input_Field"
+    },
+    {
+      "old_name": "UU_GUI_CreateDialogLine",
+      "new_name": "Add_String_List_Field"
+    },
+    {
+      "old_name": "UU_UI_AddAltKeyControl",
+      "new_name": "Add_Multi_Hot_Key_Field"
+    },
+    {
+      "old_name": "RP_GUI_CreateImageLabel",
+      "new_name": "Add_Picture_Field"
+    },
+    {
+      "old_name": "RP_GUI_CreateWndImgLbl",
+      "new_name": "UU_GUI_CreateWndImgLbl"
+    },
+    {
+      "old_name": "UU_GUI_SetBtnClickDir",
+      "new_name": "Set_Button_Down_Offsets"
+    },
+    {
+      "old_name": "UU_GUI_CreateWndLabel",
+      "new_name": "UU_Add_Clipped_Hidden_Field"
+    },
+    {
+      "old_name": "UU_GUI_NoSelectColor",
+      "new_name": "NX_UU_GUI_NoSelectColor"
+    },
+    {
+      "old_name": "UU_GUI_CreateTextDialog",
+      "new_name": "Get_List_Field"
+    },
+    {
+      "old_name": "GUI_MoveDlgHighlight",
+      "new_name": "GUI_MoveDlgHighlight__STUB"
+    },
+    {
+      "old_name": "UU_GUI_SetControlCount",
+      "new_name": "Clear_Fields_Above"
+    },
+    {
+      "old_name": "UU_GUI_GetControlCount",
+      "new_name": "Get_Field_Counter"
+    },
+    {
+      "old_name": "UU_GUI_GetDelay",
+      "new_name": "UU_Get_Input_Delay"
+    },
+    {
+      "old_name": "UU_CTRL_Clear_Skip1",
+      "new_name": "UU_GUI_ExtClear"
+    }
+  ]
+}

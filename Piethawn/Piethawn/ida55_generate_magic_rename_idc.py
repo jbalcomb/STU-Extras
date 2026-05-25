@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 Generate an IDC script that renames MAGIC functions to WIZARDS names.
+
+LEGACY / TRANSITIONAL: this script belongs to the older rename-IDC flow that
+builds renames directly from ida_proc_status_relationships.json. For WZD-to-MGC
+procedure name sync, rename generation should eventually consume the approved
+WZD-to-MGC procedure map and per-run rename plan instead. Keep this script
+available until the current post-IDA pipeline is migrated.
 """
 
 from __future__ import annotations
@@ -12,10 +18,10 @@ from typing import Dict, List, Set, Tuple
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate MAGIC rename IDC from ida55-function-match.json.")
+    parser = argparse.ArgumentParser(description="Generate MAGIC rename IDC from ida_proc_status_relationships.json.")
     parser.add_argument(
         "--match",
-        default="out/ida55-function-match.json",
+        default=str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"),
         help="Machine-code match JSON produced by ida55_match_functions.py",
     )
     parser.add_argument(

@@ -22,12 +22,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--magic-functions-txt",
         default=str(Path("in") / "MAGIC.idb.ida55-functions.txt"),
-        help="MAGIC function dump text produced by ida55_dump_functions.idc",
+        help="MAGIC function dump text produced by ida_proc_data_export/ida55_dump_functions.idc",
     )
     parser.add_argument(
         "--wizards-functions-txt",
         default=str(Path("in") / "WIZARDS.idb.ida55-functions.txt"),
-        help="WIZARDS function dump text produced by ida55_dump_functions.idc",
+        help="WIZARDS function dump text produced by ida_proc_data_export/ida55_dump_functions.idc",
     )
     parser.add_argument("--magic-exe", default=str(Path("in") / "MAGIC.EXE"), help="MAGIC executable")
     parser.add_argument("--wizards-exe", default=str(Path("in") / "WIZARDS.EXE"), help="WIZARDS executable")
@@ -41,6 +41,16 @@ def parse_args() -> argparse.Namespace:
         "--skip-asm-analysis",
         action="store_true",
         help="Skip asm_dedupe_index.py and asm_diff_report.py",
+    )
+    parser.add_argument(
+        "--skip-clean-asm-check",
+        action="store_true",
+        help="Skip ida55_check_clean_asm.py before splitting ASM files",
+    )
+    parser.add_argument(
+        "--skip-clear-split-asm",
+        action="store_true",
+        help="Do not remove existing split .asm files under output-root before re-splitting",
     )
     parser.add_argument(
         "--skip-sample-pair-diffs",
@@ -75,6 +85,17 @@ def resolve_input_path(raw_path: str) -> Path:
 def run_step(command: Sequence[str]) -> None:
     print("+", " ".join(command))
     subprocess.run(command, check=True)
+
+
+def split_asm_paths(output_root: Path) -> List[Path]:
+    return sorted(path for path in output_root.glob("*/*/*.asm") if path.is_file())
+
+
+def clear_split_asm_files(output_root: Path) -> int:
+    paths = split_asm_paths(output_root)
+    for path in paths:
+        path.unlink()
+    return len(paths)
 
 
 def split_output_dir(output_root: Path, game: str) -> Path:
@@ -163,11 +184,18 @@ def main() -> int:
         run_step([python, "exe_header_dump.py", str(magic_exe), str(wizards_exe)])
         run_step([python, "borland_ovrinfo_dump.py", str(magic_exe), str(wizards_exe)])
 
+    if not args.skip_clean_asm_check:
+        run_step([python, str(Path("ida_dasm_export") / "ida55_check_clean_asm.py"), str(magic_asm), str(wizards_asm)])
+
+    if not args.skip_clear_split_asm:
+        removed_count = clear_split_asm_files(output_root)
+        print(f"Removed {removed_count} existing split ASM files from {output_root}.")
+
     run_step([python, "ida55_split_asm.py", str(magic_asm), "--output-dir", str(split_output_dir(output_root, "MAGIC"))])
     run_step([python, "ida55_split_asm.py", str(wizards_asm), "--output-dir", str(split_output_dir(output_root, "WIZARDS"))])
 
-    run_step([python, "ida55_function_dump.py", str(magic_functions_txt), "--output", str(magic_functions_json)])
-    run_step([python, "ida55_function_dump.py", str(wizards_functions_txt), "--output", str(wizards_functions_json)])
+    run_step([python, str(Path("ida_proc_data_export") / "ida55_function_dump.py"), str(magic_functions_txt), "--output", str(magic_functions_json)])
+    run_step([python, str(Path("ida_proc_data_export") / "ida55_function_dump.py"), str(wizards_functions_txt), "--output", str(wizards_functions_json)])
 
     if not args.skip_asm_analysis:
         run_step([python, "asm_dedupe_index.py", "--root", str(output_root), "--output", str(output_root / "asm-dedupe-index.json")])
@@ -193,7 +221,7 @@ def main() -> int:
             "--wizards",
             str(wizards_functions_json),
             "--output",
-            str(output_root / "ida55-function-match.json"),
+            str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"),
         ]
     )
     run_step(
@@ -201,7 +229,7 @@ def main() -> int:
             python,
             "ida55_generate_magic_rename_idc.py",
             "--match",
-            str(output_root / "ida55-function-match.json"),
+            str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"),
             "--output",
             str(output_root / "ida55-sync" / "magic_rename_to_wizards.idc"),
             "--manifest",
@@ -227,7 +255,15 @@ def main() -> int:
                 print(f"! Skipping sample pair diff because input ASM is missing: {left_asm} or {right_asm}")
 
     print("Pipeline complete.")
-    print(f"Run this next inside MAGIC.idb: {output_root / 'ida55-sync' / 'magic_rename_to_wizards.idc'}")
+    print(
+        "If the rename manifest has rename_count > 0, run this next against MAGIC.idb:"
+    )
+    print(
+        "c:/python314/python.exe -B .\\ida_dasm_export\\ida55_clean_export.py --game MAGIC "
+        "--skip-registry-snapshot --script "
+        f"{output_root / 'ida55-sync' / 'magic_rename_to_wizards.idc'} "
+        "--skip-verify --timeout-seconds 120"
+    )
     return 0
 
 

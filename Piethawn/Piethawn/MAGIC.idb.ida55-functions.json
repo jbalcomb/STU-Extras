@@ -6549,7 +6549,7 @@
       ]
     },
     {
-      "name": "Update_MemFreeWorst_KB",
+      "name": "Check_Free",
       "segment": "seg005",
       "entry_ea": "1422:0251",
       "start_ea": "1422:0251",
@@ -8202,7 +8202,7 @@
       ]
     },
     {
-      "name": "LBX_GetEntryData",
+      "name": "LBX_Get_Entry_Data",
       "segment": "seg010",
       "entry_ea": "14F2:0D2A",
       "start_ea": "14F2:0D2A",
@@ -9275,7 +9275,7 @@
       ]
     },
     {
-      "name": "EMM_ReleaseAll__STUB",
+      "name": "EMM_Release_All",
       "segment": "seg013",
       "entry_ea": "1643:11D6",
       "start_ea": "1643:11D6",
@@ -9623,7 +9623,7 @@
       ]
     },
     {
-      "name": "UU_EMM_Data_Mark",
+      "name": "EMMDATAH_Save_Last_Offset",
       "segment": "seg013",
       "entry_ea": "1643:1772",
       "start_ea": "1643:1772",
@@ -9652,7 +9652,7 @@
       ]
     },
     {
-      "name": "UU_EMM_Data_Undo",
+      "name": "EMMDATAH_Restore_Last_Offset",
       "segment": "seg013",
       "entry_ea": "1643:177D",
       "start_ea": "1643:177D",

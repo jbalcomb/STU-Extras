@@ -2924,7 +2924,7 @@
       "is_default_color": true
     },
     {
-      "name": "Update_MemFreeWorst_KB",
+      "name": "Check_Free",
       "segment": "seg005",
       "entry_ea": 251,
       "start_ea": 251,
@@ -3008,7 +3008,7 @@
       "is_default_color": false
     },
     {
-      "name": "RAM_GetFreeBlockSize",
+      "name": "Dos_Free",
       "segment": "seg006",
       "entry_ea": "006A",
       "start_ea": "006A",
@@ -3722,7 +3722,7 @@
       "is_default_color": false
     },
     {
-      "name": "LBX_GetEntryData__WIP",
+      "name": "LBX_Get_Entry_Data",
       "segment": "seg010",
       "entry_ea": "0D2A",
       "start_ea": "0D2A",
@@ -4016,7 +4016,7 @@
       "is_default_color": false
     },
     {
-      "name": "EMM_Map4Pages",
+      "name": "EMM_MapMulti4",
       "segment": "seg012",
       "entry_ea": "028C",
       "start_ea": "028C",
@@ -4240,7 +4240,7 @@
       "is_default_color": false
     },
     {
-      "name": "EMM_ReleaseAll__STUB",
+      "name": "EMM_Release_All",
       "segment": "seg013",
       "entry_ea": "11D6",
       "start_ea": "11D6",
@@ -4366,7 +4366,7 @@
       "is_default_color": false
     },
     {
-      "name": "EMM_Map_DataH",
+      "name": "EMMDATAH_Map",
       "segment": "seg013",
       "entry_ea": "160D",
       "start_ea": "160D",
@@ -4408,7 +4408,7 @@
       "is_default_color": false
     },
     {
-      "name": "UU_EMM_Data_Mark",
+      "name": "EMMDATAH_Save_Last_Offset",
       "segment": "seg013",
       "entry_ea": 1772,
       "start_ea": 1772,
@@ -4422,7 +4422,7 @@
       "is_default_color": false
     },
     {
-      "name": "UU_EMM_Data_Undo",
+      "name": "EMMDATAH_Restore_Last_Offset",
       "segment": "seg013",
       "entry_ea": "177D",
       "start_ea": "177D",
@@ -4464,7 +4464,7 @@
       "is_default_color": false
     },
     {
-      "name": "EMM_GetLowString",
+      "name": "EMM_Error_Message",
       "segment": "seg013",
       "entry_ea": "18F6",
       "start_ea": "18F6",
@@ -7082,7 +7082,7 @@
       "is_default_color": true
     },
     {
-      "name": "Draw_File_Animation_Frame__WIP",
+      "name": "Draw_File_Animation_Frame_ASM",
       "segment": "seg025",
       "entry_ea": "000A",
       "start_ea": "000A",
@@ -7110,7 +7110,7 @@
       "is_default_color": true
     },
     {
-      "name": "Remap_Draw_File_Animation_Frame__NOP",
+      "name": "Remap_Draw_File_Animation_Frame_ASM",
       "segment": "seg025",
       "entry_ea": 200,
       "start_ea": 200,
@@ -7866,7 +7866,7 @@
       "is_default_color": true
     },
     {
-      "name": "Load_File_Animation_Frame__WIP",
+      "name": "Load_File_Animation_Frame",
       "segment": "seg028",
       "entry_ea": "2C75",
       "start_ea": "2C75",

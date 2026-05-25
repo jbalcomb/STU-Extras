@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 Compare IDA 5.5 function dumps using machine-code hashes first.
+
+LEGACY / TRANSITIONAL: this script belongs to the older post-IDA matching
+pipeline. For WZD-to-MGC procedure name sync, its segment-pair matching role is
+being moved into the one-off map creation process described in
+WZD_TO_MGC_PROCEDURE_NAME_SYNC_PRD.md. Keep this script available until the
+current post-IDA pipeline and completion-color sync are migrated.
 """
 
 from __future__ import annotations
@@ -21,7 +27,7 @@ def parse_args() -> argparse.Namespace:
         default="ida55_exact_match_overrides.json",
         help="JSON file containing known-exact segment pair overrides",
     )
-    parser.add_argument("--output", default="out/ida55-function-match.json", help="Output JSON path")
+    parser.add_argument("--output", default=str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"), help="Output JSON path")
     return parser.parse_args()
 
 

@@ -1,58 +1,4 @@
 
-Here is a list of segments I am sure are exactly the same. Add these to a json file and add an override to the process to assume these should be exact matches.
-MAGIC,WIZARDS
-seg002,seg002
-seg003,seg003
-seg004,seg004
-seg005,seg005
-seg006,seg006
-seg007,seg007
-seg008,seg008
-seg009,seg009
-seg010,seg010
-seg011,seg011
-seg012,seg012
-seg013,seg013
-seg014,seg014
-seg015,seg015
-seg016,seg016
-seg017,seg017
-seg018,seg018
-seg019,seg019
-seg020,seg020
-seg021,seg021
-seg022,seg022
-seg023,seg023
-seg024,seg024
-seg025,seg025
-seg026,seg028
-seg027,seg029
-seg028,seg030
-seg029,seg031
-seg030,seg032
-seg031,seg033
-seg032,seg034
-seg033,seg035
-seg034,seg036
-_AIL_,_AIL_
-SOUND,SOUND
-stub048,stub050
-ovr048,ovr050
-
-One important detail: your list includes stub048 -> stub050 and seg048 -> seg050, so the j_ SAVE_GAM stubs are now forced exact matches. But Load_SAVE_GAM and Save_SAVE_GAM live in ovr048 and ovr050, not seg048 and seg050, so they are still not overridden. If that was meant to cover the overlay bodies too, the next fix is to add ovr048 -> ovr050 to the override JSON.
-
-
-
-                     |               |       |
-    MAGIC.EXE        WIZARDS.EXE             
-[ ] RP_CLK_ExtWait   UU_CLK_ExtWait  seg002  seg002
-[x] Set_Page_On      Set_Page_On     seg026  seg028
-[ ] UU_Enable_Cancel Enable_Cancel   seg034  seg036
-
-
-
-
-
 
 
 1. Produce .ASM in IDA Pro v5.5
@@ -70,9 +16,9 @@ IDA 5.5 sync workflow now also includes:
 Relevant scripts:
 - `run_post_ida55_dump_pipeline.py`
 - `ida55_generate_magic_rename_idc.py`
-- `ida55_dump_function_colors.idc`
-- `ida55_function_color_dump.py`
-- `ida55_merge_completion_status.py`
+- `ida_proc_data_export\ida55_dump_functions.idc`
+- `ida_proc_data_export\ida55_function_dump.py`
+- `ida_proc_status_sync/ida_proc_status_sync.py`
 - `ida55_db_timestamp_config.py`
 - `configure_daily_timestamp_task.py`
 

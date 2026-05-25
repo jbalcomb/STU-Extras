@@ -15,18 +15,20 @@ The main analysis pipeline stops when the rename IDC script for `MAGIC` has been
 
 ## Manual Steps In IDA 5.5
 
-For each game:
+For the assembly listing, export each game to `in/MAGIC.asm` or `in/WIZARDS.asm`.
 
-1. Open the IDB in IDA Pro 5.5.
-2. Export the full assembly listing to `in/MAGIC.asm` or `in/WIZARDS.asm`.
-3. Run `ida55_dump_functions.idc`.
-4. Save the resulting text dump as:
-   - `in/MAGIC.idb.ida55-functions.txt`
-   - `in/WIZARDS.idb.ida55-functions.txt`
-5. If you want completion-state sync, also run `ida55_dump_function_colors.idc`.
-6. Save the resulting color dumps as:
-   - `in/MAGIC.idb.ida55-function-colors.txt`
-   - `in/WIZARDS.idb.ida55-function-colors.txt`
+For the command-line function data export, close the IDBs in any interactive IDA session, then run:
+
+```text
+c:/python314/python.exe -B .\ida_proc_data_export\ida55_export_function_data.py --copy
+```
+
+The command launches `ida_proc_data_export\ida55_dump_functions.idc` through `ida_automation\idaw.py` and copies the resulting dumps to:
+
+- `in/MAGIC.idb.ida55-functions.txt`
+- `in/WIZARDS.idb.ida55-functions.txt`
+
+The function dump now includes function colors, so it is the single function data source for matching and completion-state sync.
 
 The original executables are also expected at:
 
@@ -51,8 +53,8 @@ Default stages:
    - `borland_ovrinfo_dump.py`
 3. Split each full IDA ASM dump into per-segment and per-procedure files:
    - `ida55_split_asm.py`
-4. Convert the function text dumps into JSON with byte hashes:
-   - `ida55_function_dump.py`
+4. Convert the function text dumps into JSON with byte hashes and color fields:
+   - `ida_proc_data_export\ida55_function_dump.py`
 5. Build the split-ASM duplicate index and normalized diff report:
    - `asm_dedupe_index.py`
    - `asm_diff_report.py`
@@ -90,21 +92,19 @@ This renames matched `MAGIC` functions to the corresponding `WIZARDS` names.
 
 When a function transcription is finished, mark the function in IDA with your completion color. The current merged tooling treats `00FFFF80` as the completion color.
 
-Run these steps after you have new color dumps:
+Run this after you have refreshed function dumps and converted them to JSON:
 
 ```powershell
-python -B .\ida55_function_color_dump.py .\in\MAGIC.idb.ida55-function-colors.txt --output .\in\MAGIC.idb.ida55-function-colors.json
-python -B .\ida55_function_color_dump.py .\in\WIZARDS.idb.ida55-function-colors.txt --output .\in\WIZARDS.idb.ida55-function-colors.json
-python -B .\ida55_merge_completion_status.py
+python -B .\ida_proc_status_sync\ida_proc_status_sync.py
 ```
 
 That produces:
 
-- `out/ida55-sync/completion-merge.json`
-- `out/ida55-sync/magic_sync_completion.idc`
-- `out/ida55-sync/wizards_sync_completion.idc`
+- `ida_proc_status_sync/ida_proc_status_sync.plan.json`
+- `ida_proc_status_sync/mgc_proc_status_sync.idc`
+- `ida_proc_status_sync/wzd_proc_status_sync.idc`
 
-The merge uses the duplicate/equivalence graph from `out/ida55-function-match.json`, so completion state propagates across exact byte matches and positional override matches.
+The merge joins functions by current function name only. If two functions have different current names, status sync will not infer that they match.
 
 Run the generated IDC inside either IDB to copy completion status from the merged result back into IDA.
 
@@ -156,23 +156,3 @@ By default this creates the task:
 - `Piethawn IDA55 Timestamp Snapshot`
 
 which runs `ida55_db_timestamp_config.py` daily and updates `project_config.json`.
-
-## Cleanup
-
-To remove generated artifacts while keeping the final rename IDC:
-
-```powershell
-python -B .\clean_post_ida55_pipeline.py
-```
-
-That is a dry run. To actually delete the files:
-
-```powershell
-python -B .\clean_post_ida55_pipeline.py --apply
-```
-
-To clean everything generated after the manual dumps, including the final rename IDC:
-
-```powershell
-python -B .\clean_post_ida55_pipeline.py --stage post-dump --apply
-```

@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "status": "draft_seed",
+  "description": "WZD-to-MGC segment map seed for the one-off procedure-name sync map creation process.",
+  "source": "ida55_exact_match_overrides.json",
+  "direction": {
+    "source_names": "WZD",
+    "target_names": "MGC"
+  },
+  "segment_pairs": [
+    {
+      "pair_id": "MGC:seg002__WZD:seg002",
+      "mgc_segment": "seg002",
+      "wzd_segment": "seg002",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg003__WZD:seg003",
+      "mgc_segment": "seg003",
+      "wzd_segment": "seg003",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg004__WZD:seg004",
+      "mgc_segment": "seg004",
+      "wzd_segment": "seg004",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg005__WZD:seg005",
+      "mgc_segment": "seg005",
+      "wzd_segment": "seg005",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg006__WZD:seg006",
+      "mgc_segment": "seg006",
+      "wzd_segment": "seg006",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg007__WZD:seg007",
+      "mgc_segment": "seg007",
+      "wzd_segment": "seg007",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg008__WZD:seg008",
+      "mgc_segment": "seg008",
+      "wzd_segment": "seg008",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg009__WZD:seg009",
+      "mgc_segment": "seg009",
+      "wzd_segment": "seg009",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg010__WZD:seg010",
+      "mgc_segment": "seg010",
+      "wzd_segment": "seg010",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg011__WZD:seg011",
+      "mgc_segment": "seg011",
+      "wzd_segment": "seg011",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg012__WZD:seg012",
+      "mgc_segment": "seg012",
+      "wzd_segment": "seg012",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg013__WZD:seg013",
+      "mgc_segment": "seg013",
+      "wzd_segment": "seg013",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg014__WZD:seg014",
+      "mgc_segment": "seg014",
+      "wzd_segment": "seg014",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg015__WZD:seg015",
+      "mgc_segment": "seg015",
+      "wzd_segment": "seg015",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg016__WZD:seg016",
+      "mgc_segment": "seg016",
+      "wzd_segment": "seg016",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg017__WZD:seg017",
+      "mgc_segment": "seg017",
+      "wzd_segment": "seg017",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg018__WZD:seg018",
+      "mgc_segment": "seg018",
+      "wzd_segment": "seg018",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg019__WZD:seg019",
+      "mgc_segment": "seg019",
+      "wzd_segment": "seg019",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg020__WZD:seg020",
+      "mgc_segment": "seg020",
+      "wzd_segment": "seg020",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg021__WZD:seg021",
+      "mgc_segment": "seg021",
+      "wzd_segment": "seg021",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg022__WZD:seg022",
+      "mgc_segment": "seg022",
+      "wzd_segment": "seg022",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg023__WZD:seg023",
+      "mgc_segment": "seg023",
+      "wzd_segment": "seg023",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg024__WZD:seg024",
+      "mgc_segment": "seg024",
+      "wzd_segment": "seg024",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg025__WZD:seg025",
+      "mgc_segment": "seg025",
+      "wzd_segment": "seg025",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg026__WZD:seg028",
+      "mgc_segment": "seg026",
+      "wzd_segment": "seg028",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg027__WZD:seg029",
+      "mgc_segment": "seg027",
+      "wzd_segment": "seg029",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg028__WZD:seg030",
+      "mgc_segment": "seg028",
+      "wzd_segment": "seg030",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg029__WZD:seg031",
+      "mgc_segment": "seg029",
+      "wzd_segment": "seg031",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg030__WZD:seg032",
+      "mgc_segment": "seg030",
+      "wzd_segment": "seg032",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg031__WZD:seg033",
+      "mgc_segment": "seg031",
+      "wzd_segment": "seg033",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg032__WZD:seg034",
+      "mgc_segment": "seg032",
+      "wzd_segment": "seg034",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg033__WZD:seg035",
+      "mgc_segment": "seg033",
+      "wzd_segment": "seg035",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:seg034__WZD:seg036",
+      "mgc_segment": "seg034",
+      "wzd_segment": "seg036",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:_AIL___WZD:_AIL_",
+      "mgc_segment": "_AIL_",
+      "wzd_segment": "_AIL_",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:SOUND__WZD:SOUND",
+      "mgc_segment": "SOUND",
+      "wzd_segment": "SOUND",
+      "relationship": "same_procedure_domain",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:stub048__WZD:stub050",
+      "mgc_segment": "stub048",
+      "wzd_segment": "stub050",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    },
+    {
+      "pair_id": "MGC:ovr048__WZD:ovr050",
+      "mgc_segment": "ovr048",
+      "wzd_segment": "ovr050",
+      "relationship": "same_procedure_domain_different_segment_id",
+      "pairing": "by_position",
+      "status": "approved_seed",
+      "evidence": [
+        "legacy ida55_exact_match_overrides.json"
+      ],
+      "notes": "Seeded from the legacy override file; verify during one-off map creation."
+    }
+  ]
+}
