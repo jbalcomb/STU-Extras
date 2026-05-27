@@ -1,0 +1,54 @@
+﻿flowchart TD
+    main["_main() / ReMoM main()"]
+    id["Init_Drivers()\nWZD s014p01"]
+    rnd1["Randomize()\nrandom_seed = clock\nALWAYS"]
+
+    main --> id --> rnd1
+
+    ls["Load_Screen()\nWZD o160p01"]
+    lgu["Loaded_Game_Update()\nWZD o160p04"]
+    lguw["Loaded_Game_Update_WZD()\nWZD o60p01"]
+    io["Init_Overland()\nWZD o51p01"]
+    pio["PreInit_Overland()\nWZD o51p02"]
+
+    main --> lguw --> io
+    ls --> lgu --> io
+    io --> pio
+
+    pio --> chk1{"_cmd_line_seed != 0?\n(ReMoM)\n-- OR --\nCheck_Release_Version==ST_FALSE\n(OG debug)"}
+    chk1 -- "seed provided" --> ss1["Set_Random_Seed(seed)\nSEED WRITE 1"]
+    chk1 -- "no seed" --> rnd2["Randomize()\nrandom_seed = clock\nSEED WRITE 1"]
+
+    io --> chk2{"Check_Release_Version()\n== ST_FALSE?\nOG debug build only"}
+    chk2 -- "debug" --> ss2["Set_Random_Seed(10039)\n0x2737\nSEED WRITE 2\nOVERWRITES WRITE 1"]
+    chk2 -- "release" --> skip["(no write)"]
+
+    endturn["Player: End Turn"]
+    ntc["Next_Turn_Calc()\nWZD o119p01"]
+    ss3["Set_Random_Seed(RNG_AI_Turn_Seed)\nSEED WRITE 3"]
+    ai["AI processing\nRandom() calls..."]
+    turn_inc["_turn++"]
+    saveseed["RNG_AI_Turn_Seed = Get_Random_Seed()"]
+
+    endturn --> ntc --> ss3 --> ai --> turn_inc --> saveseed
+
+    combat["CMB_PrepareBattlefield()"]
+    savec["save = Get_Random_Seed()"]
+    ss4["Set_Random_Seed(10039+(wp+5)*(wx*wy))\ndeterministic per tile\nSEED WRITE 4"]
+    genc["Generate_Combat_Map()\nRandom() calls"]
+    restc["Set_Random_Seed(save)\nrestore"]
+
+    combat --> savec --> ss4 --> genc --> restc
+
+    citysc["Draw_Cityscape()"]
+    savecs["tmp = Get_Random_Seed()"]
+    ss5["Set_Random_Seed(0x2895 + wx*wy)\ndeterministic per city\nSEED WRITE 5"]
+    restcs["Set_Random_Seed(tmp)\nrestore"]
+
+    citysc --> savecs --> ss5 --> restcs
+
+    warp["WarpNode anim\nSPELLY not yet ported"]
+    savew["WarpNode_SeedSave=Get_Random_Seed()\ndseg:7048"]
+    restw["Set_Random_Seed(WarpNode_SeedSave)\nthen restore"]
+
+    warp --> savew --> restw
