@@ -173,7 +173,7 @@ static main(void)
     {
         Message("ida55_dseg_dump: ERROR - no segment named 'dseg' found\n");
         Batch(0);
-        Exit(2);
+        return;
     }
     dseg_end  = SegEnd(dseg_ea);
     dseg_base = dseg_ea;
@@ -185,7 +185,7 @@ static main(void)
     {
         Message("ida55_dseg_dump: ERROR - could not open output file: %s\n", out_path);
         Batch(0);
-        Exit(2);
+        return;
     }
 
     // --- Header ---
@@ -217,5 +217,4 @@ static main(void)
     Message("ida55_dseg_dump: done -> %s\n", out_path);
 
     Batch(0);
-    Exit(0);
 }
