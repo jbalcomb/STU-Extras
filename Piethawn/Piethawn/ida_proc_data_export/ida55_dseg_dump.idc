@@ -10,10 +10,11 @@
 // FWV column layout (one row per defined head in dseg):
 //
 //   ADDR_LINEAR  DSEG_OFFS  NAME
-//   8 hex chars  4 hex chars  40 chars (left-justified, space-padded)
+//   8 hex chars  4 hex chars  variable length (no truncation)
 //   e.g.:
 //   0003E2E6 7846 random_seed
 //
+// NAME is the last column so it is emitted as-is with no padding or truncation.
 // Rows with no user-assigned name carry the auto-generated IDA label.
 // Iterates using NextHead() so only defined items are emitted (not every byte).
 //
@@ -27,7 +28,7 @@
 // ---------------------------------------------------------------------------
 #define FWV_COL_ADDR   8    // linear address, 8 hex digits, no prefix
 #define FWV_COL_OFFS   4    // dseg offset, 4 hex digits, no prefix
-#define FWV_COL_NAME  40    // variable name, left-justified, space-padded
+// NAME column is last — no fixed width, no truncation
 #define FWV_SEP       " "   // single space between columns
 
 // ---------------------------------------------------------------------------
@@ -125,7 +126,7 @@ static find_seg_by_name(name)
 static dump_dseg_fwv(handle, dseg_ea, dseg_end, dseg_base)
 {
     auto ea, name, offs_val;
-    auto row_addr, row_offs, row_name;
+    auto row_addr, row_offs;
 
     for (ea = dseg_ea; ea < dseg_end && ea != BADADDR; ea = NextHead(ea, dseg_end))
     {
@@ -137,12 +138,11 @@ static dump_dseg_fwv(handle, dseg_ea, dseg_end, dseg_base)
 
         row_addr = form("%08X", ea);
         row_offs = form("%04X", offs_val);
-        row_name = pad_right(name, FWV_COL_NAME);
 
         fprintf(handle, "%s%s%s%s%s\n",
             row_addr, FWV_SEP,
             row_offs, FWV_SEP,
-            row_name);
+            name);
     }
 }
 
@@ -155,7 +155,7 @@ static main(void)
     auto idb_path, idb_dir, db_name, out_path;
     auto handle;
     auto dseg_ea, dseg_end, dseg_base;
-    auto sep_line, hdr_addr, hdr_offs, hdr_name;
+    auto sep_line, hdr_addr, hdr_offs;
 
     Batch(1);
 
@@ -191,11 +191,10 @@ static main(void)
     // --- Header ---
     hdr_addr = pad_right("ADDR_LIN", FWV_COL_ADDR);
     hdr_offs = pad_right("OFFS",     FWV_COL_OFFS);
-    hdr_name = pad_right("NAME",     FWV_COL_NAME);
 
     sep_line = pad_right("--------", FWV_COL_ADDR) + FWV_SEP +
                pad_right("----",     FWV_COL_OFFS) + FWV_SEP +
-               pad_right("----------------------------------------", FWV_COL_NAME);
+               "NAME";
 
     fprintf(handle, "# ida55_dseg_dump fwv-v1\n");
     fprintf(handle, "# db:         %s\n", db_name);
@@ -207,7 +206,7 @@ static main(void)
         dseg_end - dseg_base, dseg_end - dseg_base);
     fprintf(handle, "#\n");
     fprintf(handle, "%s%s%s%s%s\n",
-        hdr_addr, FWV_SEP, hdr_offs, FWV_SEP, hdr_name);
+        hdr_addr, FWV_SEP, hdr_offs, FWV_SEP, "NAME");
     fprintf(handle, "%s\n", sep_line);
 
     // --- Data rows ---
