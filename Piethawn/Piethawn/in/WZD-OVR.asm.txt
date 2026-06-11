@@ -1,0 +1,2747 @@
+; Segment type: Pure code
+segment _OVRTEXT_ byte public 'CODE' use16
+assume cs:_OVRTEXT_
+;org 5
+assume es:nothing, ss:nothing, ds:dseg, fs:nothing, gs:nothing
+__OVRGROUP dw seg _OVRDATA_
+__DGROUP dw seg dseg
+_Path_EnvString db 'PATH='
+_exeseg dw 0
+; Attributes: library function bp-based frame
+proc __OVRINIT far
+Read_Buffer= word ptr -14h
+OvrFileName_Ptr= dword ptr  6
+Last_Paragraph= word ptr  0Ah
+First_Paragraph= word ptr  0Ch
+push    bp
+loc_32441:
+mov     bp, sp
+loc_32443:
+sub     sp, 14h
+loc_32446:
+push    ds
+loc_32447:
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+loc_3244C:
+push    si
+push    di
+cld
+loc_3244F:
+cmp     [ds:__OVRTRAP__], 0
+loc_32454:
+jnz     short loc_32459
+loc_32456:
+jmp     loc_32565
+loc_32459:
+call    _OvrOpen_DOS3
+jnb     short loc_3248A
+loc_3245E:
+mov     ax, [word ptr bp+OvrFileName_Ptr]
+or      ax, [word ptr bp+OvrFileName_Ptr+2]
+loc_32464:
+jnz     short loc_32470
+loc_32466:
+mov     [word ptr bp+OvrFileName_Ptr], offset __EXENAME__
+loc_3246B:
+mov     [word ptr bp+OvrFileName_Ptr+2], seg _EXEINFO_
+loc_32470:
+call    _OvrOpen_SkipSet
+loc_32473:
+jnb     short loc_3248A
+loc_32475:
+call    _OvrOpen_AllPaths
+loc_32478:
+jnb     short loc_3248A
+loc_3247A:
+mov     ax, -2
+jmp     loc_32567
+loc_32480:
+mov     ah, 3Eh
+loc_32482:
+int     21h
+loc_32484:
+mov     ax, -1
+loc_32487:
+jmp     loc_32567
+loc_3248A:
+mov     bx, ax
+loc_3248C:
+mov     [ds:__OvrDosHandle], bx
+loc_32490:
+mov     cx, 14h
+loc_32493:
+call    _Ovr_ReadHeader
+mov     cx, -3
+jb      short loc_32480
+xor     ax, ax
+xor     dx, dx
+cmp     [bp+Read_Buffer], EXE_Sig
+jz      short loc_324AB
+mov     cx, -4
+jmp     short loc_32480
+loc_324AB:
+mov     ax, [bp+Read_Buffer+4]
+mov     cx, [bp+Read_Buffer+2]
+jcxz    short loc_324B4
+dec     ax
+loc_324B4:
+mov     dx, 200h
+mul     dx
+add     ax, cx
+add     ax, 0Fh
+adc     dx, 0
+and     ax, 0FFF0h
+loc_324C4:
+push    dx
+push    ax
+mov     cx, dx
+mov     dx, ax
+loc_324CA:
+mov     ax, 4200h
+int     21h
+mov     cx, 10h
+call    _Ovr_ReadHeader
+pop     ax
+pop     dx
+mov     cx, -3
+loc_324DA:
+jb      short loc_32480
+add     ax, 10h
+adc     dx, 0
+cmp     [bp+Read_Buffer], 4246h
+mov     cx, -4
+jz      short loc_324EE
+jmp     short loc_32480
+loc_324EE:
+cmp     [bp+Read_Buffer+2], 564Fh
+jz      short loc_324FD
+add     ax, [bp+Read_Buffer+4]
+loc_324F8:
+adc     dx, [bp+Read_Buffer+6]
+jmp     short loc_324C4
+loc_324FD:
+mov     [word ptr ds:__OvrFileBase], ax
+mov     [word ptr ds:__OvrFileBase+2], dx
+mov     es, [cs:__DGROUP]
+assume es:dseg
+mov     ax, [bp+Read_Buffer+4]
+mov     [word ptr es:__OvrSize], ax
+mov     ax, [bp+Read_Buffer+6]
+loc_32513:
+mov     [word ptr es:__OvrSize+2], ax
+mov     ah, 3Eh
+int     21h
+loc_3251B:
+mov     [ds:__OvrDosHandle], 0
+nop
+push    cs
+call    near ptr _Ovr_INT_Swap
+mov     ax, [bp+First_Paragraph]
+inc     ax
+mov     [ds:__OvrHeapOrg], ax
+mov     [ds:__OvrHeapPtr], ax
+mov     bx, [bp+Last_Paragraph]
+mov     [ds:__OvrHeapEnd], bx
+call    __InitModules
+mov     bx, [ds:__OvrHeapEnd]
+sub     bx, [ds:__OvrHeapOrg]
+cmp     bx, [ds:__OvrMinHeapSize]
+jnb     short loc_3254E
+mov     cx, -5
+jmp     loc_32480
+loc_3254E:
+shr     bx, 1
+shr     bx, 1
+mov     [ds:__OvrRetrySize], bx
+call    _Ovr_Buffer_Init
+jnb     short loc_32565
+mov     bx, [ds:__OvrDosHandle]
+mov     cx, -1
+jmp     short loc_32567
+db 90h
+loc_32565:
+xor     ax, ax
+loc_32567:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+mov     sp, bp
+pop     bp
+retf    8
+endp __OVRINIT
+; Attributes: library function bp-based frame
+proc _Ovr_INT_Swap far
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+mov     al, [byte ptr ds:__OVRTRAP__+1]
+mov     ah, 35h
+int     21h
+push    es
+push    bx
+push    ds
+mov     al, [byte ptr ds:__OVRTRAP__+1]
+loc_32586:
+mov     dx, [_Ovr_INT_Offset]
+mov     ds, [_Ovr_INT_Segment]
+assume ds:dseg
+mov     ah, 25h
+int     21h
+pop     ds
+assume ds:_OVRDATA_
+pop     [_Ovr_INT_Offset]
+pop     [_Ovr_INT_Segment]
+cmp     [ds:__OvrDosHandle], 0
+jz      short loc_325B2
+loc_325A2:
+mov     bx, [ds:__OvrDosHandle]
+mov     ah, 3Eh
+int     21h
+mov     [ds:__OvrDosHandle], 0
+jmp     short loc_325C0
+loc_325B2:
+lea     dx, [__OVRFILENAME]
+mov     ah, 3Dh
+mov     al, [_OvrFile_OpenMode]
+int     21h
+mov     [ds:__OvrDosHandle], ax
+loc_325C0:
+pop     ds
+assume ds:dseg
+pop     bp
+retf
+endp _Ovr_INT_Swap
+; Attributes: library function bp-based frame
+proc __OVREXIT far
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+loc_325CC:
+cmp     [ds:__OvrDosHandle], 0
+jz      short loc_325D8
+nop
+push    cs
+call    near ptr _Ovr_INT_Swap
+loc_325D8:
+push    cs
+loc_325D9:
+call    [__CALLEMSEXIT]
+push    cs
+loc_325DE:
+call    [__CALLEXTEXIT]
+loc_325E2:
+pop     ds
+assume ds:dseg
+pop     bp
+locret_325E4:
+retf
+endp __OVREXIT
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _OvrOpen_SkipSet near
+push    ds
+loc_325E6:
+lea     di, [__OVRFILENAME]
+loc_325EA:
+push    ds
+pop     es
+assume es:_OVRDATA_
+loc_325EC:
+call    _OvrOpen_ByName
+pop     ds
+assume ds:dseg
+retn
+endp _OvrOpen_SkipSet
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _OvrOpen_DOS3 near
+mov     ah, 30h
+int     21h
+cmp     al, 3
+jb      short locret_32635
+mov     [_OvrFile_OpenMode], 20h
+push    ds
+mov     ax, seg dseg
+mov     ds, ax
+assume ds:dseg
+mov     ds, [_envseg]
+xor     si, si
+cld
+loc_3260B:
+lodsb
+or      al, al
+jnz     short loc_3260B
+lodsb
+or      al, al
+jnz     short loc_3260B
+lodsw
+assume ds:_OVRDATA_
+lea     di, [__OVRFILENAME]
+mov     ax, seg _OVRDATA_
+loc_3261D:
+mov     es, ax
+loc_3261F:
+mov     bx, di
+loc_32621:
+lodsb
+stosb
+or      al, al
+jz      short loc_3262F
+cmp     al, 5Ch
+jnz     short loc_32621
+mov     bx, di
+jmp     short loc_32621
+loc_3262F:
+mov     di, bx
+call    _OvrOpen_ByName
+pop     ds
+assume ds:dseg
+locret_32635:
+retn
+endp _OvrOpen_DOS3
+; Attributes: library function
+proc _OvrOpen_AllPaths near
+push    ds
+mov     ax, seg dseg
+mov     ds, ax
+mov     ds, [_envseg]
+xor     si, si
+loc_32642:
+mov     di, offset _Path_EnvString
+push    cs
+pop     es
+assume es:_OVRTEXT_
+mov     cx, 5
+cld
+repe cmpsb
+jz      short loc_3265C
+dec     si
+loc_32650:
+lodsb
+or      al, al
+jnz     short loc_32650
+cmp     al, [si]
+jnz     short loc_32642
+loc_32659:
+pop     ds
+stc
+retn
+loc_3265C:
+cmp     [byte ptr si], 0
+jz      short loc_32659
+assume ds:_OVRDATA_
+lea     di, [__OVRFILENAME]
+mov     ax, seg _OVRDATA_
+mov     es, ax
+assume es:_OVRDATA_
+xor     al, al
+loc_3266C:
+mov     ah, al
+lodsb
+or      al, al
+jz      short loc_3267A
+cmp     al, 3Bh
+jz      short loc_3267B
+stosb
+jmp     short loc_3266C
+loc_3267A:
+dec     si
+loc_3267B:
+cmp     ah, 3Ah
+jz      short loc_32688
+cmp     ah, 5Ch
+jz      short loc_32688
+mov     al, 5Ch
+stosb
+loc_32688:
+push    ds
+push    si
+call    _OvrOpen_ByName
+pop     si
+pop     ds
+assume ds:dseg
+jb      short loc_3265C
+pop     ds
+retn
+endp _OvrOpen_AllPaths
+; Attributes: library function
+proc _OvrOpen_ByName near
+lds     si, [bp+6]
+mov     ax, ds
+or      ax, si
+jz      short loc_326AA
+mov     cx, 0Ch
+loc_3269F:
+lodsb
+stosb
+or      al, al
+jz      short loc_326AA
+loop    loc_3269F
+sub     al, al
+stosb
+assume ds:_OVRDATA_
+loc_326AA:
+lea     dx, [__OVRFILENAME]
+mov     ax, seg _OVRDATA_
+loc_326B1:
+mov     ds, ax
+loc_326B3:
+mov     ah, 3Dh
+mov     al, [_OvrFile_OpenMode]
+int     21h
+retn
+endp _OvrOpen_ByName
+; Attributes: library function
+proc _Ovr_ReadHeader near
+push    ds
+lea     dx, [bp-14h]
+push    ss
+pop     ds
+assume ds:dseg
+mov     ah, 3Fh
+int     21h
+pop     ds
+jb      short locret_326CA
+cmp     ax, cx
+locret_326CA:
+retn
+endp _Ovr_ReadHeader
+assume ds:_OVRDATA_
+; Attributes: library function
+proc __InitModules near
+mov     ax, seg dseg
+mov     es, ax
+assume es:dseg
+mov     ax, [es:_psp]
+add     ax, 10h
+mov     [cs:_exeseg], ax
+mov     ax, seg _STUB_
+mov     es, ax
+assume es:_STUB_
+xor     bx, bx
+xor     di, di
+lea     si, [_SEGTABLE_]
+loc_326E8:
+test    [si+SEGTABLE_entry.SEG_TYPE], SEG_OVERLAY
+jz      short loc_326F5
+cmp     [si+SEGTABLE_entry.STUB_SIZE], 0
+jnz     short loc_326F8
+loc_326F5:
+jmp     short loc_32736
+align 2
+loc_326F8:
+mov     ax, [si+SEGTABLE_entry.SEG_PTR]
+push    es
+mov     [es:__OvrCodeList], ax
+loc_326FF:
+mov     es, ax
+assume es:nothing
+cmp     [byte ptr es:BC_OVERLAY_STUB._HookFlags], 0FFh
+jnz     short loc_32714
+pop     es
+mov     [es:__OvrCodeList], 0
+jmp     short loc_32736
+align 2
+loc_32714:
+pop     ax
+mov     [word ptr es:BC_OVERLAY_STUB._Ovr_Load_Fn], offset __ReadOvrDisk
+mov     ax, [word ptr ds:__OvrFileBase]
+mov     dx, [word ptr ds:__OvrFileBase+2]
+add     [es:BC_OVERLAY_STUB._OvrFileOff_LO], ax
+adc     [es:BC_OVERLAY_STUB._OvrFileOff_HI], dx
+call    _Ovr_GetSize
+cmp     bx, dx
+jnb     short loc_32736
+xchg    bx, dx
+loc_32736:
+add     si, 8
+cmp     si, __SEGTABEND__@
+jnb     short loc_32741
+jmp     short loc_326E8
+loc_32741:
+xor     ax, ax
+add     bx, 2
+loc_32746:
+mov     [ds:__OvrMinHeapSize], bx
+retn
+endp __InitModules
+; Attributes: library function
+proc _Ovr_Buffer_Init near
+mov     cx, [ds:__OvrCodeList]
+mov     [ds:__OvrLoadList], cx
+mov     bx, cx
+mov     si, [ds:__OvrHeapOrg]
+mov     di, [ds:__OvrHeapEnd]
+push    ds
+loc_3275E:
+mov     ds, cx
+assume ds:nothing
+mov     cx, [ds:BC_OVERLAY_STUB._NextStub]
+jcxz    short loc_32794
+mov     es, cx
+mov     ax, [es:BC_OVERLAY_STUB._OvrFileOff_LO]
+mov     dx, [es:BC_OVERLAY_STUB._OvrFileOff_HI]
+sub     ax, [ds:BC_OVERLAY_STUB._OvrFileOff_LO]
+sbb     dx, [ds:BC_OVERLAY_STUB._OvrFileOff_HI]
+mov     cx, 10h
+div     cx
+add     ax, si
+cmp     ax, di
+ja      short loc_32794
+mov     [ds:BC_OVERLAY_STUB._MemSeg], si
+mov     si, ax
+mov     cx, es
+mov     [ds:BC_OVERLAY_STUB._Next_Loaded], cx
+mov     bx, ds
+jmp     short loc_3275E
+loc_32794:
+mov     ds, bx
+mov     [word ptr ds:BC_OVERLAY_STUB._Next_Loaded], 0
+pop     ds
+assume ds:_OVRDATA_
+mov     [ds:__OvrHeapPtr], si
+mov     ax, [ds:__OvrHeapOrg]
+sub     si, ax
+jnz     short loc_327AB
+jmp     short loc_32809
+db 90h
+loc_327AB:
+mov     cl, 4
+rol     si, cl
+mov     di, si
+and     di, 0Fh
+and     si, 0FFF0h
+mov     es, [ds:__OvrLoadList]
+mov     dx, [es:BC_OVERLAY_STUB._OvrFileOff_LO]
+mov     cx, [es:BC_OVERLAY_STUB._OvrFileOff_HI]
+call    _Ovr_SeqDiskRead
+jb      short locret_3280A
+mov     ax, [ds:__OvrLoadList]
+push    ds
+loc_327CE:
+mov     es, ax
+mov     cx, [es:BC_OVERLAY_STUB._RelocSize]
+jcxz    short loc_327DA
+call    _Ovr_ModuleReloc
+loc_327DA:
+cmp     [word ptr es:BC_OVERLAY_STUB._FunctionCount], 0
+jz      short loc_327E5
+call    _Ovr_Link
+loc_327E5:
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+dec     ax
+mov     ds, ax
+assume ds:nothing
+mov     [word ptr ds:0Eh], es
+push    es
+mov     ax, 0FFFFh
+mov     bx, ax
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+call    [__OVRHOOK__]
+pop     es
+mov     ax, [es:BC_OVERLAY_STUB._Next_Loaded]
+or      ax, ax
+jnz     short loc_327CE
+pop     ds
+assume ds:dseg
+loc_32809:
+clc
+locret_3280A:
+retn
+endp _Ovr_Buffer_Init
+; Attributes: library function
+proc UU_Ovr_pconvert near
+mov     cl, 4
+shr     ax, cl
+ror     dx, cl
+and     dx, 0F000h
+or      ax, dx
+retn
+endp UU_Ovr_pconvert
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _Ovr_SeqDiskRead near
+push    ax
+mov     bx, [ds:__OvrDosHandle]
+mov     ax, 4200h
+int     21h
+pop     ax
+push    ds
+mov     ds, ax
+assume ds:nothing
+jmp     short loc_3282F
+loc_32828:
+mov     ax, ds
+add     ax, 0FFFh
+mov     ds, ax
+assume ds:nothing
+loc_3282F:
+mov     cx, 0FFF0h
+or      di, di
+jnz     short loc_32838
+mov     cx, si
+loc_32838:
+xor     dx, dx
+mov     ah, 3Fh
+int     21h
+jb      short loc_3284F
+cmp     ax, cx
+jb      short loc_3284F
+sub     si, ax
+sbb     di, 0
+loc_32849:
+mov     ax, si
+or      ax, di
+jnz     short loc_32828
+loc_3284F:
+pop     ds
+assume ds:_OVRDATA_
+retn
+endp _Ovr_SeqDiskRead
+; Attributes: library function
+proc _Ovr_ModuleReloc near
+push    ds
+push    es
+mov     ax, [es:BC_OVERLAY_STUB._CodeSize]
+mov     si, ax
+and     si, 0Fh
+shr     ax, 1
+shr     ax, 1
+shr     ax, 1
+shr     ax, 1
+mov     dx, [es:BC_OVERLAY_STUB._MemSeg]
+add     ax, dx
+loc_3286B:
+mov     ds, ax
+assume ds:nothing
+mov     es, dx
+shr     cx, 1
+cld
+loc_32872:
+lodsw
+mov     bx, ax
+mov     di, [es:bx]
+push    ds
+mov     ax, seg _EXEINFO_
+mov     ds, ax
+assume ds:_EXEINFO_
+mov     ax, di
+and     di, 0FFF8h
+mov     dx, [di]
+mov     [es:bx], dx
+loc_32888:
+test    ax, 1
+jz      short loc_32890
+call    _Ovr_CallbackReloc
+loc_32890:
+pop     ds
+assume ds:dseg
+loop    loc_32872
+pop     es
+pop     ds
+retn
+endp _Ovr_ModuleReloc
+; Attributes: library function
+proc _Ovr_CallbackReloc near
+push    cx
+mov     ds, dx
+assume ds:nothing
+mov     ah, [es:bx-1]
+mov     al, ah
+and     ax, 0F807h
+cmp     ah, 0B8h
+jnz     short loc_328F2
+mov     cx, ax
+mov     ah, [es:bx+2]
+mov     al, ah
+and     ax, 0F807h
+cmp     ah, 50h
+jnz     short loc_328F2
+cmp     al, cl
+jnz     short loc_328F2
+mov     dx, ax
+mov     ah, [es:bx+3]
+mov     al, ah
+and     ax, 0F807h
+cmp     cx, ax
+jnz     short loc_328F2
+mov     ah, [es:bx+6]
+mov     al, ah
+and     ax, 0F807h
+cmp     ax, dx
+jnz     short loc_328F2
+mov     di, 20h
+mov     cx, [ds:BC_OVERLAY_STUB._FunctionCount]
+loc_328DE:
+mov     ax, [es:bx+4]
+loc_328E2:
+cmp     ax, [di+2]
+jz      short loc_328EE
+add     di, 5
+loop    loc_328E2
+jmp     short loc_328F4
+loc_328EE:
+mov     [es:bx+4], di
+loc_328F2:
+pop     cx
+retn
+loc_328F4:
+pop     cx
+retn
+endp _Ovr_CallbackReloc
+; Attributes: library function
+proc __ReadOvrDisk near
+mov     si, [es:BC_OVERLAY_STUB._CodeSize]
+xor     di, di
+add     si, [es:BC_OVERLAY_STUB._RelocSize]
+adc     di, 0
+mov     dx, [es:BC_OVERLAY_STUB._OvrFileOff_LO]
+mov     cx, [es:BC_OVERLAY_STUB._OvrFileOff_HI]
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+call    _Ovr_SeqDiskRead
+jb      short locret_32923
+mov     cx, [es:BC_OVERLAY_STUB._RelocSize]
+jcxz    short loc_32922
+call    _Ovr_ModuleReloc
+loc_32922:
+clc
+locret_32923:
+retn
+endp __ReadOvrDisk
+; Attributes: library function bp-based frame
+proc _Ovr_INT_Handler far
+push    bp
+mov     bp, sp
+test    bp, 1
+jz      short loc_32932
+jmp     far ptr __OverlayHalt
+loc_32932:
+push    ax
+push    bx
+push    cx
+push    dx
+push    si
+push    di
+push    ds
+push    es
+mov     ax, seg _OVRDATA_
+mov     ds, ax
+assume ds:_OVRDATA_
+sti
+les     bx, [bp+2]
+push    [word ptr es:bx]
+sub     word ptr [bp+2], 2
+jnz     short loc_32951
+call    _Ovr_LoadOverlay
+jmp     short loc_32969
+loc_32951:
+add     bp, 6
+mov     ax, [bp+0]
+xchg    ax, [bp-6]
+mov     [bp+0], ax
+call    _Ovr_LoadOverlay
+mov     ax, [bp+0]
+xchg    ax, [bp-6]
+mov     [bp+0], ax
+loc_32969:
+pop     bx
+mov     al, [es:BC_OVERLAY_STUB._HookFlags]
+and     al, 8
+and     [byte ptr es:BC_OVERLAY_STUB._HookFlags], not 8
+cbw
+mov     ds, [cs:__OVRGROUP]
+call    [__OVRHOOK__]
+loc_32980:
+pop     es
+pop     ds
+assume ds:dseg
+pop     di
+pop     si
+pop     dx
+pop     cx
+pop     bx
+pop     ax
+pop     bp
+iret
+endp _Ovr_INT_Handler
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _Ovr_GetLoadSeg near
+push    es
+inc     [ds:__OvrLoadCount]
+call    _Ovr_GetSize
+jmp     short loc_329C2
+loc_32994:
+popf
+push    dx
+jnb     short loc_3299B
+call    _Ovr_ShiftBufferUp
+loc_3299B:
+mov     es, [ds:__OvrLoadList]
+mov     ax, [es:BC_OVERLAY_STUB._Next_Loaded]
+mov     [ds:__OvrLoadList], ax
+cmp     [byte ptr es:BC_OVERLAY_STUB._HoldCounter], 0
+jnz     short loc_329B6
+call    _Ovr_SwapOut
+call    _Ovr_GetCodeSize
+jmp     short loc_329C1
+loc_329B6:
+dec     [byte ptr es:BC_OVERLAY_STUB._HoldCounter]
+call    _Ovr_CodeShift
+call    _Ovr_MakeLastStub
+loc_329C1:
+pop     dx
+loc_329C2:
+call    _Ovr_HeapLeft
+pushf
+cmp     dx, ax
+ja      short loc_32994
+popf
+pop     es
+mov     ax, [ds:__OvrHeapPtr]
+loc_329CF:
+mov     [es:BC_OVERLAY_STUB._MemSeg], ax
+retn
+endp _Ovr_GetLoadSeg
+; Attributes: library function
+proc _Ovr_LoadOverlay near
+inc     [ds:__OvrTrapCount]
+cmp     [word ptr es:BC_OVERLAY_STUB._MemSeg], 0
+jz      short loc_329EF
+loc_329E0:
+mov     [byte ptr es:BC_OVERLAY_STUB._HoldCounter], 1
+or      [byte ptr es:BC_OVERLAY_STUB._HookFlags], 4
+jmp     short loc_32A0B
+byte_329EE db 90h
+loc_329EF:
+or      [byte ptr es:BC_OVERLAY_STUB._HookFlags], 8
+call    _Ovr_GetLoadSeg
+push    ds
+loc_329F9:
+dec     ax
+mov     ds, ax
+assume ds:nothing
+mov     [word ptr ds:0Eh], es
+pop     ds
+assume ds:_OVRDATA_
+loc_32A01:
+call    [word ptr es:BC_OVERLAY_STUB._Ovr_Load_Fn]
+jb      short loc_32A4A
+call    _Ovr_MakeLastStub
+loc_32A0B:
+call    _Ovr_ReLink
+loc_32A0E:
+mov     al, [es:BC_OVERLAY_STUB._HookFlags]
+and     al, 3
+loc_32A14:
+add     [es:BC_OVERLAY_STUB._HoldCounter], al
+push    es
+call    _Ovr_HeapLeft
+mov     es, [ds:__OvrLoadList]
+loc_32A21:
+mov     cx, [es:BC_OVERLAY_STUB._Next_Loaded]
+jcxz    short loc_32A48
+cmp     ax, [ds:__OvrRetrySize]
+jnb     short loc_32A48
+push    cx
+push    ax
+cmp     [byte ptr es:BC_OVERLAY_STUB._HoldCounter], 0
+jz      short loc_32A3C
+xor     ax, ax
+jmp     short loc_32A42
+loc_32A3C:
+call    _Ovr_Unlink
+call    _Ovr_GetCodeSize
+loc_32A42:
+pop     cx
+pop     es
+add     ax, cx
+jmp     short loc_32A21
+loc_32A48:
+pop     es
+retn
+loc_32A4A:
+jmp     far ptr __OverlayHalt
+endp _Ovr_LoadOverlay
+; Attributes: library function
+proc _Ovr_SwapOut near
+call    _Ovr_Unlink
+loc_32A52:
+cmp     [word ptr es:BC_OVERLAY_STUB._Ovr_Load_Fn], offset __ReadOvrDisk
+jnz     short loc_32A5F
+loc_32A5B:
+call    [__CALLEXTEMSSWAP]
+loc_32A5F:
+mov     [word ptr es:BC_OVERLAY_STUB._MemSeg], 0
+retn
+endp _Ovr_SwapOut
+; Attributes: library function
+proc _Ovr_ShiftBufferUp near
+mov     ax, [ds:__OvrLoadList]
+xor     cx, cx
+loc_32A6C:
+inc     cx
+push    ax
+mov     es, ax
+mov     ax, [es:BC_OVERLAY_STUB._Next_Loaded]
+or      ax, ax
+jnz     short loc_32A6C
+mov     [ds:__OvrLoadList], ax
+mov     ax, [ds:__OvrHeapEnd]
+mov     [ds:__OvrHeapPtr], ax
+loc_32A81:
+pop     es
+push    cx
+mov     ax, [ds:__OvrLoadList]
+mov     [es:BC_OVERLAY_STUB._Next_Loaded], ax
+mov     [ds:__OvrLoadList], es
+call    _Ovr_GetCodeSize
+sub     [ds:__OvrHeapPtr], ax
+call    _Ovr_CodeShift
+pop     cx
+loop    loc_32A81
+loc_32A9B:
+mov     ax, [ds:__OvrHeapOrg]
+loc_32A9E:
+mov     [ds:__OvrHeapPtr], ax
+retn
+endp _Ovr_ShiftBufferUp
+; Attributes: library function
+proc _Ovr_ReLink near
+cmp     [word ptr es:BC_OVERLAY_STUB._FunctionCount], 0
+jnz     short loc_32AAB
+retn
+loc_32AAB:
+cmp     [byte ptr es:20h], 0EAh
+jz      short near_return
+mov     cx, [es:BC_OVERLAY_STUB._RetOffset]
+jcxz    short _Ovr_Link
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+mov     dx, es
+call    _Ovr_ReturnAdjust
+endp _Ovr_ReLink
+; Attributes: library function
+proc _Ovr_Link near
+mov     bx, [es:BC_OVERLAY_STUB._MemSeg]
+mov     cx, [es:BC_OVERLAY_STUB._FunctionCount]
+mov     di, 20h
+cld
+loc_32AD1:
+mov     dx, [es:di+2]
+mov     al, 0EAh
+stosb
+mov     ax, dx
+stosw
+mov     ax, bx
+stosw
+loop    loc_32AD1
+near_return:
+retn
+endp _Ovr_Link
+; Attributes: library function
+proc _Ovr_Unlink near
+cmp     [byte ptr es:20h], 0CDh
+jz      short locret_32B13
+mov     ax, es
+mov     dx, [es:BC_OVERLAY_STUB._MemSeg]
+xor     cx, cx
+call    _Ovr_ReturnAdjust
+mov     [es:BC_OVERLAY_STUB._RetOffset], cx
+mov     cx, [es:BC_OVERLAY_STUB._FunctionCount]
+mov     di, 20h
+cld
+loc_32B03:
+mov     dx, [es:di+1]
+mov     ax, [ds:__OVRTRAP__]
+stosw
+mov     ax, dx
+stosw
+xor     al, al
+stosb
+loop    loc_32B03
+locret_32B13:
+retn
+endp _Ovr_Unlink
+; Attributes: library function
+proc _Ovr_CodeShift near
+mov     ax, [ds:__OvrHeapPtr]
+mov     dx, [es:BC_OVERLAY_STUB._MemSeg]
+mov     [es:BC_OVERLAY_STUB._MemSeg], ax
+mov     cx, [es:BC_OVERLAY_STUB._CodeSize]
+inc     cx
+shr     cx, 1
+xor     si, si
+cld
+cmp     ax, dx
+jb      short loc_32B35
+mov     si, cx
+dec     si
+shl     si, 1
+std
+loc_32B35:
+mov     di, si
+push    ds
+push    es
+mov     ds, dx
+assume ds:nothing
+mov     es, ax
+rep movsw
+cld
+dec     ax
+mov     ds, ax
+pop     es
+mov     [word ptr ds:0Eh], es
+inc     ax
+pop     ds
+assume ds:_OVRDATA_
+cmp     [byte ptr es:20h], 0CDh
+jz      short locret_32B64
+call    _Ovr_SwapActiveCalls
+mov     cx, [es:BC_OVERLAY_STUB._FunctionCount]
+mov     di, 23h
+cld
+loc_32B5E:
+stosw
+add     di, 3
+loop    loc_32B5E
+locret_32B64:
+retn
+endp _Ovr_CodeShift
+; Attributes: library function
+proc _Ovr_MakeLastStub near
+call    _Ovr_GetCodeSize
+add     [ds:__OvrHeapPtr], ax
+push    ds
+mov     ax, seg _STUB_
+loc_32B70:
+mov     ds, ax
+assume ds:_STUB_
+mov     ax, [__OvrLoadList]
+or      ax, ax
+jnz     short loc_32B70
+assume ds:nothing
+mov     [word ptr ds:BC_OVERLAY_STUB._Next_Loaded], es
+mov     [es:BC_OVERLAY_STUB._Next_Loaded], ax
+pop     ds
+assume ds:dseg
+retn
+endp _Ovr_MakeLastStub
+; Attributes: library function
+proc _Ovr_ReturnAdjust near
+call    _Ovr_SwapActiveCalls
+or      bx, bx
+jz      short locret_32B8E
+xchg    cx, [ss:bx+2]
+locret_32B8E:
+retn
+endp _Ovr_ReturnAdjust
+; Attributes: library function
+proc _Ovr_SwapActiveCalls near
+xor     bx, bx
+push    cx
+push    bp
+jmp     short loc_32B99
+loc_32B95:
+shl     cx, 1
+mov     bp, cx
+loc_32B99:
+mov     cx, [bp+0]
+shr     cx, 1
+jz      short loc_32BB2
+jb      short loc_32B95
+cmp     dx, [bp+4]
+jnz     short loc_32B95
+mov     [bp+4], ax
+or      bx, bx
+jnz     short loc_32B95
+mov     bx, bp
+jmp     short loc_32B95
+loc_32BB2:
+pop     bp
+pop     cx
+retn
+endp _Ovr_SwapActiveCalls
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _Ovr_HeapLeft near
+mov     ax, [ds:__OvrLoadList]
+or      ax, ax
+jz      short loc_32BC8
+mov     es, ax
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+sub     ax, [ds:__OvrHeapPtr]
+jnb     short locret_32BD0
+loc_32BC8:
+mov     ax, [ds:__OvrHeapEnd]
+sub     ax, [ds:__OvrHeapPtr]
+stc
+locret_32BD0:
+retn
+endp _Ovr_HeapLeft
+; Attributes: library function
+proc _Ovr_GetCodeSize near
+mov     ax, [es:BC_OVERLAY_STUB._CodeSize]
+add     ax, 11h
+mov     cl, 4
+shr     ax, cl
+retn
+endp _Ovr_GetCodeSize
+; Attributes: library function
+proc _Ovr_GetSize near
+mov     cl, 4
+mov     ax, [es:BC_OVERLAY_STUB._CodeSize]
+add     ax, 11h
+shr     ax, cl
+mov     dx, [es:BC_OVERLAY_STUB._RelocSize]
+add     dx, 0Fh
+shr     dx, cl
+add     dx, ax
+retn
+endp _Ovr_GetSize
+; Attributes: library function
+proc UU__ISOVERLAYMOD far
+push    ds
+push    es
+mov     ds, [cs:__OVRGROUP]
+cmp     ax, [ds:__OvrHeapOrg]
+jb      short loc_32C25
+cmp     ax, [ds:__OvrHeapEnd]
+jnb     short loc_32C25
+dec     ax
+mov     es, ax
+mov     es, [word ptr es:0Eh]
+inc     ax
+mov     bx, [ds:__OVRTRAP__]
+cmp     bx, [es:0]
+jnz     short loc_32C25
+cmp     ax, [es:BC_OVERLAY_STUB._MemSeg]
+mov     ax, es
+jz      short loc_32C28
+loc_32C25:
+xor     ax, ax
+stc
+loc_32C28:
+pop     es
+pop     ds
+assume ds:dseg
+retf
+endp UU__ISOVERLAYMOD
+; Attributes: library function bp-based frame
+proc UU__CHECKSTACK far
+Unloaded_Ovr_Found= byte ptr -2
+push    bp
+mov     bp, sp
+sub     sp, 2
+mov     [bp+Unloaded_Ovr_Found], 0
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+push    si
+push    di
+mov     bx, bp
+mov     ax, [ds:__OVRTRAP__]
+mov     dx, [ds:__OvrHeapOrg]
+jmp     short loc_32C4C
+loc_32C48:
+shl     si, 1
+mov     bx, si
+loc_32C4C:
+cmp     bx, cx
+jnb     short loc_32C7A
+mov     si, [ss:bx]
+shr     si, 1
+jz      short loc_32C7A
+jb      short loc_32C48
+mov     di, ss:[bx+4]
+cmp     di, dx
+jnb     short loc_32C48
+mov     es, di
+mov     di, ss:[bx+2]
+or      di, di
+jnz     short loc_32C48
+cmp     [es:di], ax
+jnz     short loc_32C48
+mov     [bp+Unloaded_Ovr_Found], 1
+mov     [es:di+2], di
+jmp     short loc_32C48
+loc_32C7A:
+cmp     [bp+Unloaded_Ovr_Found], 1
+jz      short loc_32C87
+jmp     short loc_32CBC
+db 90h
+loc_32C83:
+shl     si, 1
+mov     bx, si
+loc_32C87:
+mov     si, [ss:bx]
+shr     si, 1
+jz      short loc_32CBC
+jb      short loc_32C83
+mov     di, ss:[bx+4]
+cmp     di, dx
+jnb     short loc_32C83
+mov     es, di
+mov     di, ss:[bx+2]
+or      di, di
+jz      short loc_32C83
+cmp     [es:0], ax
+jnz     short loc_32C83
+cmp     [word ptr es:BC_OVERLAY_STUB._RetOffset], 0
+jnz     short loc_32C83
+xchg    di, [es:BC_OVERLAY_STUB._RetOffset]
+mov     ss:[bx+2], di
+jmp     short loc_32C83
+loc_32CBC:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+loc_32CBF:
+mov     sp, bp
+pop     bp
+retf
+endp UU__CHECKSTACK
+; Attributes: library function bp-based frame
+proc UU_CHECKOVERLAY far
+j_ip= word ptr  6
+j_cs= word ptr  8
+push    bp
+mov     bp, sp
+loc_32CC6:
+push    ds
+loc_32CC7:
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+mov     es, [bp+j_cs]
+mov     cx, [ds:__OVRTRAP__]
+loc_32CD3:
+cmp     cx, [es:0]
+jnz     short loc_32D18
+cmp     [word ptr es:BC_OVERLAY_STUB._MemSeg], 0
+jz      short loc_32CEA
+cmp     [byte ptr es:20h], 0CDh
+jnz     short loc_32D11
+loc_32CEA:
+mov     [bp+j_cs], 0
+push    si
+push    di
+call    _Ovr_LoadOverlay
+pop     di
+pop     si
+mov     bx, [bp+j_ip]
+push    es
+mov     al, [es:BC_OVERLAY_STUB._HookFlags]
+and     al, 8
+and     [byte ptr es:BC_OVERLAY_STUB._HookFlags], not 8
+cbw
+mov     ds, [cs:__OVRGROUP]
+call    [__OVRHOOK__]
+pop     es
+loc_32D11:
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+mov     [bp+j_cs], ax
+loc_32D18:
+pop     ds
+assume ds:dseg
+pop     bp
+retf
+endp UU_CHECKOVERLAY
+; Attributes: library function bp-based frame
+proc __OvrInitEms far
+emsHandle= word ptr  6
+emsFirst= word ptr  8
+emsPages= word ptr  0Ah
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+test    [__OvrSwapType], 1
+jz      short loc_32D31
+loc_32D2B:
+mov     ax, 0FFFFh
+jmp     loc_32DF8
+loc_32D31:
+cmp     [bp+emsHandle], 0
+jz      short loc_32D48
+mov     cx, [bp+emsPages]
+jcxz    short loc_32D2B
+loc_32D3C:
+cmp     cx, [bp+emsFirst]
+loc_32D3F:
+jbe     short loc_32D2B
+or      [__EmsChecked], 1
+jmp     short loc_32D65
+loc_32D48:
+nop
+push    cs
+call    near ptr __INITEMS
+or      ax, ax
+jz      short loc_32D2B
+mov     bx, [bp+emsFirst]
+cmp     bx, ax
+jnb     short loc_32D2B
+sub     ax, bx
+mov     cx, [bp+emsPages]
+jcxz    short loc_32D63
+cmp     cx, ax
+jb      short loc_32D65
+loc_32D63:
+mov     cx, ax
+loc_32D65:
+mov     es, [cs:__DGROUP]
+assume es:dseg
+mov     bx, 4000h
+mov     ax, [word ptr es:__OvrSize]
+mov     dx, [word ptr es:__OvrSize+2]
+add     ax, 3FFFh
+adc     dx, 0
+div     bx
+cmp     cx, ax
+jbe     short loc_32D84
+mov     cx, ax
+loc_32D84:
+cmp     cx, 4
+jnb     short loc_32D96
+mov     ax, 400h
+mul     cx
+loc_32D8E:
+cmp     ax, [ds:__OvrMinHeapSize]
+jnb     short loc_32D96
+jmp     short loc_32D2B
+loc_32D96:
+push    [bp+emsHandle]
+push    [bp+emsFirst]
+mov     [bp+emsPages], cx
+push    cx
+nop
+push    cs
+call    near ptr __INITEMSPAGE
+or      ax, ax
+jnz     short loc_32DF8
+push    di
+mov     di, __EmsRec@
+push    ds
+pop     es
+assume es:_OVRDATA_
+cld
+mov     ax, 4000h
+mul     [bp+emsFirst]
+mov     bx, ax
+stosw
+mov     cx, dx
+mov     ax, dx
+stosw
+mov     ax, 4000h
+mul     [bp+emsPages]
+add     ax, bx
+adc     dx, cx
+stosw
+mov     ax, dx
+stosw
+mov     ax, bx
+stosw
+mov     ax, cx
+stosw
+loc_32DD2:
+mov     [ds:__EmsRec._Read_Fn], offset __ReadOvrEms
+loc_32DD8:
+mov     [ds:__EmsRec._StubChain], 0
+mov     [ds:__OvrMemorySwap], 1
+or      [__OvrSwapType], 2
+mov     [__CALLEMSEXIT], offset __EXITEMS
+mov     [__CALLEXTEMSSWAP], offset __SwapOverlay
+xor     ax, ax
+pop     di
+loc_32DF8:
+pop     ds
+assume ds:dseg
+pop     bp
+retf
+endp __OvrInitEms
+assume ds:_OVRDATA_
+; Attributes: library function
+proc _Ovr_SwapToEms near
+mov     ax, seg _EMSSEG_
+call    _Ovr_PrepareSwap
+jb      short locret_32E7A
+push    es
+push    ax
+push    bx
+push    cx
+push    dx
+mov     ax, 1
+call    [__OVRHOOK__]
+pop     dx
+pop     cx
+pop     bx
+pop     ax
+pop     es
+assume es:nothing
+mov     ax, bx
+mov     dx, cx
+mov     bx, 4000h
+div     bx
+mov     bx, ax
+mov     di, dx
+mov     dx, [__EmsHandle]
+mov     ah, 47h
+int     67h
+shl     ah, 1
+jb      short loc_32E75
+mov     dx, [es:BC_OVERLAY_STUB._CodeSize]
+xor     si, si
+loc_32E34:
+mov     cx, 4000h
+sub     cx, di
+cmp     cx, dx
+jb      short loc_32E3F
+mov     cx, dx
+loc_32E3F:
+sub     dx, cx
+push    dx
+mov     dx, [__EmsHandle]
+mov     ax, 4400h
+int     67h
+pop     dx
+shl     ah, 1
+jb      short loc_32E69
+push    ds
+push    es
+mov     ax, [__EmsPageFrame]
+mov     ds, [word ptr es:BC_OVERLAY_STUB._MemSeg]
+assume ds:nothing
+loc_32E5A:
+mov     es, ax
+cld
+rep movsb
+pop     es
+pop     ds
+assume ds:dseg
+inc     bx
+xor     di, di
+or      dx, dx
+jnz     short loc_32E34
+clc
+loc_32E69:
+pushf
+assume ds:_OVRDATA_
+mov     dx, [__EmsHandle]
+mov     ah, 48h
+int     67h
+popf
+jnb     short locret_32E7A
+loc_32E75:
+jmp     far ptr __OverlayHalt
+locret_32E7A:
+retn
+endp _Ovr_SwapToEms
+; Attributes: library function
+proc __ReadOvrEms near
+mov     dx, [__EmsHandle]
+mov     ah, 47h
+int     67h
+shl     ah, 1
+jb      short loc_32EDF
+mov     ax, [es:BC_OVERLAY_STUB._SwapOffset_LO]
+mov     dx, [es:BC_OVERLAY_STUB._SwapOffset_HI]
+mov     bx, 4000h
+div     bx
+mov     bx, ax
+mov     si, dx
+mov     dx, [es:BC_OVERLAY_STUB._CodeSize]
+xor     di, di
+loc_32EA0:
+mov     cx, 4000h
+sub     cx, si
+cmp     cx, dx
+jb      short loc_32EAB
+mov     cx, dx
+loc_32EAB:
+sub     dx, cx
+push    dx
+mov     dx, [__EmsHandle]
+mov     ax, 4400h
+int     67h
+pop     dx
+shl     ah, 1
+jb      short loc_32ED3
+push    ds
+push    es
+mov     ds, [__EmsPageFrame]
+assume ds:nothing
+mov     es, [word ptr es:BC_OVERLAY_STUB._MemSeg]
+cld
+rep movsb
+pop     es
+pop     ds
+assume ds:_OVRDATA_
+inc     bx
+xor     si, si
+or      dx, dx
+jnz     short loc_32EA0
+loc_32ED3:
+pushf
+mov     dx, [__EmsHandle]
+mov     ah, 48h
+int     67h
+popf
+jnb     short locret_32EE4
+loc_32EDF:
+jmp     far ptr __OverlayHalt
+locret_32EE4:
+retn
+endp __ReadOvrEms
+; Attributes: library function bp-based frame
+proc UU__OvrInitExt far
+Passes= byte ptr -2
+ExtStart= dword ptr  6
+ExtLength= dword ptr  0Ah
+push    bp
+mov     bp, sp
+sub     sp, 2
+push    ds
+mov     ds, [cs:__OVRGROUP]
+push    si
+push    di
+test    [__OvrSwapType], 2
+jz      short loc_32EFF
+xor     ax, ax
+jmp     loc_32FF8
+loc_32EFF:
+mov     [bp+Passes], 0
+nop
+push    cs
+call    near ptr UU__INITEXT
+or      ax, dx
+jnz     short loc_32F12
+loc_32F0C:
+mov     ax, 0FFFFh
+jmp     loc_32FF8
+loc_32F12:
+mov     bx, [word ptr bp+ExtStart]
+loc_32F15:
+mov     cx, [word ptr bp+ExtStart+2]
+cmp     cx, [word ptr __ExtStartAddress+2]
+jb      short loc_32F26
+ja      short loc_32F2E
+cmp     bx, [word ptr __ExtStartAddress]
+jnb     short loc_32F2E
+loc_32F26:
+mov     cx, [word ptr __ExtStartAddress+2]
+mov     bx, [word ptr __ExtStartAddress]
+loc_32F2E:
+cmp     cx, [word ptr __ExtEndAddress+2]
+ja      short loc_32F0C
+jb      short loc_32F3C
+cmp     bx, [word ptr __ExtEndAddress]
+ja      short loc_32F0C
+loc_32F3C:
+mov     [word ptr bp+ExtStart], bx
+mov     [word ptr bp+ExtStart+2], cx
+mov     ax, [word ptr __ExtEndAddress]
+loc_32F45:
+mov     dx, [word ptr __ExtEndAddress+2]
+sub     ax, bx
+sbb     dx, cx
+mov     si, [word ptr bp+ExtLength]
+loc_32F50:
+or      si, [word ptr bp+ExtLength+2]
+jz      short loc_32F68
+cmp     dx, [word ptr bp+ExtLength+2]
+jb      short loc_32F68
+ja      short loc_32F62
+cmp     ax, [word ptr __ExtEndAddress]
+jbe     short loc_32F68
+loc_32F62:
+mov     ax, [word ptr bp+ExtLength]
+mov     dx, [word ptr bp+ExtLength+2]
+loc_32F68:
+mov     es, [cs:__DGROUP]
+assume es:dseg
+cmp     dx, [word ptr es:__OvrSize+2]
+jb      short loc_32F86
+ja      short loc_32F7D
+cmp     ax, [word ptr es:__OvrSize]
+jbe     short loc_32F86
+loc_32F7D:
+mov     dx, [word ptr es:__OvrSize+2]
+mov     ax, [word ptr es:__OvrSize]
+loc_32F86:
+mov     [word ptr bp+ExtLength], ax
+loc_32F89:
+mov     [word ptr bp+ExtLength+2], dx
+or      dx, dx
+jnz     short loc_32F9E
+push    ax
+shr     ax, 4
+cmp     ax, [ds:__OvrMinHeapSize]
+pop     ax
+jnb     short loc_32F9E
+jmp     loc_32F0C
+loc_32F9E:
+push    cx
+push    bx
+push    dx
+push    ax
+mov     di, __ExtRec@
+push    ds
+pop     es
+assume es:_OVRDATA_
+cld
+loc_32FA8:
+push    ax
+loc_32FA9:
+mov     ax, bx
+stosw
+mov     ax, cx
+stosw
+pop     ax
+add     ax, bx
+adc     dx, cx
+stosw
+mov     ax, dx
+stosw
+mov     ax, bx
+stosw
+mov     ax, cx
+stosw
+nop
+push    cs
+call    near ptr UU__INITEXTMEM
+or      ax, ax
+jnz     short loc_32FF8
+cmp     [bp+Passes], 0
+jnz     short loc_32FD3
+inc     [bp+Passes]
+jmp     loc_32F12
+loc_32FD3:
+mov     [ds:__ExtRec._Read_Fn], offset UU__ReadOvrXms
+mov     [ds:__ExtRec._StubChain], 0
+mov     [ds:__OvrMemorySwap], 1
+or      [__OvrSwapType], 1
+mov     [__CALLEXTEXIT], offset UU__EXITEXT
+mov     [__CALLEXTEMSSWAP], offset __SwapOverlay
+xor     ax, ax
+loc_32FF8:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+loc_32FFB:
+mov     sp, bp
+pop     bp
+retf
+endp UU__OvrInitExt
+assume ds:_OVRDATA_
+; Attributes: library function
+proc UU_Ovr_SwapToExt near
+mov     ax, seg _EXTSEG_
+call    _Ovr_PrepareSwap
+jb      short locret_3302D
+push    es
+push    ax
+push    bx
+push    cx
+push    dx
+mov     ax, 1
+call    [__OVRHOOK__]
+pop     dx
+pop     cx
+pop     bx
+pop     ax
+pop     es
+assume es:nothing
+push    cx
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+mov     dx, 10h
+mul     dx
+pop     cx
+call    UU__EXTCOPY
+jnb     short locret_3302D
+jmp     far ptr __OverlayHalt
+locret_3302D:
+retn
+endp UU_Ovr_SwapToExt
+; Attributes: library function
+proc UU__ReadOvrXms near
+call    _Ovr_CodeSwapSize
+mov     ax, [es:BC_OVERLAY_STUB._MemSeg]
+mov     dx, 10h
+mul     dx
+mov     bx, ax
+mov     cx, dx
+mov     ax, [es:BC_OVERLAY_STUB._SwapOffset_LO]
+mov     dx, [es:BC_OVERLAY_STUB._SwapOffset_HI]
+call    UU__EXTCOPY
+jnb     short locret_33051
+jmp     far ptr __OverlayHalt
+locret_33051:
+retn
+endp UU__ReadOvrXms
+; Attributes: library function
+proc _Ovr_CodeSwapSize near
+mov     si, [es:BC_OVERLAY_STUB._CodeSize]
+inc     si
+loc_33058:
+and     si, 1111111111111110b
+loc_3305B:
+xor     di, di
+retn
+endp _Ovr_CodeSwapSize
+; Attributes: library function
+proc _Ovr_PrepareSwap near
+push    ds
+assume ds:dseg
+mov     ds, ax
+assume ds:_EMSSEG_
+push    bp
+push    es
+loc_33063:
+mov     ax, [word ptr __EmsRec.BufferEnd]
+loc_33066:
+mov     bx, [word ptr __EmsRec.BreakLevel]
+sub     ax, bx
+push    ax
+mov     dx, [word ptr __EmsRec.BufferEnd+2]
+mov     cx, [word ptr __EmsRec.BreakLevel+2]
+sbb     dx, cx
+push    dx
+loc_33078:
+call    _Ovr_CodeSwapSize
+sub     ax, si
+sbb     dx, di
+jnb     short loc_330C1
+pop     di
+pop     si
+mov     bp, [__EmsRec._Read_Fn]
+call    _Ovr_SwapPicker
+or      ax, ax
+jz      short loc_330AA
+mov     es, ax
+mov     dx, [__EmsRec._StubChain]
+mov     ax, [es:BC_OVERLAY_STUB._NextSwapped]
+mov     [__EmsRec._StubChain], ax
+mov     [word ptr es:BC_OVERLAY_STUB._NextSwapped], 0
+call    _Ovr_FindChainEnd
+mov     [es:BC_OVERLAY_STUB._NextSwapped], dx
+loc_330AA:
+mov     bx, [word ptr __EmsRec.BufferStart]
+mov     [word ptr __EmsRec.BreakLevel], bx
+mov     cx, [word ptr __EmsRec.BufferStart+2]
+mov     [word ptr __EmsRec.BreakLevel+2], cx
+pop     es
+push    es
+call    _Ovr_CodeSwapSize
+jmp     short loc_330C4
+loc_330C1:
+add     sp, 4
+loc_330C4:
+mov     bp, offset __ReadOvrDisk
+call    _Ovr_SwapPicker
+or      ax, ax
+jz      short loc_330D7
+mov     es, ax
+mov     ax, [es:BC_OVERLAY_STUB._NextSwapped]
+mov     [__EmsRec._StubChain], ax
+loc_330D7:
+pop     es
+pop     bp
+add     [word ptr __EmsRec.BreakLevel], si
+adc     [word ptr __EmsRec.BreakLevel+2], di
+mov     [es:BC_OVERLAY_STUB._SwapOffset_LO], bx
+mov     [es:BC_OVERLAY_STUB._SwapOffset_HI], cx
+mov     ax, [__EmsRec._Read_Fn]
+mov     [es:BC_OVERLAY_STUB._Ovr_Load_Fn], ax
+mov     dx, es
+call    _Ovr_FindChainEnd
+loc_330F7:
+mov     [es:BC_OVERLAY_STUB._NextSwapped], dx
+mov     es, dx
+mov     [es:BC_OVERLAY_STUB._NextSwapped], ax
+clc
+pop     ds
+assume ds:dseg
+retn
+endp _Ovr_PrepareSwap
+; Attributes: library function
+proc _Ovr_SwapPicker near
+push    ds
+xor     ax, ax
+mov     es, ax
+assume es:nothing
+jmp     short loc_33129
+loc_3310C:
+mov     ds, ax
+assume ds:nothing
+mov     ax, [ds:BC_OVERLAY_STUB._SwapOffset_LO]
+sub     ax, bx
+mov     dx, [ds:BC_OVERLAY_STUB._SwapOffset_HI]
+sbb     dx, cx
+jb      short loc_33130
+sub     ax, si
+sbb     dx, di
+jnb     short loc_33130
+mov     [ds:BC_OVERLAY_STUB._Ovr_Load_Fn], bp
+mov     ax, ds
+mov     es, ax
+loc_33129:
+mov     ax, [ds:__EmsRec._StubChain]
+or      ax, ax
+jnz     short loc_3310C
+loc_33130:
+mov     ax, es
+pop     ds
+assume ds:dseg
+retn
+endp _Ovr_SwapPicker
+; Attributes: library function
+proc _Ovr_FindChainEnd near
+mov     ax, ds
+loc_33136:
+mov     es, ax
+assume es:_EMSSEG_
+mov     ax, [es:__EmsRec._StubChain]
+or      ax, ax
+jnz     short loc_33136
+retn
+endp _Ovr_FindChainEnd
+assume ds:_OVRDATA_
+; Attributes: library function
+proc __SwapOverlay near
+test    [__OvrSwapType], 1
+jz      short loc_3314C
+call    UU_Ovr_SwapToExt
+retn
+loc_3314C:
+test    [__OvrSwapType], 2
+jz      short locret_33156
+call    _Ovr_SwapToEms
+locret_33156:
+retn
+endp __SwapOverlay
+; Attributes: library function
+proc __OvrPrepare far
+push    ds
+push    si
+push    di
+mov     ax, seg _OVRDATA_
+mov     ds, ax
+call    __InitModules
+mov     bx, [ds:__OvrMinHeapSize]
+mov     ax, seg dseg
+mov     ds, ax
+assume ds:dseg
+mov     ax, seg dseg
+mov     es, ax
+assume es:dseg
+cmp     bx, [es:__ovrbuffer]
+jnb     short loc_3317E
+mov     bx, [es:__ovrbuffer]
+jmp     short loc_33180
+loc_3317E:
+shl     bx, 1
+loc_33180:
+inc     bx
+push    bx
+mov     ax, 10h
+mul     bx
+push    dx
+push    ax
+call    _farmalloc
+pop     bx
+pop     bx
+pop     bx
+mov     cx, ax
+or      cx, dx
+jcxz    short loc_331AD
+inc     dx
+add     bx, dx
+push    dx
+push    bx
+xor     ax, ax
+push    ax
+push    ax
+nop
+push    cs
+call    near ptr __OVRINIT
+or      ax, ax
+jnz     short loc_331AD
+pop     di
+pop     si
+pop     ds
+retf
+loc_331AD:
+jmp     far ptr _abort
+endp __OvrPrepare
+cnst_EMS_DevName db 'EMMXXXX0',0
+; Attributes: library function bp-based frame
+proc __INITEMS far
+push    bp
+mov     bp, sp
+sub     sp, 102h
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+push    si
+push    di
+test    [__EmsChecked], 1
+jz      short loc_331E1
+test    [__EmsChecked], 2
+jnz     short loc_331DB
+jmp     short loc_33249
+db 90h
+loc_331DB:
+mov     ax, [__EmsPages]
+jmp     loc_33266
+loc_331E1:
+push    ds
+push    cs
+pop     ds
+assume ds:_OVRTEXT_
+mov     dx, offset cnst_EMS_DevName
+mov     ax, 3D00h
+int     21h
+pop     ds
+assume ds:_OVRDATA_
+mov     bx, ax
+jb      short loc_33213
+mov     ax, 4400h
+int     21h
+jb      short loc_3320F
+test    dx, 80h
+jz      short loc_3320F
+mov     ax, 4407h
+int     21h
+jb      short loc_3320F
+push    ax
+mov     ah, 3Eh
+int     21h
+pop     ax
+cmp     al, 0FFh
+jz      short loc_33216
+loc_3320F:
+mov     ah, 3Eh
+int     21h
+loc_33213:
+jmp     short loc_3325F
+align 2
+loc_33216:
+mov     ax, 3567h
+int     21h
+loc_3321B:
+mov     ax, es
+or      ax, bx
+jz      short loc_33213
+mov     ah, 40h
+int     67h
+or      ah, ah
+jnz     short loc_33213
+mov     [__EmsChecked], 1
+mov     ah, 46h
+int     67h
+or      ah, ah
+jnz     short loc_33213
+cmp     al, 32h
+jb      short loc_33213
+mov     [__EmsVersion], al
+mov     ah, 41h
+int     67h
+or      ah, ah
+jnz     short loc_33213
+mov     [__EmsPageFrame], bx
+loc_33249:
+mov     ah, 42h
+int     67h
+or      ah, ah
+jnz     short loc_3325F
+mov     [__EmsPages], bx
+mov     [__EmsHandle], -1
+mov     ax, bx
+jmp     short loc_33266
+loc_3325F:
+xor     ax, ax
+mov     [__EmsChecked], 0
+loc_33266:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+mov     sp, bp
+pop     bp
+retf
+endp __INITEMS
+; Attributes: library function bp-based frame
+proc __INITEMSPAGE far
+emsPages= word ptr  6
+emsFirst= word ptr  8
+emsHandle= word ptr  0Ah
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+test    [__EmsChecked], 1
+jnz     short loc_33280
+jmp     short loc_332CA
+align 2
+loc_33280:
+test    [__EmsChecked], 2
+jz      short loc_3328C
+xor     ax, ax
+jmp     short loc_332CD
+align 2
+loc_3328C:
+or      [__EmsChecked], 2
+mov     ax, [bp+emsFirst]
+mov     [__EmsFirstPage], ax
+mov     bx, [bp+emsPages]
+mov     [__EmsPages], bx
+mov     dx, [bp+emsHandle]
+or      dx, dx
+jnz     short loc_332B2
+mov     ah, 43h
+int     67h
+or      ah, ah
+jnz     short loc_332CA
+or      [__EmsChecked], 4
+loc_332B2:
+mov     [__EmsHandle], dx
+mov     ah, 47h
+int     67h
+or      ah, ah
+jnz     short loc_332CA
+mov     dx, [__EmsHandle]
+mov     ah, 48h
+int     67h
+mov     al, ah
+jmp     short loc_332CD
+loc_332CA:
+mov     ax, 0FFFFh
+loc_332CD:
+pop     ds
+assume ds:dseg
+pop     bp
+retf    6
+endp __INITEMSPAGE
+; Attributes: library function bp-based frame
+proc __EXITEMS far
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+test    [__EmsChecked], 4
+jz      short loc_332FA
+mov     dx, [__EmsHandle]
+cmp     dx, 0FFFFh
+jz      short loc_332FA
+mov     ah, 45h
+int     67h
+mov     [__EmsHandle], 0FFFFh
+mov     [__EmsChecked], 0
+loc_332FA:
+pop     ds
+assume ds:dseg
+pop     bp
+retf
+endp __EXITEMS
+; Attributes: library function bp-based frame
+proc UU__INITEXT far
+DOS_Version= word ptr -22h
+Fake_Boot_Sector_Copy= word ptr -20h
+Field_03_Name= word ptr -1Dh
+Field_0B_Bytes_per_sector= word ptr -15h
+Field_13_Volume_size= word ptr -0Dh
+push    bp
+mov     bp, sp
+sub     sp, 22h
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+push    si
+push    di
+test    [__ExtChecked], 1
+jz      short loc_3331C
+test    [__ExtChecked], 2
+jz      short loc_33321
+jmp     loc_33492
+loc_3331C:
+mov     [__ExtChecked], 1
+loc_33321:
+mov     [word ptr __ExtStartAddress], 0
+mov     [word ptr __ExtStartAddress+2], 10h
+mov     [word ptr __ExtEndAddress], 0
+mov     [word ptr __ExtEndAddress+2], 10h
+push    sp
+pop     ax
+cmp     ax, sp
+jnz     short loc_33347
+mov     ah, 30h
+int     21h
+cmp     al, 0Ah
+jb      short loc_3334A
+loc_33347:
+jmp     loc_334A3
+loc_3334A:
+xchg    al, ah
+mov     [bp+DOS_Version], ax
+mov     ax, 0F000h
+mov     es, ax
+assume es:nothing
+mov     al, [es:0FFFEh]
+cmp     al, 0FCh
+ja      short loc_33347
+cmp     al, 0FBh
+jz      short loc_33347
+cmp     al, 0F9h
+jz      short loc_33347
+cmp     [bp+DOS_Version], 31h
+jnb     short loc_3336D
+loc_3336A:
+jmp     loc_333EC
+loc_3336D:
+mov     ax, 4300h
+int     2Fh
+cmp     al, 80h
+jnz     short loc_3336A
+mov     ax, 4310h
+int     2Fh
+mov     [word ptr __XmsControl], bx
+mov     [word ptr __XmsControl+2], es
+xor     ax, ax
+call    [__XmsControl]
+cmp     ah, 2
+jb      short loc_333EC
+mov     ah, 8
+call    [__XmsControl]
+or      ax, ax
+jz      short loc_333E9
+mov     si, ax
+xchg    ax, dx
+mov     ah, 9
+call    [__XmsControl]
+or      ax, ax
+jz      short loc_333E9
+mov     [__XmsHandle], dx
+mov     ah, 0Ch
+call    [__XmsControl]
+or      ax, ax
+jz      short loc_333CF
+mov     [word ptr __ExtStartAddress], bx
+mov     [word ptr __ExtStartAddress+2], dx
+mov     ax, 400h
+mul     si
+add     ax, [word ptr __ExtStartAddress]
+adc     dx, [word ptr __ExtStartAddress+2]
+mov     [word ptr __ExtEndAddress], ax
+mov     [word ptr __ExtEndAddress+2], dx
+loc_333CF:
+mov     ah, 0Dh
+mov     dx, [__XmsHandle]
+call    [__XmsControl]
+mov     ah, 0Ah
+mov     dx, [__XmsHandle]
+call    [__XmsControl]
+mov     [__XmsHandle], 0
+loc_333E9:
+jmp     loc_33492
+loc_333EC:
+mov     ah, 88h
+int     15h
+or      ax, ax
+jnz     short loc_333F7
+loc_333F4:
+jmp     loc_334A3
+loc_333F7:
+mov     dx, 400h
+mul     dx
+add     dl, 10h
+mov     [word ptr __ExtEndAddress], ax
+mov     [word ptr __ExtEndAddress+2], dx
+mov     cx, [word ptr __XmsControl]
+or      cx, [word ptr __XmsControl+2]
+jcxz    short loc_3341B
+mov     [byte ptr __ExtStartAddress+2], 11h
+mov     [word ptr __ExtStartAddress], 0
+loc_3341B:
+mov     ax, ss
+mov     dx, 10h
+mul     dx
+lea     bx, [bp+Fake_Boot_Sector_Copy]
+xor     cx, cx
+add     bx, ax
+adc     cx, dx
+mov     ax, 0
+mov     dx, 10h
+mov     si, 20h
+xor     di, di
+call    UU__EXTCOPY
+jb      short loc_333F4
+lea     di, [bp+Field_03_Name]
+push    ss
+pop     es
+assume es:nothing
+lea     si, [cnst_VDISK_sig]
+mov     cx, 5
+cld
+repe cmpsb
+jnz     short loc_3345C
+mov     ax, [bp+Field_0B_Bytes_per_sector]
+mul     [bp+Field_13_Volume_size]
+add     dl, 10h
+mov     [word ptr __ExtStartAddress], ax
+mov     [byte ptr __ExtStartAddress+2], dl
+loc_3345C:
+xor     ax, ax
+mov     es, ax
+assume es:nothing
+mov     es, [word ptr es:66h]
+assume es:nothing
+mov     di, Vdisk_Hdr.driver_name
+lea     si, [cnst_VDISK_sig]
+mov     cx, 5
+cld
+repe cmpsb
+jnz     short loc_33492
+mov     ax, [es:Vdisk_Hdr.ext_base_00_15]
+mov     dl, [es:Vdisk_Hdr.ext_base_16_23]
+cmp     dl, [byte ptr __ExtStartAddress+2]
+jb      short loc_33492
+ja      short loc_3348B
+cmp     ax, [word ptr __ExtStartAddress]
+jbe     short loc_33492
+loc_3348B:
+mov     [word ptr __ExtStartAddress], ax
+mov     [byte ptr __ExtStartAddress+2], dl
+loc_33492:
+mov     ax, [word ptr __ExtEndAddress]
+mov     dx, [word ptr __ExtEndAddress+2]
+sub     ax, [word ptr __ExtStartAddress]
+sbb     dx, [word ptr __ExtStartAddress+2]
+jmp     short loc_334A6
+loc_334A3:
+xor     ax, ax
+cwd
+loc_334A6:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+mov     sp, bp
+pop     bp
+retf
+endp UU__INITEXT
+; Attributes: library function bp-based frame
+proc UU__INITEXTMEM far
+ExtLength= dword ptr  6
+ExtStart= dword ptr  0Ah
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+push    si
+push    di
+test    [__ExtChecked], 1
+jnz     short loc_334C2
+jmp     loc_3357B
+loc_334C2:
+test    [__ExtChecked], 2
+jz      short loc_334CE
+xor     ax, ax
+jmp     loc_3357E
+loc_334CE:
+or      [__ExtChecked], 2
+mov     ax, [word ptr bp+ExtStart]
+mov     dx, [word ptr bp+ExtStart+2]
+mov     si, [word ptr bp+ExtLength]
+mov     di, [word ptr bp+ExtLength+2]
+mov     bx, [word ptr __XmsControl]
+or      bx, [word ptr __XmsControl+2]
+jz      short loc_3352C
+mov     ax, si
+mov     dx, di
+add     ax, 3FFh
+adc     dx, 0
+mov     bx, 400h
+div     bx
+xchg    ax, dx
+mov     ah, 9
+call    [__XmsControl]
+or      ax, ax
+jz      short loc_33529
+mov     [__XmsHandle], dx
+mov     ah, 0Ch
+call    [__XmsControl]
+or      ax, ax
+jz      short loc_33529
+mov     [word ptr __ExtStartAddress], bx
+mov     [word ptr __ExtStartAddress+2], dx
+mov     [word ptr __XmsBase], bx
+mov     [word ptr __XmsBase+2], dx
+mov     ax, bx
+add     ax, si
+adc     dx, di
+jmp     short loc_33570
+loc_33529:
+jmp     short loc_3357B
+align 2
+loc_3352C:
+mov     [word ptr __ExtStartAddress], ax
+mov     [word ptr __ExtStartAddress+2], dx
+xor     bx, bx
+mov     es, bx
+assume es:nothing
+push    ds
+mov     bx, seg _VDISKSEG_
+mov     ds, bx
+assume ds:_VDISKSEG_
+mov     bx, [es:64h]
+mov     [word ptr _INT_19h_vector], bx
+mov     bx, [es:66h]
+mov     [word ptr _INT_19h_vector+2], bx
+mov     [word ptr es:64h], offset __BootHandler
+mov     [word ptr es:66h], seg _VDISKSEG_
+mov     [__ExtStart_24b_00_15], ax
+mov     [__ExtStart_24b_16_23], dl
+add     ax, si
+adc     dx, di
+mov     [__FakeVdisk.ext_base_00_15], ax
+mov     [__FakeVdisk.ext_base_16_23], dl
+pop     ds
+assume ds:_OVRDATA_
+loc_33570:
+mov     [word ptr __ExtEndAddress], ax
+mov     [word ptr __ExtEndAddress+2], dx
+xor     ax, ax
+jmp     short loc_3357E
+loc_3357B:
+mov     ax, 0FFFFh
+loc_3357E:
+pop     di
+pop     si
+pop     ds
+assume ds:dseg
+pop     bp
+retf    8
+endp UU__INITEXTMEM
+; Attributes: library function bp-based frame
+proc UU__EXITEXT far
+push    bp
+mov     bp, sp
+push    ds
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+cmp     [__ExtChecked], 0
+jz      short loc_335D6
+cmp     [__XmsHandle], 0
+jz      short loc_335B2
+mov     ah, 0Dh
+mov     dx, [__XmsHandle]
+call    [__XmsControl]
+mov     ah, 0Ah
+mov     dx, [__XmsHandle]
+call    [__XmsControl]
+jmp     short loc_335D6
+loc_335B2:
+xor     ax, ax
+mov     es, ax
+mov     ax, [es:66h]
+cmp     ax, seg _VDISKSEG_
+jnz     short loc_335D6
+push    ds
+mov     ds, ax
+assume ds:_VDISKSEG_
+mov     ax, [word ptr _INT_19h_vector]
+mov     [es:64h], ax
+mov     ax, [word ptr _INT_19h_vector+2]
+mov     [es:66h], ax
+pop     ds
+assume ds:_OVRDATA_
+mov     [__ExtChecked], 0
+loc_335D6:
+pop     ds
+assume ds:dseg
+pop     bp
+retf
+endp UU__EXITEXT
+; Attributes: library function
+proc UU__EXTCOPY near
+push    ds
+push    es
+add     si, 1
+loc_335DE:
+adc     di, 0
+and     si, 0FFFEh
+cld
+mov     ds, [cs:__OVRGROUP]
+assume ds:_OVRDATA_
+cmp     [__XmsHandle], 0
+jz      short loc_3365B
+mov     [word ptr __EXTGDT.Length], si
+mov     [word ptr __EXTGDT.Length+2], di
+cmp     dl, 10h
+jb      short loc_33611
+mov     si, [__XmsHandle]
+loc_33602:
+mov     [__EXTGDT.SourceHandle], si
+sub     ax, [word ptr __XmsBase]
+sbb     dx, [word ptr __XmsBase+2]
+jmp     short loc_3361A
+db 90h
+loc_33611:
+mov     [__EXTGDT.SourceHandle], 0
+ror     dx, 4
+loc_3361A:
+mov     [word ptr __EXTGDT.SourceOffset], ax
+mov     [word ptr __EXTGDT.SourceOffset+2], dx
+cmp     cl, 10h
+jb      short loc_33639
+mov     si, [__XmsHandle]
+mov     [__EXTGDT.DestHandle], si
+sub     bx, [word ptr __XmsBase]
+sbb     cx, [word ptr __XmsBase+2]
+jmp     short loc_33642
+db 90h
+loc_33639:
+mov     [__EXTGDT.DestHandle], 0
+ror     cx, 4
+loc_33642:
+mov     [word ptr __EXTGDT.DestOffset], bx
+mov     [word ptr __EXTGDT.DestOffset+2], cx
+mov     ah, 0Bh
+lea     si, [__EXTGDT]
+call    [__XmsControl]
+or      ax, ax
+jnz     short loc_33681
+stc
+jmp     short loc_3367C
+loc_3365B:
+shr     di, 1
+rcr     si, 1
+mov     [_SourceGDT_286.base_00_15], ax
+mov     [_SourceGDT_286.base_16_23], dl
+mov     [_TargetGDT_286.base_00_15], bx
+mov     [_TargetGDT_286.base_16_23], cl
+mov     cx, si
+lea     si, [__EXTGDT]
+loc_33674:
+push    ds
+pop     es
+assume es:_OVRDATA_
+mov     ah, 87h
+int     15h
+jnb     short loc_33681
+loc_3367C:
+sbb     ax, ax
+stc
+jmp     short loc_33683
+loc_33681:
+xor     ax, ax
+loc_33683:
+pop     es
+assume es:nothing
+pop     ds
+assume ds:dseg
+retn
+endp UU__EXTCOPY
+; Attributes: library function
+proc _Ovr_Placeholder1 near
+retn
+endp _Ovr_Placeholder1
+; Attributes: library function
+proc _Ovr_Placeholder2 far
+retf
+endp _Ovr_Placeholder2
+ends _OVRTEXT_
+; Segment type: Regular
+segment _OVRDATA_ byte public 'OVRINFO' use16
+assume cs:_OVRDATA_
+assume es:nothing, ss:nothing, ds:dseg, fs:nothing, gs:nothing
+word_33690 dw 0
+_Ovr_INT_Offset dw offset _Ovr_INT_Handler
+_Ovr_INT_Segment dw seg _OVRTEXT_
+_OvrFile_OpenMode db 0
+algn_33697:
+align 10h
+__OvrSwapType db 0
+algn_336A1:
+align 10h
+cnst_VDISK_sig db 'VDISK',0
+algn_336B6:
+align 10h
+__EmsPageFrame dw 0
+__EmsHandle dw 0FFFFh
+__EmsFirstPage dw 0
+__EmsPages dw 0
+__EmsChecked db 0
+__EmsVersion db 0
+; unsigned __int32 _ExtStartAddress
+__ExtStartAddress dd 0
+__ExtEndAddress dd 0
+__ExtChecked db 0
+__XmsControl dd 0
+__XmsHandle dw 0
+__XmsBase dd 0
+__EXTGDT ExtMemMoveStruct <0, 9300h, 0, 0, 9300h>
+_SourceGDT_286 GDT_Set_Desc <0FFFFh, 0, 0, 92h, 0>
+_TargetGDT_286 GDT_Set_Desc <0FFFFh, 0, 0, 92h, 0>
+_GDTs_4_5 GDT_Set_Desc 2 dup(<0, 0, 0, 93h, 0>)
+algn_3370D:
+align 10h
+__CALLEXTEMSSWAP dw offset _Ovr_Placeholder1
+__CALLEXTEXIT dw offset _Ovr_Placeholder2
+__CALLEMSEXIT dw offset _Ovr_Placeholder2
+__OVRHOOK__ dd __FAR_RETURN
+__OVRBACKLINK__ dw 0Eh
+__OVRFILENAME db 80h dup(   0); 0
+algn_3379C:
+align 10h
+ends _OVRDATA_
+; Segment type: Regular
+segment _STUB_ byte public 'OVRINFO' use16
+assume cs:_STUB_
+assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+__OVRTRAP__ dw 3FCDh
+__OvrMemorySwap dw 0
+__OvrFileBase dd 0
+__OvrRetrySize dw 0
+__OvrMinHeapSize dw 0
+__OvrTrapCount dw 0
+__OvrProbation dw 0
+__OvrHeapPtr dw 0
+__OvrCodeList dw 0
+__OvrHeapOrg dw 0
+__OvrHeapEnd dw 0
+__OvrDosHandle dw 0
+__OvrLoadCount dw 0
+__OvrLoadList dw 0
+word_337BE dw 0
+ends _STUB_
+; Segment type: Regular
+segment _EXTSEG_ byte public 'OVRINFO' use16
+assume cs:_EXTSEG_
+assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+__ExtRec Ovl_SwapRecord <0>
+ends _EXTSEG_
+; Segment type: Regular
+segment _EMSSEG_ byte public 'OVRINFO' use16
+assume cs:_EMSSEG_
+assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+__EmsRec Ovl_SwapRecord <0>
+ends _EMSSEG_
+; Segment type: Pure code
+segment _VDISKSEG_ byte public 'CODE' use16
+assume cs:_VDISKSEG_
+assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+__FakeVdisk  = Vdisk_Hdr ptr $
+db 12h dup(0); driver_header
+db 'V', 'D', 'I', 'S', 'K', ' ', 'F', 'A', 'K', 'E', 0; driver_name
+db 0Fh dup(0); unused_1Dh
+dw 0; ext_base_00_15
+db 0; ext_base_16_23
+_INT_19h_vector dd 0
+db    0
+db    0
+unk_33815 db    0
+db    0
+db    1
+db    0
+unk_33819 db    0
+__ExtStart_24b_00_15 dw 0
+__ExtStart_24b_16_23 db 0
+unk_3381D db    0
+unk_3381E db    0
+; Attributes: library function
+proc __BootHandler near
+jmp     [cs:_INT_19h_vector]
+endp __BootHandler
+algn_33824:
+align 10h
+ends _VDISKSEG_
+; Segment type: Regular
+segment _EXEINFO_ byte public 'OVRINFO' use16
+assume cs:_EXEINFO_
+assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+_SEGTABLE_ SEGTABLE_entry <seg seg000,  3EC7h, SEG_CODE, 0>; 0
+SEGTABLE_entry <seg seg001,   986h, SEG_CODE,      7>; 1
+SEGTABLE_entry <seg seg002,   0D3h, SEG_CODE,      6>; 2
+SEGTABLE_entry <seg seg003,   1A0h, SEG_CODE,      4>; 3
+SEGTABLE_entry <seg seg004,   0A2h, SEG_CODE, 0>; 4
+SEGTABLE_entry <seg seg005,   3B1h, SEG_CODE,      2>; 5
+SEGTABLE_entry <seg seg006,    8Eh, SEG_CODE,      2>; 6
+SEGTABLE_entry <seg seg007,   12Bh, SEG_CODE,    0Eh>; 7
+SEGTABLE_entry <seg seg008,   695h, SEG_CODE,    0Bh>; 8
+SEGTABLE_entry <seg seg009,   11Ah, SEG_CODE,      6>; 9
+SEGTABLE_entry <seg seg010,  1161h, SEG_CODE,    0Ah>; 10
+SEGTABLE_entry <seg seg011,   0F9h, SEG_CODE,      1>; 11
+SEGTABLE_entry <seg seg012,   2CBh, SEG_CODE,    0Ah>; 12
+SEGTABLE_entry <seg seg013,  1941h, SEG_CODE,    0Bh>; 13
+SEGTABLE_entry <seg seg014,   8F8h, SEG_CODE,      1>; 14
+SEGTABLE_entry <seg seg015,    4Ch, SEG_CODE,      8>; 15
+SEGTABLE_entry <seg seg016,  0B8Eh, SEG_CODE,    0Ch>; 16
+SEGTABLE_entry <seg seg017,  18DFh, SEG_CODE,    0Eh>; 17
+SEGTABLE_entry <seg seg018,   5B1h, SEG_CODE, 0>; 18
+SEGTABLE_entry <seg seg019,  0DCEh, SEG_CODE,      1>; 19
+SEGTABLE_entry <seg seg020,   65Bh, SEG_CODE,    0Eh>; 20
+SEGTABLE_entry <seg seg021,   6FEh, SEG_CODE,    0Ch>; 21
+SEGTABLE_entry <seg seg022,  0A32h, SEG_CODE,    0Eh>; 22
+SEGTABLE_entry <seg seg023,   566h, SEG_CODE,      2>; 23
+SEGTABLE_entry <seg seg024,   597h, SEG_CODE,      6>; 24
+SEGTABLE_entry <seg seg025,   3EDh, SEG_CODE,      8>; 25
+SEGTABLE_entry <seg seg026,  0D09h, SEG_CODE,    0Eh>; 26
+SEGTABLE_entry <seg seg027,   2A8h, SEG_CODE,      9>; 27
+SEGTABLE_entry <seg seg028,   2FAh, SEG_CODE,      8>; 28
+SEGTABLE_entry <seg seg029,   6CFh, SEG_CODE,    0Ah>; 29
+SEGTABLE_entry <seg seg030,  3329h, SEG_CODE,    0Fh>; 30
+SEGTABLE_entry <seg seg031,   531h, SEG_CODE,    0Ah>; 31
+SEGTABLE_entry <seg seg032,   625h, SEG_CODE,      2>; 32
+SEGTABLE_entry <seg seg033,  0A75h, SEG_CODE,      6>; 33
+SEGTABLE_entry <seg seg034,   794h, SEG_CODE,      6>; 34
+SEGTABLE_entry <seg seg035,  0EDCh, SEG_CODE,      4>; 35
+SEGTABLE_entry <seg seg036,  95B0h, SEG_CODE,    0Ch>; 36
+SEGTABLE_entry <seg _AIL_,  1904h, SEG_CODE, 0>; 37
+SEGTABLE_entry <seg SOUND,  0F25h, SEG_CODE,      4>; 38
+SEGTABLE_entry <seg _OVRTEXT_,  1258h, SEG_CODE,      5>; 39
+SEGTABLE_entry 3 dup(<seg _OVRDATA_, 0, 0, 0>); 40
+SEGTABLE_entry <seg _OVRDATA_,   730h, 0, 0>; 43
+SEGTABLE_entry <seg _STUB_, 0FFFFh, SEG_VIRTUAL, 0>; 44
+SEGTABLE_entry <seg _EXTSEG_, 0FFFFh, SEG_VIRTUAL, 0>; 45
+SEGTABLE_entry <seg _EMSSEG_, 0FFFFh, SEG_VIRTUAL, 0>; 46
+SEGTABLE_entry <seg _VDISKSEG_, 0FFFFh, SEG_VIRTUAL, 0>; 47
+SEGTABLE_entry <seg _EXEINFO_, 0FFFFh, SEG_VIRTUAL, 0>; 48
+SEGTABLE_entry <seg stub050, 0, SEG_CODE, 0>; 49
+SEGTABLE_entry <seg stub050,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 50
+SEGTABLE_entry <seg stub051,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 51
+SEGTABLE_entry <seg stub052,   0CAh, SEG_CODE or SEG_OVERLAY, 0>; 52
+SEGTABLE_entry <seg stub053,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 53
+SEGTABLE_entry <seg stub054,    75h, SEG_CODE or SEG_OVERLAY, 0>; 54
+SEGTABLE_entry <seg stub055,   0E8h, SEG_CODE or SEG_OVERLAY, 0>; 55
+SEGTABLE_entry <seg stub056,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 56
+SEGTABLE_entry <seg stub057,    52h, SEG_CODE or SEG_OVERLAY, 0>; 57
+SEGTABLE_entry <seg stub058,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 58
+SEGTABLE_entry <seg stub059,    84h, SEG_CODE or SEG_OVERLAY, 0>; 59
+SEGTABLE_entry <seg stub060,    43h, SEG_CODE or SEG_OVERLAY, 0>; 60
+SEGTABLE_entry <seg stub061,    70h, SEG_CODE or SEG_OVERLAY, 0>; 61
+SEGTABLE_entry <seg stub062,    52h, SEG_CODE or SEG_OVERLAY, 0>; 62
+SEGTABLE_entry <seg stub063,    6Bh, SEG_CODE or SEG_OVERLAY, 0>; 63
+SEGTABLE_entry <seg stub064,    57h, SEG_CODE or SEG_OVERLAY, 0>; 64
+SEGTABLE_entry <seg stub065,    48h, SEG_CODE or SEG_OVERLAY, 0>; 65
+SEGTABLE_entry <seg stub066,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 66
+SEGTABLE_entry <seg stub067,    6Bh, SEG_CODE or SEG_OVERLAY, 0>; 67
+SEGTABLE_entry <seg stub068,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 68
+SEGTABLE_entry <seg stub069,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 69
+SEGTABLE_entry <seg stub070,    6Bh, SEG_CODE or SEG_OVERLAY, 0>; 70
+SEGTABLE_entry <seg stub071,    66h, SEG_CODE or SEG_OVERLAY, 0>; 71
+SEGTABLE_entry <seg stub072,    7Fh, SEG_CODE or SEG_OVERLAY, 0>; 72
+SEGTABLE_entry <seg stub073,    48h, SEG_CODE or SEG_OVERLAY, 0>; 73
+SEGTABLE_entry <seg stub074,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 74
+SEGTABLE_entry <seg stub075,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 75
+SEGTABLE_entry <seg stub076,    57h, SEG_CODE or SEG_OVERLAY, 0>; 76
+SEGTABLE_entry <seg stub077,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 77
+SEGTABLE_entry <seg stub078,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 78
+SEGTABLE_entry <seg stub079,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 79
+SEGTABLE_entry <seg stub080,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 80
+SEGTABLE_entry <seg stub081,    34h, SEG_CODE or SEG_OVERLAY, 0>; 81
+SEGTABLE_entry <seg stub082,    43h, SEG_CODE or SEG_OVERLAY, 0>; 82
+SEGTABLE_entry <seg stub083,    66h, SEG_CODE or SEG_OVERLAY, 0>; 83
+SEGTABLE_entry <seg stub084,    7Fh, SEG_CODE or SEG_OVERLAY, 0>; 84
+SEGTABLE_entry <seg stub085,    7Ah, SEG_CODE or SEG_OVERLAY, 0>; 85
+SEGTABLE_entry <seg stub086,    39h, SEG_CODE or SEG_OVERLAY, 0>; 86
+SEGTABLE_entry <seg stub087,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 87
+SEGTABLE_entry <seg stub088,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 88
+SEGTABLE_entry <seg stub089,    52h, SEG_CODE or SEG_OVERLAY, 0>; 89
+SEGTABLE_entry <seg stub090,    25h, SEG_CODE or SEG_OVERLAY, 0>; 90
+SEGTABLE_entry <seg stub091,    52h, SEG_CODE or SEG_OVERLAY, 0>; 91
+SEGTABLE_entry <seg stub092,    48h, SEG_CODE or SEG_OVERLAY, 0>; 92
+SEGTABLE_entry <seg stub093,    70h, SEG_CODE or SEG_OVERLAY, 0>; 93
+SEGTABLE_entry <seg stub094,    57h, SEG_CODE or SEG_OVERLAY, 0>; 94
+SEGTABLE_entry <seg stub095,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 95
+SEGTABLE_entry <seg stub096,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 96
+SEGTABLE_entry <seg stub097,    48h, SEG_CODE or SEG_OVERLAY, 0>; 97
+SEGTABLE_entry <seg stub098,    8Eh, SEG_CODE or SEG_OVERLAY, 0>; 98
+SEGTABLE_entry <seg stub099,    43h, SEG_CODE or SEG_OVERLAY, 0>; 99
+SEGTABLE_entry <seg stub100,    61h, SEG_CODE or SEG_OVERLAY, 0>; 100
+SEGTABLE_entry <seg stub101,    25h, SEG_CODE or SEG_OVERLAY, 0>; 101
+SEGTABLE_entry <seg stub102,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 102
+SEGTABLE_entry <seg stub103,    66h, SEG_CODE or SEG_OVERLAY, 0>; 103
+SEGTABLE_entry <seg stub104,    98h, SEG_CODE or SEG_OVERLAY, 0>; 104
+SEGTABLE_entry <seg stub105,    61h, SEG_CODE or SEG_OVERLAY, 0>; 105
+SEGTABLE_entry <seg stub106,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 106
+SEGTABLE_entry <seg stub107,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 107
+SEGTABLE_entry <seg stub108,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 108
+SEGTABLE_entry <seg stub109,    39h, SEG_CODE or SEG_OVERLAY, 0>; 109
+SEGTABLE_entry <seg stub110,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 110
+SEGTABLE_entry <seg stub111,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 111
+SEGTABLE_entry <seg stub112,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 112
+SEGTABLE_entry <seg stub113,    70h, SEG_CODE or SEG_OVERLAY, 0>; 113
+SEGTABLE_entry <seg stub114,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 114
+SEGTABLE_entry <seg stub115,    70h, SEG_CODE or SEG_OVERLAY, 0>; 115
+SEGTABLE_entry <seg stub116,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 116
+SEGTABLE_entry <seg stub117,    61h, SEG_CODE or SEG_OVERLAY, 0>; 117
+SEGTABLE_entry <seg stub118,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 118
+SEGTABLE_entry <seg stub119,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 119
+SEGTABLE_entry <seg stub120,   0A2h, SEG_CODE or SEG_OVERLAY, 0>; 120
+SEGTABLE_entry <seg stub121,    66h, SEG_CODE or SEG_OVERLAY, 0>; 121
+SEGTABLE_entry <seg stub122,    6Bh, SEG_CODE or SEG_OVERLAY, 0>; 122
+SEGTABLE_entry <seg stub123,    43h, SEG_CODE or SEG_OVERLAY, 0>; 123
+SEGTABLE_entry <seg stub124,    89h, SEG_CODE or SEG_OVERLAY, 0>; 124
+SEGTABLE_entry <seg stub125,    39h, SEG_CODE or SEG_OVERLAY, 0>; 125
+SEGTABLE_entry <seg stub126,    34h, SEG_CODE or SEG_OVERLAY, 0>; 126
+SEGTABLE_entry <seg stub127,    4Dh, SEG_CODE or SEG_OVERLAY, 0>; 127
+SEGTABLE_entry <seg stub128,    57h, SEG_CODE or SEG_OVERLAY, 0>; 128
+SEGTABLE_entry <seg stub129,    70h, SEG_CODE or SEG_OVERLAY, 0>; 129
+SEGTABLE_entry <seg stub130,    7Ah, SEG_CODE or SEG_OVERLAY, 0>; 130
+SEGTABLE_entry <seg stub131,    52h, SEG_CODE or SEG_OVERLAY, 0>; 131
+SEGTABLE_entry <seg stub132,    7Ah, SEG_CODE or SEG_OVERLAY, 0>; 132
+SEGTABLE_entry <seg stub133,    89h, SEG_CODE or SEG_OVERLAY, 0>; 133
+SEGTABLE_entry <seg stub134,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 134
+SEGTABLE_entry <seg stub135,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 135
+SEGTABLE_entry <seg stub136,    5Ch, SEG_CODE or SEG_OVERLAY, 0>; 136
+SEGTABLE_entry <seg stub137,    61h, SEG_CODE or SEG_OVERLAY, 0>; 137
+SEGTABLE_entry <seg stub138,    57h, SEG_CODE or SEG_OVERLAY, 0>; 138
+SEGTABLE_entry <seg stub139,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 139
+SEGTABLE_entry <seg stub140,   0ACh, SEG_CODE or SEG_OVERLAY, 0>; 140
+SEGTABLE_entry <seg stub141,    25h, SEG_CODE or SEG_OVERLAY, 0>; 141
+SEGTABLE_entry <seg stub142,   0D4h, SEG_CODE or SEG_OVERLAY, 0>; 142
+SEGTABLE_entry <seg stub143,    7Fh, SEG_CODE or SEG_OVERLAY, 0>; 143
+SEGTABLE_entry <seg stub144,    66h, SEG_CODE or SEG_OVERLAY, 0>; 144
+SEGTABLE_entry <seg stub145,    7Ah, SEG_CODE or SEG_OVERLAY, 0>; 145
+SEGTABLE_entry <seg stub146,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 146
+SEGTABLE_entry <seg stub147,    25h, SEG_CODE or SEG_OVERLAY, 0>; 147
+SEGTABLE_entry <seg stub148,    48h, SEG_CODE or SEG_OVERLAY, 0>; 148
+SEGTABLE_entry <seg stub149,    8Eh, SEG_CODE or SEG_OVERLAY, 0>; 149
+SEGTABLE_entry <seg stub150,    7Ah, SEG_CODE or SEG_OVERLAY, 0>; 150
+SEGTABLE_entry <seg stub151,    39h, SEG_CODE or SEG_OVERLAY, 0>; 151
+SEGTABLE_entry <seg stub152,    25h, SEG_CODE or SEG_OVERLAY, 0>; 152
+SEGTABLE_entry <seg stub153,    98h, SEG_CODE or SEG_OVERLAY, 0>; 153
+SEGTABLE_entry <seg stub154,    7Fh, SEG_CODE or SEG_OVERLAY, 0>; 154
+SEGTABLE_entry <seg stub155,    2Ah, SEG_CODE or SEG_OVERLAY, 0>; 155
+SEGTABLE_entry <seg stub156,   147h, SEG_CODE or SEG_OVERLAY, 0>; 156
+SEGTABLE_entry <seg stub157,    39h, SEG_CODE or SEG_OVERLAY, 0>; 157
+SEGTABLE_entry <seg stub158,   0DEh, SEG_CODE or SEG_OVERLAY, 0>; 158
+SEGTABLE_entry <seg stub159,    2Fh, SEG_CODE or SEG_OVERLAY, 0>; 159
+SEGTABLE_entry <seg stub160,    34h, SEG_CODE or SEG_OVERLAY, 0>; 160
+SEGTABLE_entry <seg stub161,   0EDh, SEG_CODE or SEG_OVERLAY, 0>; 161
+SEGTABLE_entry <seg stub162,   0DEh, SEG_CODE or SEG_OVERLAY, 0>; 162
+SEGTABLE_entry <seg stub163,    3Eh, SEG_CODE or SEG_OVERLAY, 0>; 163
+SEGTABLE_entry <seg stub164,    48h, SEG_CODE or SEG_OVERLAY, 0>; 164
+SEGTABLE_entry <seg dseg, 0EA54h, 0, 0>; 165
+SEGTABLE_entry <3F30h,      9, SEG_VIRTUAL,    0Ah>; 166
+SEGTABLE_entry <3F30h,    0Bh, SEG_VIRTUAL,    0Ch>; 167
+SEGTABLE_entry 2 dup(<3F31h,      1, SEG_VIRTUAL,      2>); 168
+SEGTABLE_entry 2 dup(<3F32h,      9, SEG_VIRTUAL,    0Ah>); 170
+SEGTABLE_entry 2 dup(<3F33h, 0FFFFh, SEG_VIRTUAL, 0>); 172
+SEGTABLE_entry <454Fh,      3, SEG_VIRTUAL,      4>; 174
+SEGTABLE_entry <seg seg162,    80h, 0, 0>; 175
+__EXENAME__ db 'wizards.exe',0
+__EXEDATE__ FILE_DATE <3, 3, 1995>
+ends _EXEINFO_
