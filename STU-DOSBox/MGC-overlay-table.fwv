@@ -956,8 +956,8 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 002C 00031930 stub051    000319AF NX_j_Desert_Autotile
 002C 00031930 stub051    000319B4 NX_j_Simtex_Autotiling
 002C 00031930 stub051    000319B9 NX_j_Shuffle_Terrains
-002C 00031930 stub051    000319BE NX_j_River_Path
-002C 00031930 stub051    000319C3 NX_j_River_Terrain
+002C 00031930 stub051    000319BE NX_j_Generate_River
+002C 00031930 stub051    000319C3 NX_j_River_Autotile
 002C 00031930 stub051    000319C8 NX_j_Generate_Neutral_Cities__WIP
 002C 00031930 stub051    000319CD NX_j_Generate_Roads
 002C 00031930 stub051    000319D2 NX_j_Generate_Terrain_Specials
@@ -1018,7 +1018,7 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 002F 00031B20 stub054    00031B54 j_UU_SPATH_GetBorderTiles
 0030 00031B60 stub055    00031B80 j_CRP_NEWG_CreatePathGrid__STUB
 0031 00031B90 stub056    00031BB0 j_Init_Computer_Players
-0031 00031B90 stub056    00031BB5 j_NEWG_FinalizeTables
+0031 00031B90 stub056    00031BB5 j_Init_Runtime
 0031 00031B90 stub056    00031BBA j_Initialize_Items
 0031 00031B90 stub056    00031BBF NX_j_Init_Summoning_Circle_And_Spell_Of_Mastery
 0031 00031B90 stub056    00031BC4 NX_j_Init_Magic_Personalities_Objectives
@@ -1096,7 +1096,7 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 003C 00043580 ovr051     00043580 Init_New_Game
 003C 00043580 ovr051     00043839 Set_Upper_Lair_Guardian_Count
 003C 00043580 ovr051     000438C4 Extend_Islands
-003C 00043580 ovr051     00043C95 NEWG_CreateTowers__WIP
+003C 00043580 ovr051     00043C95 Generate_Towers
 003C 00043580 ovr051     00043E4F Generate_Home_Cities
 003C 00043580 ovr051     000449D0 Init_Landmasses
 003C 00043580 ovr051     00044A0E Rebalance_Node_Types
@@ -1114,8 +1114,8 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 003C 00043580 ovr051     000472C7 Desert_Autotile
 003C 00043580 ovr051     0004763F Simtex_Autotiling
 003C 00043580 ovr051     00048821 Shuffle_Terrains
-003C 00043580 ovr051     00048C63 River_Path
-003C 00043580 ovr051     0004910F River_Terrain
+003C 00043580 ovr051     00048C63 Generate_River
+003C 00043580 ovr051     0004910F River_Autotile
 003C 00043580 ovr051     0004A942 Generate_Neutral_Cities
 003C 00043580 ovr051     0004B973 Random_City_Name_By_Race_NewGame
 003C 00043580 ovr051     0004BA53 Generate_Roads
@@ -1177,12 +1177,12 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 003F 000503F0 ovr054     0005173F UU_SPATH_GetBorderTiles
 0040 000518E0 ovr055     000518E0 CRP_NEWG_CreatePathGrid__STUB
 0041 000522E0 ovr056     000522E0 Init_Computer_Players
-0041 000522E0 ovr056     000523A3 NEWG_FinalizeTables
+0041 000522E0 ovr056     000523A3 Init_Runtime
 0041 000522E0 ovr056     0005244A Init_Diplomatic_Relations
 0041 000522E0 ovr056     0005266E Initialize_Items
 0041 000522E0 ovr056     000526A6 Init_Summoning_Circle_And_Spell_Of_Mastery
 0041 000522E0 ovr056     00052792 Init_Magic_Personalities_Objectives
-0041 000522E0 ovr056     00052C4D AI_WIZ_StrategyReset__WIP
+0041 000522E0 ovr056     00052C4D Init_CP_Strategy
 0041 000522E0 ovr056     00052CE7 Init_Players
 0041 000522E0 ovr056     0005301E Init_Computer_Players_Wizard_Profile
 0041 000522E0 ovr056     00053A06 Init_Computer_Players_Spell_Library

@@ -2,33 +2,55 @@
 
 ## Consumer
 
-The comparison is run **per stage** via the orchestrator scripts
-[`baselines/compare-stage0.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-stage0.py),
-[`baselines/compare-stage1.sh`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-stage1.sh),
-[`baselines/compare-stage2.sh`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-stage2.sh),
-... (one `compare-stage{N}` per matchup stage).  Each orchestrator
-runs three analyses in order of decreasing abstraction:
+This PRD's output -- a clean `[FN-ENTER]` / `[FN-EXIT]` stream --
+feeds the OG-vs-ReMoM call-path comparison.  Two scripts consume
+it, at two granularities.
 
-1. [`baselines/compare-anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-anchors.py)
-   -- the function-call / program-path comparator,
-2. `baselines/diff-bytes.py` -- raw per-byte save diff,
-3. `baselines/diff-structured-stage{N}.py` -- region/field-grouped diff.
+**1. The direct consumer:**
+[`baselines/compare-call-paths.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-call-paths.py)
+-- the per-event function-call / program-path comparator.  It
+reads ReMoM's `[FN-ENTER]` events (with the legacy `BEGIN:` lines
+as fallback) from the freshest rotating STU_LOG, reads the OG call
+log, walks both streams, and prints a side-by-side path table
+tagging each row `match` / `OG-only` / `ReMoM-only`, plus the
+earliest mismatch.  This is the script the `name=` field exists
+for.  It is run standalone (not part of any orchestrator).
 
-`compare-anchors.py` is the **direct consumer** of this PRD's
-output.  It pairs OG function calls (from
-`/tmp/magic_exe-calls.log`) with ReMoM function entries (from
-ReMoM's `STU_LOG` output) at named anchors, and reports where
-each side was when reaching each anchor.  The anchor table lives
-at [`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py).
+**2. The bridge-point reporter chain:**
+[`baselines/merge-remom-trace.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/merge-remom-trace.py)
+->
+[`baselines/compare-anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-anchors.py).
+`merge-remom-trace.py` interleaves the STU_LOG
+`[FN-ENTER]`/`[FN-EXIT]`/`BEGIN` events with the stderr
+`[RNG-CALL]` stream (keyed on the shared `g_random_call_count`)
+into one chronological table at `/tmp/remom-trace.fwv`.
+`compare-anchors.py` then reads that merged trace and reports the
+rng-counter delta at each anchor; a non-zero delta means an
+assumed re-sync point did not actually line up.
 
-So in process terms: you run `compare-stage{N}`, it invokes
-`compare-anchors.py`, and `compare-anchors.py` reads the
-`[FN-ENTER]` / `[FN-EXIT]` stream this PRD specifies.
+The anchor table
+[`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py)
+is no longer "the checkpoints both sides cross."  Anchors are now
+**re-sync barriers**: verified points where, after a divergence
+the per-event walk in `compare-call-paths.py` cannot resolve, both
+sides are known to be in the same state, so the walk can reset and
+resume.  `compare-anchors.py` is the reporter that confirms each
+barrier still holds.
 
-This PRD covers the ReMoM-side capture only.  The comparators
-(the per-stage `compare-stage{N}` orchestrators and the
-`compare-anchors.py` they drive) and the OG-side probe are out
-of scope.
+These consumers are driven two ways:
+
+- The per-stage orchestrators
+  [`compare-stage0.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/compare-stage0.py),
+  `compare-stage1.sh`, `compare-stage2.sh`, ... run, in order:
+  (a) `merge-remom-trace.py` then `compare-anchors.py`
+  (-> `anchor-comparison.txt`), (b) `diff-bytes.py` (raw per-byte
+  save diff), (c) `diff-structured-stage{N}.py` (region/field
+  diff).
+- `compare-call-paths.py` is run standalone for the full per-event
+  path walk; it is NOT currently part of the orchestrator.
+
+This PRD covers the ReMoM-side capture only.  All of the consumers
+above, and the OG-side probe, are out of scope.
 
 ## Problem
 
@@ -80,14 +102,19 @@ Produce a log of ReMoM's function execution path that:
 ## Non-goals
 
 - OG-side capture (handled separately by the DOSBox probe).
-- Building the OG↔ReMoM comparator -- the per-stage
-  `compare-stage{N}` orchestrators and the `compare-anchors.py`
-  they drive already exist; this PRD is their upstream supplier
-  of clean ReMoM-side data.
+- Building the OG↔ReMoM comparator -- the per-event
+  `compare-call-paths.py`, the `merge-remom-trace.py` ->
+  `compare-anchors.py` bridge-point reporter, and the per-stage
+  `compare-stage{N}` orchestrators that drive the reporter chain
+  already exist; this PRD is their upstream supplier of clean
+  ReMoM-side data.
 - Instrumenting *every* function in ReMoM.  Initial scope is the
-  set of functions named in
-  [`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py);
-  the anchor table is the working list of "what to instrument".
+  worklist in F4 (the `Init_New_Game` call chain).  Note that the
+  anchor table
+  [`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py)
+  is now a small set of *re-sync barriers*, NOT the full
+  instrumentation list -- instrument the F4 functions whether or
+  not they currently appear as anchors.
 - Replacing or modifying the existing `STU_LOG` infrastructure.
 - Reformatting / removing the existing ad-hoc `BEGIN:` / `END:`
   `LOG_INFO` lines.  Those can stay; the comparator can fall back
@@ -98,6 +125,9 @@ Produce a log of ReMoM's function execution path that:
 ### Functional
 
 **F1.** Add a new `LOG_CAT_CALL_TRACE` category in `STU/src/STU_LOG.h`.
+
+> **Status (verified 2026-06-13): ✅ DONE.**  `LOG_CAT_CALL_TRACE = 46`
+> is defined in `STU/src/STU_LOG.h:79`.
 
 **F2.** Add two macros (in a new `STU/src/STU_TRACE.h` or appended to `STU_LOG.h`):
 
@@ -110,6 +140,20 @@ Both emit at `LOG_TRACE` severity under `LOG_CAT_CALL_TRACE`.
 When the category is disabled (per `ReMoM.ini` `[Logging]`),
  the macros compile to zero overhead (sizeof-noop, same as existing `LOG_*` gates).
 
+> **Status (verified 2026-06-13): ❌ NOT DONE (deviation).**  No
+> `STU/src/STU_TRACE.h` exists and no `TRACE_ENTER` / `TRACE_EXIT`
+> macros are defined anywhere.  Instrumentation instead uses raw
+> inline calls at 93 sites (across `MoM/src`, `MoX/src`, and `src/`), e.g.
+> `LOG_TRACE(LOG_CAT_CALL_TRACE, "[FN-ENTER] name=%s rng_call=%llu", __func__, (unsigned long long)g_random_call_count)`.
+> The F3 format and the gating / zero-overhead behaviour ARE met
+> (they ride the existing `LOG_TRACE` category gate), but the macro
+> indirection is not: the format string and the `g_random_call_count`
+> read are duplicated at every site, so a format change would touch
+> all 93.  **Decision needed:** introduce the macros and migrate the
+> call sites, or close F2 as "won't do -- raw `LOG_TRACE` is the
+> accepted convention" (in which case F2 should be rewritten to spec
+> the raw-call pattern instead of macros).
+
 **F3.** The log line format MUST be:
 
 ```
@@ -117,9 +161,16 @@ When the category is disabled (per `ReMoM.ini` `[Logging]`),
 [FN-EXIT]  name=<FUNC>  rng_call=<N>  [retval=<val>]
 ```
 
-- `rng_call` = current value of the global `Random()` call counter
-  (the same counter as `[RNG-CALL] call=N`).  Lets a comparator
-  align FN events against RNG calls without timestamp matching.
+- `rng_call` = the global counter `g_random_call_count` -- the count
+  of `Random()` calls **completed** at the moment the event is
+  logged.  This is NOT the same number as the adjacent
+  `[RNG-CALL] call=N` field: `[RNG-CALL] call=N` is the ordinal of
+  the call *about to fire*, so the number of calls completed strictly
+  before it is `N - 1`.  A consumer aligning the two streams MUST
+  account for this off-by-one (calls completed before an event =
+  `call - 1`); `merge-remom-trace.py` already does, using
+  `g_random_call_count` as the shared merge key.  Aligning FN events
+  against RNG calls this way avoids timestamp matching.
 - `arg=` and `retval=` are optional and printf-formatted; emit only
   what's useful per function (plane index, player index, retort
   count, etc).
@@ -127,12 +178,29 @@ When the category is disabled (per `ReMoM.ini` `[Logging]`),
   timestamps in the event payload (STU_LOG already prefixes each
   line with its own timestamp / severity / category / file:line).
 
-**F4.** The instrumentation worklist is **the anchor table** at
-[`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py).
-Every function listed there as a `remom_fn` should have
-`TRACE_ENTER` / `TRACE_EXIT` so the comparator can match it
-without falling back to the existing ad-hoc `BEGIN:` lines or
-to `[RNG-CALL]` enclosing-function inference.
+> **Status (verified 2026-06-13): ✅ DONE (format).**  Every
+> instrumented site emits exactly
+> `[FN-ENTER] name=<fn> rng_call=<N>` /
+> `[FN-EXIT]  name=<fn> rng_call=<N>`, one line each.  `name` is
+> `__func__` at most sites; a few hand-written ones hardcode `name=`
+> or add a payload note (e.g. `Fonts.c` `name=Load_Palette`,
+> `EMS.c` `(NULL early)`) -- within F3's optional-payload allowance.
+> No `arg=` / `retval=` payloads are emitted yet.
+
+**F4.** The instrumentation worklist is the `Init_New_Game` call
+chain enumerated under "Starting points" below.  Every function on
+it should have `TRACE_ENTER` / `TRACE_EXIT` so
+`compare-call-paths.py` can match it by name without falling back
+to the existing ad-hoc `BEGIN:` lines.
+
+The anchor table
+[`baselines/anchors.py`](/home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/anchors.py)
+is a *subset* of this worklist -- the functions promoted to
+re-sync barriers because a divergence was resolved at them.  Every
+`remom_fn` in `anchors.py` MUST be instrumented (the bridge
+reporter depends on its `[FN-ENTER]` row), but the worklist is
+broader than the anchor table and grows as `compare-call-paths.py`
+flags OG-only functions that ReMoM actually runs.
 
 Starting points (these are already anchors or will be in the
 near term, all called from `Init_New_Game` in `MoM/src/MAPGEN.c`):
@@ -166,10 +234,74 @@ Helper functions called many times per top-level call (e.g.
 `Random()`, `Test_Bit_Field()`) are NOT instrumented -- they
 would swamp the log.
 
+> **Status (verified 2026-06-13): ⚠️ PARTIAL.**
+>
+> Instrumented with `[FN-ENTER]` / `[FN-EXIT]`:
+> - `MoM/src/MAPGEN.c` -- the full world-gen chain (36 functions:
+>   `Init_New_Game`, `Init_Landmasses`, `Generate_Landmasses`,
+>   `Translate_Heightmap_To_Base_Terrain_Types`,
+>   `Generate_Climate_Terrain_Types`, `Generate_Nodes`, `Make_Aura`,
+>   `Set_Node_Type`, `Rebalance_Node_Types`, `Generate_Towers`,
+>   `Extend_Islands`, `Generate_Lairs`, `Create_Lair`,
+>   `Generate_Home_Cities`, `Generate_Neutral_Cities`,
+>   `Generate_Terrain_Specials`, `Generate_Roads`, `Simex_Autotiling`,
+>   `River_Path`, and more).
+> - `MoM/src/INITGAME.c` -- computer-player setup (13 sites incl.
+>   `Init_Computer_Players`, `Init_Computer_Players_Wizard_Profile`,
+>   `Init_Computer_Players_Spell_Library`, `Init_Players`,
+>   `Init_Heroes`, `Init_Diplomatic_Relations`).
+> - `MoM/src/CITYCALC.c` -- `Do_City_Calculations` + 9 city-economy
+>   callees.
+> - `MoM/src/LOADER.c` -- `Load_TERRSTAT`, `Load_SPELLDAT`.
+> - `MoM/src/LoadScr.c` -- `PreInit_Overland`, `Init_Overland`,
+>   `Loaded_Game_Update`.
+> - `MoX/src/LOADSAVE.c` -- `Save_SAVE_GAM` (writer),
+>   `Load_SAVE_GAM` (reader).
+> - `MoM/src/NewGame.c` -- `Randomize_Book_Heights`, `Newgame_Screen_0`.
+> - `src/ReMoM.c` -- `MOM_main` (the ported MoM entry point).
+>
+> NOT yet on `[FN-ENTER]` (legacy `BEGIN:` only -- so they appear in
+> the merged trace with an unknown rng_call):
+> - `main` (`src/HeMoM.c:835`) -- the HeMoM **host harness** entry,
+>   `BEGIN:`-only by design (the Linux/SDL wrapper, outside the MoM
+>   call graph).  The MoM entry `MOM_main` -- the actual anchor
+>   target -- IS instrumented (see the main/MOM_main note below).
+>
+> Anchor impact: all 5 anchors in `anchors.py` now resolve on the
+> ReMoM side via `[FN-ENTER]` -- `Load_TERRSTAT`,
+> `Randomize_Book_Heights`, `Newgame_Screen_0`, `Init_New_Game`, and
+> (after the retarget below) the `main` anchor via `MOM_main`.
+>
+> **main vs MOM_main (resolved 2026-06-13).**  OG's `_main` is
+> MAGIC.EXE's entry, which corresponds to ReMoM's **`MOM_main`**
+> (`src/ReMoM.c:445`, `[FN-ENTER]`-instrumented), NOT the HeMoM
+> host-harness `main` (`src/HeMoM.c:835`, the Linux/SDL wrapper that
+> runs before any MoM code).  Two fixes landed:
+> 1. The `main` anchor in `anchors.py` sets `remom_fn = "MOM_main"`
+>    (file `ReMoM.c`, line 445), so `compare-anchors.py` resolves the
+>    anchor and its rng delta.
+> 2. `anchors.py` gained a `RENAMES` map (`{"main": "MOM_main"}`) that
+>    `compare-call-paths.py`'s OG-side `canon_og()` applies, so the
+>    per-event side-by-side row pairs as `match` (`_main` @rng0 <->
+>    `MOM_main` @rng0, Δ+0).  Renames apply to the OG side ONLY, so
+>    ReMoM's HeMoM host `main` stays distinct from `MOM_main`.
+>
+> drake178 `__WIP` city renames need NO `RENAMES` entry: the OG call
+> log already emits the resolved names (`Generate_Home_Cities`,
+> `Generate_Neutral_Cities`, `Generate_Towers`); the `..._WIP` symbols
+> in `MGC-overlay-table.fwv` are stale relative to the call log.
+
 **F5.** ReMoM-side change: the existing `Random_at()` wrapper in
 `MoX/src/random.c` already increments a global call counter.
 Expose that counter (or its accessor) so `TRACE_ENTER` / `TRACE_EXIT`
 can read it.
+
+> **Status (verified 2026-06-13): ✅ DONE.**  The counter is
+> `g_random_call_count`, declared `extern uint64_t g_random_call_count;`
+> in `MoX/src/random.h:74`, incremented inside `Random()`
+> (`random.c:252`, `:341`), and read directly by every
+> `[FN-ENTER]` / `[FN-EXIT]` site.  Exposed as a plain extern global
+> (no accessor function), which satisfies "expose that counter."
 
 **F6.** Provide an `[Logging]`-section example in
 `assets/ReMoM.ini` that enables `CALL_TRACE = true` (default
@@ -216,23 +348,31 @@ necessarily `remom_log_current.txt`.  Rotation can leave today's
 data in `new.txt` while `current.txt` still holds an older run.
 
 **Consumers MUST pick the active log by mtime, not by name.**
-`compare-anchors.py` and `compare-call-paths.py` use a
+`compare-call-paths.py` and `merge-remom-trace.py` use a
 `pick_freshest_remom_log()` helper that scans all three and
-returns the one with the highest mtime.  Hardcoding
-`remom_log_current.txt` has produced false negatives ("function
-never logged") when the BEGIN was sitting in `remom_log_new.txt`
-from a more recent run.
+returns the one with the highest mtime.  (`compare-anchors.py`
+gets this indirectly -- it reads the `/tmp/remom-trace.fwv` that
+`merge-remom-trace.py` produces.)  Hardcoding `remom_log_current.txt`
+has produced false negatives ("function never logged") when the
+`[FN-ENTER]` / `BEGIN` was sitting in `remom_log_new.txt` from a
+more recent run.
 
 ### Consumer contract
 
-`compare-anchors.py` (invoked by the per-stage `compare-stage{N}`
-orchestrator) reads these events from the freshest ReMoM STU_LOG
-file and treats the `name=` field as authoritative for the
-matching `anchor.remom_fn`.  No source parsing.  Anchors that
-don't appear as `[FN-ENTER]` events fall back to (a) ad-hoc
-`BEGIN:` lines for the same function, or (b) `[RNG-CALL]`
-enclosing-function inference -- both noisier, both inferior, but
-available where this PRD's instrumentation hasn't landed yet.
+`compare-call-paths.py` reads these events from the freshest
+rotating STU_LOG and treats the `name=` field as authoritative for
+function identity -- no source parsing.  Functions that don't
+appear as `[FN-ENTER]` events fall back to (a) ad-hoc `BEGIN:`
+lines for the same function, or (b) `[RNG-CALL]` enclosing-function
+inference (the latter only in `compare-rng-streams.py`) -- both
+noisier, both inferior, but available where this PRD's
+instrumentation hasn't landed yet.
+
+`compare-anchors.py` does not read the raw STU_LOG directly.  It
+reads the merged `/tmp/remom-trace.fwv` that `merge-remom-trace.py`
+builds (STU_LOG `[FN-ENTER]`/`[FN-EXIT]`/`BEGIN` plus stderr
+`[RNG-CALL]`), and uses the first `[FN-ENTER]` (or `BEGIN`) row
+matching each `anchor.remom_fn` to read that anchor's rng counter.
 
 ### Name normalisation (OG vs ReMoM)
 
@@ -273,20 +413,22 @@ strips automatically.  Anchor renames are handled by carrying both
 
 ## Out of scope (explicit)
 
-- The comparator scripts that consume these logs -- the per-stage
+- The comparator scripts that consume these logs -- the per-event
+  `compare-call-paths.py`, the `merge-remom-trace.py` ->
+  `compare-anchors.py` bridge-point reporter, and the per-stage
   `compare-stage{N}` orchestrators (`compare-stage0.py`,
-  `compare-stage1.sh`, `compare-stage2.sh`, ...) and the
-  `baselines/compare-anchors.py` they invoke -- already exist.
-  `compare-anchors.py` will pick up TRACE_ENTER events when they
-  land; until then it falls back to existing `BEGIN:` lines and
-  `[RNG-CALL]` enclosing-function inference.
-- The anchor table at `baselines/anchors.py` -- it's the
-  worklist for F4, owned by the comparator.
+  `compare-stage1.sh`, `compare-stage2.sh`, ...) that drive the
+  reporter chain -- already exist.  They pick up `[FN-ENTER]`
+  events as functions are instrumented; until then they fall back
+  to existing `BEGIN:` lines.
+- The anchor table at `baselines/anchors.py` -- the re-sync
+  barrier set, owned by the comparator.  It is a subset of, not
+  the same as, the F4 instrumentation worklist.
 - The OG-side probe in DOSBox / STU-DOSBox -- separate work.
 - Performance-mode builds
   (`STU_LOG_MIN_SEVERITY > LOG_SEV_TRACE`) -- those already strip
   the macros; no special handling needed.
 - The `compare-rng-streams.py` PRNG analysis -- this PRD is for
-  the function-call / program-path comparator, not RNG-stream
-  alignment.  The two analyses share infrastructure but answer
-  different questions.
+  the function-call / program-path comparator (`compare-call-paths.py`),
+  not RNG-stream alignment.  The two analyses share infrastructure
+  but answer different questions.
