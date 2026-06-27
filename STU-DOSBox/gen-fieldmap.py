@@ -145,11 +145,26 @@ def member_offsets(members):
     for i, (off_c, typ, nm, cnt) in enumerate(members):
         if off_c is not None:
             offs.append(int(off_c, 16))
+        elif i == 0:
+            offs.append(0)            # first member, no /* 0xNN */ comment -> starts at 0
         else:
             pcnt = members[i - 1][3]
             pcount = resolve_const(pcnt) if pcnt is not None else 1
             offs.append(offs[i - 1] + elem_size(members[i - 1][1]) * pcount)
     return offs
+
+def max_offset_marker(struct_name):
+    """Largest /* 0xNN */ offset comment in the body.  Catches a trailing
+    end-of-struct marker (e.g. s_HERO's `/* 0C */`) that has no member, so a
+    struct sized only by that marker gets its real size -- padding included --
+    rather than a too-small size derived from the last member alone."""
+    best = 0
+    for mm in re.finditer(r'/\*\s*([0-9A-Fa-f]+)\s*\*/', struct_body.get(struct_name, "")):
+        try:
+            best = max(best, int(mm.group(1), 16))
+        except ValueError:
+            pass
+    return best
 
 def flatten(struct_name, base, prefix):
     """Return (leaf_rows, total). leaf row = (abs_off, name, kind, count, size).
@@ -161,7 +176,8 @@ def flatten(struct_name, base, prefix):
     if total is None:
         lcnt = members[-1][3]
         lcount = resolve_const(lcnt) if lcnt is not None else 1
-        total = offs[-1] + elem_size(members[-1][1]) * lcount
+        derived = offs[-1] + elem_size(members[-1][1]) * lcount
+        total = max(derived, max_offset_marker(struct_name))   # trailing /* 0xNN */ end marker wins
     rows = []
     for i, (off_c, typ, nm, cnt) in enumerate(members):
         loff = offs[i]
@@ -169,15 +185,16 @@ def flatten(struct_name, base, prefix):
         size = nxt - loff
         elem = elem_size(typ)
         count = size // elem if elem else size
-        if cnt is not None:                    # cross-check vs declared count
+        ab = base + loff
+        dc = None
+        if cnt is not None:                    # declared array count, if any
             try:
                 dc = resolve_const(cnt)
-                if dc != count:
-                    warnings.append(f"{struct_name}.{nm}: declared [{cnt}]={dc} "
-                                    f"!= delta-derived {count}")
             except ValueError:
-                pass
-        ab = base + loff
+                dc = None
+        if dc is not None and dc > count:      # declared EXCEEDS the byte gap -> real error
+            warnings.append(f"{struct_name}.{nm}: declared [{cnt}]={dc} "
+                            f"EXCEEDS delta-derived {count}")
         if typ.startswith('struct '):
             sname = typ.split()[1]
             for k in range(count):
@@ -191,8 +208,16 @@ def flatten(struct_name, base, prefix):
         elif typ == 'char' and cnt is not None:
             rows.append((ab, f"{prefix}{nm}", 'STR', size, size))
         else:
-            rows.append((ab, f"{prefix}{nm}", TYPE_KIND.get(typ, 'U8'),
-                         count, size))
+            kind = TYPE_KIND.get(typ, 'U8')
+            if dc is not None and 0 < dc < count:
+                # declared array shorter than the byte gap -> the remainder is
+                # trailing struct padding; emit the real field + a masked pad row.
+                used = dc * elem
+                rows.append((ab, f"{prefix}{nm}", kind, dc, used))
+                rows.append((ab + used, f"{prefix}pad_{loff + used:02X}h",
+                             'U8', size - used, size - used))
+            else:
+                rows.append((ab, f"{prefix}{nm}", kind, count, size))
     return rows, total
 
 # ---------- run ----------
