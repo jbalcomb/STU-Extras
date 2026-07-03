@@ -1,4 +1,75 @@
 
+Are all of the _UNITS divergences in compare-gd-stage2.py showing as 'Status' for OG-MoM = 0 and ReMoM = 3?
+
+Add a capture on the OG-MoM side for event_pressure_accumulator at bp-2, in Determine_Event(), in /home/jbalcomb/STU/devel/ReMoM/MoM/src/EVENTS.c. Also capture the global _event_delay_count, at 36AA:4A32 in WZD.
+
+
+stage1 need post-process and compare-gd scripts
+SAVE9.GAM is continue-save
+stage0 has no input game-save and uses save slot 1 as its output game-save
+stage1 uses save slot 2 as its intput game-save and uses save slot 3 as its output game-save
+stage2 uses save slot 4 as its intput game-save and uses save slot 5 as its output game-save
+if we're unsure of some result, we can always compare output of the previous stage with the input of the current satge.
+
+
+
+[] Add GD points for _UNITS before and after AI_Execute_Orders()
+
+
+
+🎲 reevaluate_magic_strategy_countdown (2) — your known culprit
+AIDATA.c:840 -= 1, 847 = 15 + Random(10) — in AI_Evaluate_Magic_Power_Strategy()
+Phase: AI_Next_Turn() → AIDUDES.c:245, per active player. The uint16_t signedness bug we found lives here.
+
+🎲 reevaluate_magic_power_countdown (2) — same pattern, check it too
+AIDUDES.c:577 -= 1, 584 = 15 + Random(10) — in AI_Update_Magic_Power()
+Phase: AI_Next_Turn() → AIDUDES.c:278. Also uint16_t (MOM_DAT.h:1521) → very likely the identical bug, one call later in the same per-player loop.
+
+_UNITS.Move_Failed (8)
+Reset → FALSE: AIDUDES.c:315 directly in AI_Next_Turn() ("reset for all non-human units" at turn start); also NEXTTURN.c:1000 in Create_Unit().
+Set → TRUE: UNITSTK.c:383 in Stack_Move_To(), reached via AI_Next_Turn() → AI_Execute_Orders() (AIDUDES.c:340/359). The 8 diverging flags are set during AI movement.
+
+_players.research_cost_remaining (3)
+NEXTTURN.c:2458 = 0, 2462 -= research_income — in Players_Apply_Magic_Power(), phase 690 (per-turn research progress).
+NEXTTURN.c:3681/3687 (set new target), 3624 (dbg) — in Players_Check_Spell_Research(), phase 693.
+NEXTTURN.c:3745/3799/3805 in Player_Gets_Spell(), reached from [693].
+
+_players.researching_spell_idx (3)
+NEXTTURN.c:3749/3753 in Player_Gets_Spell() (clear/negate on spell learned) — phase [693].
+AISPELL.c:287 in AI_Spell_Research_Select(), reached from Players_Check_Spell_Research() NEXTTURN.c:3674. (The Cheat_Power write at [1650] is off-path.)
+HEROES2[x].Level → _HEROES2[owner]->heroes[type].Level (2)
+CITYCALC.c:823 = _UNITS.Level, 829 = -20 (permanent-death sentinel), 783 (Chosen) — all in Kill_Unit().
+No dedicated phase — fires whenever a hero unit dies/disbands during the turn: AI disband (AIDUDES.c:1956-2001), AI unit mgmt (AIDATA.c:568/750), city dismiss (CITYCALC.c:1449).
+⚠️ Note: normal level-ups during the turn write _UNITS.Level (Do_All_Units_XP_Check_, phase 814) and only sync into _HEROES2 on Kill_Unit. So a _HEROES2.Level divergence points at a hero death/disband, not XP gain.
+
+scalars._units (1)
+NEXTTURN.c:183 _units -= 1 in Delete_Dead_Units() (phases 637/643/799); NEXTTURN.c:1096 _units += 1 in Create_Unit() (city production, mercenaries, AI Make_Raiders/Make_Monsters).
+
+_players.casting_cost_remaining (1)
+NEXTTURN.c:3250/3263/3303 -= in All_Players_Apply_Spell_Casting(), phase 795 (progress toward the overland spell). Also = 0 at 394 early in Next_Turn_Proc.
+
+_players.mana_reserve (1)
+Income: NEXTTURN.c:2467/2471 in Players_Apply_Magic_Power() [690].
+Upkeep: NEXTTURN.c:2579/2584 in Players_Apply_Upkeeps__WIP() [715].
+Spell casting: NEXTTURN.c:3252/3267/3305 in All_Players_Apply_Spell_Casting() [795].
+AI split: AIDUDES.c:1710+ in AI_Update_Gold_And_Mana_Reserves() via AI_Next_Turn [640] — note the two OGBUG should be += lines here.
+
+_players.gold_reserve (1)
+Income: NEXTTURN.c:2416 += in Update_Players_Gold_Reserve() [683].
+Upkeep: NEXTTURN.c:2557/2562 in Players_Apply_Upkeeps__WIP() [715].
+Mercenary hire: NEXTTURN.c:3493 -= Merc_Cost in Determine_Offer() [743].
+AI split: AIDUDES.c:1716/1725 via AI_Next_Turn [640].
+
+🎲 _players.casting_cost_original (1)
+NEXTTURN.c:4060 = 0 in Diplomacy_Growth_For_Enchantments__WIP(), phase 727.
+AIDATA.c:408 += Random(_difficulty + 1), 422 = 0 in Make_Raiders() (NEUTRAL player only), via AI_Next_Turn AIDUDES.c:365.
+
+
+
+
+
+
+
 From the top:
 DOSBOX=/home/jbalcomb/STU/developp/dosbox-0.74-3/src/dosbox
 MOM_DIR=/home/jbalcomb/STU_DBWD/MoM131
