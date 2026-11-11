@@ -90,6 +90,8 @@ class IdaProcNameSyncTests(unittest.TestCase):
         self.assertIn("MakeNameEx(ea, new_name, SN_CHECK|SN_NOWARN)", idc)
         self.assertIn('sync_magic_proc_name("OldName", "NewName")', idc)
         self.assertIn("magic-name-sync-summary", idc)
+        # The IDC must persist renames explicitly rather than relying on save-on-Exit.
+        self.assertIn('SaveBase("", 0)', idc)
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ cost dw ?
 upkeep db ?
 race db ?
 portrait_idx db ?
-Cur_Figures db ?
+figure_cnt db ?
 bufpi dw ?
 hits db ?
 scout_range db ?
@@ -657,7 +657,7 @@ abilities db ?
 value dw ?
 transport_capacity db ?
 unit_count db ?
-Landmass_ID db ?
+landmass_idx db ?
 unit_status db ?
 ends s_AI_STACK_DATA
 struc s_UNIT_TYPE ; (sizeof=0x24)
@@ -762,7 +762,7 @@ Dipl_Action db 6 dup(?)
 DA_Spell dw 6 dup(?)
 DA_City db 6 dup(?)
 Default_Rel db 6 dup(?)
-Contact_Progress db 6 dup(?)
+contact_stage db 6 dup(?)
 Broken_Treaty db 6 dup(?)
 field_6C dw 6 dup(?)
 Hidden_Rel db 6 dup(?)
@@ -770,13 +770,13 @@ field_7E db 6 dup(?)
 field_84 db 6 dup(?)
 field_8A db 6 dup(?)
 field_90 db 6 dup(?)
-Tribute_Spell db 6 dup(?)
-field_9C db 6 dup(?)
+offer_spell db 6 dup(?)
+niu_au_want_tech db 6 dup(?)
 field_A2 db 6 dup(?)
 field_A8 db 72 dup(?)
-field_F0 db 6 dup(?)
-Tribute_Gold dw 6 dup(?)
-field_102 db 6 dup(?)
+niu_au_tech_trade_num db 6 dup(?)
+offer_gold dw 6 dup(?)
+war_request db 6 dup(?)
 field_108 db 6 dup(?)
 field_10E db 6 dup(?)
 field_114 db 6 dup(?)
@@ -1439,10 +1439,10 @@ Defeated_Wizards dw ?
 gold_reserve dw ?
 Unknown_358h dw ?
 Astr Astr_Data ?
-Pop_div_10k dw ?
+empire_mini_pops dw ?
 Historian db 288 dup(?)
 Globals s_OVERLAND_ENCHANTMENTS ?
-Magic_Strategy dw ?
+magic_power_strategy dw ?
 Unknown_49Ch dw ?
 Hostility dw 6 dup(?)
 reevaluate_hostility_countdown dw ?
@@ -1452,7 +1452,7 @@ peace_duration db 6 dup(?)
 field_4B6 db ?
 field_4B7 db ?
 field_4B8 dw ?
-OVL_TargetWiz dw ?
+cp_target_3 dw ?
 field_4BC db ?
 field_4BD db ?
 Unknown_4BEh db 6 dup(?)
@@ -1487,9 +1487,9 @@ MagicPower dw ?
 Have_Save dw 8 dup(?)
 Save_Names SAVENAME 8 dup(?)
 movement_animations dw ?
-HallofFame_Names SAVENAME 10 dup(?)
+hof_names SAVENAME 10 dup(?)
 hof_scores dw 10 dup(?)
-HallofFame_Races dw 10 dup(?)
+hof_races dw 10 dup(?)
 ends s_MAGIC_SET
 struc s_MAGIC_VORTEX ; (sizeof=0xC)
 cgx dw ?
@@ -1533,17 +1533,15 @@ Unit_Type dw ?
 City db ?
 Spell db ?
 ends Unit_Killed_Msg_Item
-struc Unit_Lost_Msg_Item ; (sizeof=0x4, standard type)
+struc Unit_Lost_Msg_Item ; (sizeof=0x4)
 Unit_Type dw ?
-Cause db ?
-Unused_3h db ?
+Cause dw ?
 ends Unit_Lost_Msg_Item
-struc Spiral_Anim_Step ; (sizeof=0x8, standard type)
-TopLeft_X dw ?
-TopLeft_Y dw ?
-Rotate_Angle dw ?
-Scale_Percent db ?
-Unused_7h db ?
+struc Spiral_Anim_Step ; (sizeof=0x8)
+x dw ?
+y dw ?
+a dw ?
+s dw ?
 ends Spiral_Anim_Step
 struc PerBook_Spells ; (sizeof=0x8, standard type)
 Common dw ?
@@ -5542,7 +5540,7 @@ us_Unknown_7  = 7
 us_Purify  = 8
 us_Meld  = 9
 us_Settle  = 10
-us_SeekTransport  = 11
+us_Ferry  = 11
 us_Unknown_12  = 12
 us_Unknown_13  = 13
 us_Unknown_14  = 14
@@ -5612,7 +5610,7 @@ bue_Creature_Binding  = 2000h
 bue_Possession  = 4000h
 bue_NoEffect  = 8000h
 ; enum IPOW_LO (bitfield)
-IP_Vampiric  = 1
+IP_VAMPIRIC  = 1
 IP_Guardian_Wind  = 2
 IP_Lightning  = 4
 IP_Cloak_Of_Fear  = 8
@@ -5932,8 +5930,12 @@ oe_TimeStop  = 6
 oe_NatureAwareness  = 7
 ; enum enum_COMBAT_NODE_TYPE
 cnt_Sorcery  = 0
-cnt_Nature  = 1
-cnt_Chaos  = 2
+cnt_Chaos  = 1
+cnt_Nature  = 2
+; enum e_NODE_TYPE
+nt_Sorcery  = 0
+nt_Nature  = 1
+nt_Chaos  = 2
 ; enum MOVEFLAGS
 MV_WALKING  = 0
 MV_CAVALRY  = 1
@@ -6012,7 +6014,7 @@ spl_Natures_Cures  = 19
 spl_Basilisk  = 20
 spl_Elemental_Armor  = 21
 spl_Petrify  = 22
-Stone_Giant  = 23
+spl_Stone_Giant  = 23
 spl_Iron_Skin  = 24
 spl_Ice_Storm  = 25
 spl_Earthquake  = 26
@@ -6048,7 +6050,7 @@ spl_Enchant_Road  = 55
 spl_Flight  = 56
 spl_Wind_Mastery  = 57
 spl_Spell_Blast  = 58
-spl_Aura_of_Majesty  = 59
+spl_Aura_Of_Majesty  = 59
 spl_Phantom_Beast  = 60
 spl_Disjunction_True  = 61
 spl_Invisibility  = 62
@@ -6102,7 +6104,7 @@ spl_Flame_Strike  = 109
 spl_Chaos_Rift  = 110
 spl_Hydra  = 111
 spl_Disintegrate  = 112
-spl_Meteor_Storm  = 113
+spl_Meteor_Storms  = 113
 spl_Great_Wasting  = 114
 spl_Call_Chaos  = 115
 spl_Chaos_Surge  = 116
@@ -6135,9 +6137,9 @@ spl_Incarnation  = 142
 spl_Invulnerability  = 143
 spl_Righteousness  = 144
 spl_Prosperity  = 145
-spl_Altar_of_Battle  = 146
+spl_Altar_Of_Battle  = 146
 spl_Angel  = 147
-spl_Stream_of_Life  = 148
+spl_Stream_Of_Life  = 148
 spl_Mass_Healing  = 149
 spl_Holy_Word  = 150
 spl_High_Prayer  = 151
@@ -6149,7 +6151,7 @@ spl_Life_Force  = 156
 spl_Tranquility  = 157
 spl_Crusade  = 158
 spl_Arch_Angel  = 159
-spl_Charm_of_Life  = 160
+spl_Charm_Of_Life  = 160
 spl_Skeletons  = 161
 spl_Weakness  = 162
 spl_Dark_Rituals  = 163
@@ -6167,7 +6169,7 @@ spl_Black_Prayer  = 174
 spl_Black_Channels  = 175
 spl_Night_Stalker  = 176
 spl_Subversion  = 177
-spl_Wall_of_Darkness  = 178
+spl_Wall_Of_Darkness  = 178
 spl_Berserk  = 179
 spl_Shadow_Demons  = 180
 spl_Wraith_Form  = 181
@@ -6920,9 +6922,9 @@ rag_Short  = 10
 lmt_Invalid  = 0
 lmt_Own  = 1
 lmt_Contested  = 2
-lmt_NoPresence  = 3
-lmt_NoLanding  = 4
-lmt_Abandon  = 5
+lmt_NoOwnCity  = 3
+lmt_NoOwnCityAndAllyHasCity  = 4
+lmt_Leaveable  = 5
 lmt_NoTargets  = 6
 ; enum enum_BLDG_TYPE (width 2 bytes)
 bt_NONE  = 0
@@ -6971,7 +6973,7 @@ BREQ_Grass  = 104
 bt_Fortress  = 104
 bt_Dark_Rituals  = 105
 bt_Altar_Of_Battle  = 106
-BREQ_Water  = 110
+bt_BREQ_Water  = 110
 BREQ_Hill  = 200
 bt_GRANDVIZIER  = 65532
 bt_INVALID  = 65535
@@ -7317,7 +7319,7 @@ _BarbShaman  = 43
 _BarbSettlers  = 44
 _Berserkers  = 45
 _BeastSpearmen  = 46
-uy_BeastSwordsmen  = 47
+ut_BeastSwordsmen  = 47
 _BeastHalberdiers  = 48
 _BeastBowmen  = 49
 _BeastPriests  = 50
@@ -8119,7 +8121,7 @@ ENOTDIR  = 2Dh
 EISDIR  = 2Eh
 EUCLEAN  = 2Fh
 ; enum OVL_Tiles_Extended
-_Ocean  = 0
+tte_Ocean  = 0
 _Land  = 1
 _Shore00001000  = 2
 _Shore00001100  = 3
@@ -8281,9 +8283,9 @@ _Shore00100111  = 9Eh
 _Shore00101111  = 9Fh
 _Shore10100111  = 0A0h
 _Shore10101111  = 0A1h
-_Grasslands1  = 0A2h
+tte_Grasslands1  = 0A2h
 _Forest1  = 0A3h
-tt_1Mountain1  = 0A4h
+tte_1Mountain1  = 0A4h
 _AllDesert1  = 0A5h
 _Swamp1  = 0A6h
 _AllTundra1  = 0A7h
@@ -8298,7 +8300,7 @@ _AllDesert3  = 0AFh
 _AllDesert4  = 0B0h
 _Swamp2  = 0B1h
 _Swamp3  = 0B2h
-tt_Volcano  = 0B3h
+tte_Volcano  = 0B3h
 _Grasslands4  = 0B4h
 _AllTundra2  = 0B5h
 _AllTundra3  = 0B6h
@@ -8889,10 +8891,10 @@ e_Font_Shadow_Heavy  = 3
 Outline_Full  = 4
 e_Font_Shadow_Outline_Heavy  = 5
 ; enum TER_TYPES
-TT_Ocean1  = 0
-TT_BugGrass  = 1
+tt_Ocean  = 0
+tt_BugGrass  = 1
 TT_Shore1_1st  = 2
-TT_Lake  = 18
+tt_Lake  = 18
 TT_Shore1_end  = 161
 tt_Grasslands1  = 162
 tt_Forest1  = 163
@@ -8932,7 +8934,7 @@ tt_Mountains_Lst  = 274
 tt_Hills_1st  = 275
 tt_Hills_Lst  = 291
 tt_Desert_1st  = 292
-TT_Desert_end  = 451
+tt_Desert_Lst  = 451
 tt_Shore2_1st  = 452
 TT_Shore2_end  = 467
 TT_4WRiver1  = 468
@@ -8942,7 +8944,7 @@ TT_4WRiver4  = 471
 TT_4WRiver5  = 472
 TT_Shore3_1st  = 473
 TT_Shore3_end  = 600
-TT_Ocean2  = 601
+tt_OceanAnim  = 601
 tt_Tundra_1st  = 602
 TT_Tundra_Last  = 761
 NUM_TERRAIN_TYPES  = 762

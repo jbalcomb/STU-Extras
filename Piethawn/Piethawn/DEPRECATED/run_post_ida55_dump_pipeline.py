@@ -2,6 +2,11 @@
 """
 Run the Piethawn post-IDA55 pipeline from manually dumped ASM/function text to
 the generated MAGIC rename IDC script.
+
+Name sync uses the evidence-based chain: procedure inventories are derived from
+the function dumps (no separate IDA procedure snapshot), joined with ASM body
+hash evidence, compared against the approved MGC/WZD segment map, and reduced to
+a minimal rename handoff that generates ida_proc_name_sync/magic_sync_names_from_wzd.idc.
 """
 
 from __future__ import annotations
@@ -10,7 +15,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple
+from typing import Iterable, List, Sequence
 
 
 def parse_args() -> argparse.Namespace:
@@ -51,11 +56,6 @@ def parse_args() -> argparse.Namespace:
         "--skip-clear-split-asm",
         action="store_true",
         help="Do not remove existing split .asm files under output-root before re-splitting",
-    )
-    parser.add_argument(
-        "--skip-sample-pair-diffs",
-        action="store_true",
-        help="Skip Save_SAVE_GAM and Load_SAVE_GAM pair diff reports",
     )
     parser.add_argument(
         "--python",
@@ -102,65 +102,6 @@ def split_output_dir(output_root: Path, game: str) -> Path:
     return output_root / game
 
 
-def function_json_path(functions_txt: Path) -> Path:
-    return functions_txt.with_suffix(".json")
-
-
-def sample_pair_jobs(output_root: Path) -> List[Tuple[str, List[str], Path, Path]]:
-    return [
-        (
-            "Save_SAVE_GAM",
-            [
-                "--left-game",
-                "MAGIC",
-                "--left-segment",
-                "ovr048",
-                "--left-name",
-                "Save_SAVE_GAM",
-                "--left-asm",
-                str(output_root / "MAGIC" / "ovr048" / "Save_SAVE_GAM.asm"),
-                "--right-game",
-                "WIZARDS",
-                "--right-segment",
-                "ovr050",
-                "--right-name",
-                "Save_SAVE_GAM",
-                "--right-asm",
-                str(output_root / "WIZARDS" / "ovr050" / "Save_SAVE_GAM.asm"),
-                "--output",
-                str(output_root / "Save_SAVE_GAM.pair-diff.md"),
-            ],
-            output_root / "MAGIC" / "ovr048" / "Save_SAVE_GAM.asm",
-            output_root / "WIZARDS" / "ovr050" / "Save_SAVE_GAM.asm",
-        ),
-        (
-            "Load_SAVE_GAM",
-            [
-                "--left-game",
-                "MAGIC",
-                "--left-segment",
-                "ovr048",
-                "--left-name",
-                "Load_SAVE_GAM",
-                "--left-asm",
-                str(output_root / "MAGIC" / "ovr048" / "Load_SAVE_GAM.asm"),
-                "--right-game",
-                "WIZARDS",
-                "--right-segment",
-                "ovr050",
-                "--right-name",
-                "Load_SAVE_GAM",
-                "--right-asm",
-                str(output_root / "WIZARDS" / "ovr050" / "Load_SAVE_GAM.asm"),
-                "--output",
-                str(output_root / "Load_SAVE_GAM.pair-diff.md"),
-            ],
-            output_root / "MAGIC" / "ovr048" / "Load_SAVE_GAM.asm",
-            output_root / "WIZARDS" / "ovr050" / "Load_SAVE_GAM.asm",
-        ),
-    ]
-
-
 def main() -> int:
     args = parse_args()
     python = args.python
@@ -171,10 +112,9 @@ def main() -> int:
     wizards_functions_txt = resolve_input_path(args.wizards_functions_txt)
     magic_exe = resolve_input_path(args.magic_exe)
     wizards_exe = resolve_input_path(args.wizards_exe)
-    magic_functions_json = function_json_path(magic_functions_txt)
-    wizards_functions_json = function_json_path(wizards_functions_txt)
 
     require_files([magic_asm, wizards_asm, magic_functions_txt, wizards_functions_txt])
+    require_files([Path("ida_proc_name_sync_prereq") / "MGC-vs-WZD.segment-map.json"])
     if not args.skip_exe_metadata:
         require_files([magic_exe, wizards_exe])
 
@@ -194,9 +134,6 @@ def main() -> int:
     run_step([python, "ida55_split_asm.py", str(magic_asm), "--output-dir", str(split_output_dir(output_root, "MAGIC"))])
     run_step([python, "ida55_split_asm.py", str(wizards_asm), "--output-dir", str(split_output_dir(output_root, "WIZARDS"))])
 
-    run_step([python, str(Path("ida_proc_data_export") / "ida55_function_dump.py"), str(magic_functions_txt), "--output", str(magic_functions_json)])
-    run_step([python, str(Path("ida_proc_data_export") / "ida55_function_dump.py"), str(wizards_functions_txt), "--output", str(wizards_functions_json)])
-
     if not args.skip_asm_analysis:
         run_step([python, "asm_dedupe_index.py", "--root", str(output_root), "--output", str(output_root / "asm-dedupe-index.json")])
         run_step(
@@ -212,57 +149,45 @@ def main() -> int:
             ]
         )
 
-    run_step(
-        [
-            python,
-            "ida55_match_functions.py",
-            "--magic",
-            str(magic_functions_json),
-            "--wizards",
-            str(wizards_functions_json),
-            "--output",
-            str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"),
-        ]
-    )
-    run_step(
-        [
-            python,
-            "ida55_generate_magic_rename_idc.py",
-            "--match",
-            str(Path("ida_proc_status_sync") / "ida_proc_status_relationships.json"),
-            "--output",
-            str(output_root / "ida55-sync" / "magic_rename_to_wizards.idc"),
-            "--manifest",
-            str(output_root / "ida55-sync" / "magic_rename_to_wizards.json"),
-        ]
-    )
+    # Evidence-based MAGIC name sync. Inventories come from the function dumps via
+    # the adapter, so no separate IDA procedure-snapshot export is required.
+    snapshots_dir = output_root / "ida55-procedure-snapshots"
+    prereq_dir = Path("ida_proc_name_sync_prereq")
+    name_sync_dir = Path("ida_proc_name_sync")
 
-    if not args.skip_sample_pair_diffs:
-        for _, extra_args, left_asm, right_asm in sample_pair_jobs(output_root):
-            if left_asm.exists() and right_asm.exists():
-                run_step(
-                    [
-                        python,
-                        "ida55_function_pair_diff.py",
-                        "--magic-dump",
-                        str(magic_functions_json),
-                        "--wizards-dump",
-                        str(wizards_functions_json),
-                        *extra_args,
-                    ]
-                )
-            else:
-                print(f"! Skipping sample pair diff because input ASM is missing: {left_asm} or {right_asm}")
+    mgc_inventory = snapshots_dir / "MGC.procedure-inventory.json"
+    wzd_inventory = snapshots_dir / "WZD.procedure-inventory.json"
+    mgc_body_evidence = snapshots_dir / "MGC.asm-body-evidence.json"
+    wzd_body_evidence = snapshots_dir / "WZD.asm-body-evidence.json"
+    mgc_evidence = snapshots_dir / "MGC.procedure-evidence.json"
+    wzd_evidence = snapshots_dir / "WZD.procedure-evidence.json"
+    segment_map = prereq_dir / "MGC-vs-WZD.segment-map.json"
+    comparison = prereq_dir / "MGC-vs-WZD.procedure-evidence-comparison.json"
+    handoff = prereq_dir / "magic_sync_names_from_wzd.json"
+    handoff_final = name_sync_dir / "magic_sync_names_from_wzd.json"
+    rename_idc = name_sync_dir / "magic_sync_names_from_wzd.idc"
+
+    functions_to_inventory = Path("ida_proc_data_export") / "ida55_functions_to_inventory.py"
+    run_step([python, str(functions_to_inventory), str(magic_functions_txt), "--database", "MGC", "--output", str(mgc_inventory)])
+    run_step([python, str(functions_to_inventory), str(wizards_functions_txt), "--database", "WZD", "--output", str(wzd_inventory)])
+
+    run_step([python, "ida55_asm_body_evidence.py", str(magic_asm), "--database", "MGC", "--output", str(mgc_body_evidence)])
+    run_step([python, "ida55_asm_body_evidence.py", str(wizards_asm), "--database", "WZD", "--output", str(wzd_body_evidence)])
+
+    run_step([python, "ida55_join_procedure_evidence.py", "--inventory", str(mgc_inventory), "--asm-body-evidence", str(mgc_body_evidence), "--output", str(mgc_evidence)])
+    run_step([python, "ida55_join_procedure_evidence.py", "--inventory", str(wzd_inventory), "--asm-body-evidence", str(wzd_body_evidence), "--output", str(wzd_evidence)])
+
+    run_step([python, str(prereq_dir / "compare_procedure_evidence.py"), "--left", str(mgc_evidence), "--right", str(wzd_evidence), "--segment-map", str(segment_map), "--output", str(comparison)])
+
+    run_step([python, str(prereq_dir / "build_magic_name_sync_handoff.py"), "--comparison", str(comparison), "--output", str(handoff), "--final-copy", str(handoff_final)])
+
+    run_step([python, str(name_sync_dir / "generate_magic_name_sync.py"), "--renames", str(handoff_final), "--output-idc", str(rename_idc)])
 
     print("Pipeline complete.")
+    print(f"MAGIC name-sync IDC: {rename_idc}")
     print(
-        "If the rename manifest has rename_count > 0, run this next against MAGIC.idb:"
-    )
-    print(
-        "c:/python314/python.exe -B .\\ida_dasm_export\\ida55_clean_export.py --game MAGIC "
-        "--skip-registry-snapshot --script "
-        f"{output_root / 'ida55-sync' / 'magic_rename_to_wizards.idc'} "
-        "--skip-verify --timeout-seconds 120"
+        "If it has a non-zero rename count, apply it inside MAGIC.idb (via the IDA GUI, "
+        "or by passing it as the --script to ida_dasm_export/ida55_clean_export.py)."
     )
     return 0
 

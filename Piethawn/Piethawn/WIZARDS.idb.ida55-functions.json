@@ -90532,7 +90532,7 @@
       ]
     },
     {
-      "name": "BU_ApplyDamage__WIP__SEGRAX",
+      "name": "Battle_Unit_Commit_Damage",
       "segment": "ovr113",
       "entry_ea": "ovr113:1AD9",
       "start_ea": "ovr113:1AD9",
@@ -91721,7 +91721,7 @@
       ]
     },
     {
-      "name": "BU_Init_Battle_Unit",
+      "name": "Battle_Unit_Regular_Stats",
       "segment": "ovr116",
       "entry_ea": "ovr116:122D",
       "start_ea": "ovr116:122D",

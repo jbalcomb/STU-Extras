@@ -10851,7 +10851,7 @@
     },
     {
       "database": "WZD",
-      "name": "BU_ApplyDamage__WIP__SEGRAX",
+      "name": "Battle_Unit_Commit_Damage",
       "segment": "ovr113",
       "procedure_ordinal": 7,
       "start_ea": "1AD9",
@@ -11384,7 +11384,7 @@
     },
     {
       "database": "WZD",
-      "name": "BU_Init_Battle_Unit",
+      "name": "Battle_Unit_Regular_Stats",
       "segment": "ovr116",
       "procedure_ordinal": 7,
       "start_ea": "122D",

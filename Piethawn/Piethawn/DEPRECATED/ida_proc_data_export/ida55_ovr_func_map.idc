@@ -5,21 +5,25 @@
 //
 // The Borland overlay manager uses INT 3Fh to load segments.  At the handler
 // entry, AX = 0-based segment table index.  This script emits that same index
-// alongside every function in each segment, so a DOSBox INT 3Fh breakpoint
-// can identify which function is being dispatched.
+// alongside every function in each overlay segment, so a DOSBox INT 3Fh
+// breakpoint can identify which function is being dispatched.
 //
 // IDA enumerates segments in the same order as the Borland segment table, so
 // SEG_IDX here == AX at the INT 3Fh handler.
 //
-// Output file: <idb_dir>\<db_basename>.ovr-func-map.fwv
+// Only segments with SEGATTR_COMB == scCommon (6) are emitted — these are the
+// Borland overlay segments.  Resident code, data, and virtual segments are
+// skipped.
+//
+// Output file: <idb_dir>\<db_basename>-borland-overlay-function-table.fwv
 //
 // FWV column layout:
 //
 //   SEG_IDX  SEG_EA    SEG_NAME   FUNC_EA   FUNC_NAME
 //   4 dec    8 hex     10 chars   8 hex     variable (no truncation)
 //
-// One row per function.  Segments that contain no functions get a single row
-// with FUNC_EA=00000000 and FUNC_NAME=(none).
+// One row per function.  Overlay segments containing no functions get a single
+// row with FUNC_EA=00000000 and FUNC_NAME=(none).
 //
 // Usage:
 //   Run via File > IDC Script in IDA 5.5, or via ida_automation\idaw.py.
@@ -32,6 +36,9 @@
 #define FWV_COL_SEGNAM 10
 #define FWV_COL_FUNCEA 8
 // FUNC_NAME is last — no fixed width
+
+// Borland overlay segments have SEGATTR_COMB == scCommon
+#define scCommon       6
 
 // ---------------------------------------------------------------------------
 // String helpers (same pattern as ida55_dseg_dump.idc)
@@ -147,7 +154,7 @@ static main(void)
 {
     auto idb_path, idb_dir, db_name, out_path;
     auto handle;
-    auto seg_ea, seg_end, seg_name, seg_idx;
+    auto seg_ea, seg_end, seg_name, seg_idx, ovr_count;
     auto hdr, sep;
 
     Batch(1);
@@ -155,7 +162,7 @@ static main(void)
     idb_path = GetIdbPath();
     idb_dir  = path_dir(idb_path);
     db_name  = strip_ext(path_basename(idb_path));
-    out_path = idb_dir + db_name + ".ovr-func-map.fwv";
+    out_path = idb_dir + db_name + "-borland-overlay-function-table.fwv";
 
     Message("ida55_ovr_func_map: output -> %s\n", out_path);
 
@@ -191,24 +198,31 @@ static main(void)
     fprintf(handle, "%s\n", hdr);
     fprintf(handle, "%s\n", sep);
 
-    // Walk segments in table order — index matches Borland segment table
-    seg_idx = 0;
-    seg_ea  = FirstSeg();
+    // Walk segments in table order — seg_idx matches Borland segment table index
+    // (== AX at INT 3Fh), so ALL segments are counted even if not dumped.
+    // Only overlay segments (SEGATTR_COMB == scCommon) are written to the file.
+    seg_idx   = 0;
+    ovr_count = 0;
+    seg_ea    = FirstSeg();
     while (seg_ea != BADADDR)
     {
-        seg_end  = SegEnd(seg_ea);
-        seg_name = SegName(seg_ea);
-        if (seg_name == 0)
-            seg_name = "";
-
-        dump_seg_functions(handle, seg_idx, seg_ea, seg_name, seg_end);
+        if (GetSegmentAttr(seg_ea, SEGATTR_COMB) == scCommon)
+        {
+            seg_end  = SegEnd(seg_ea);
+            seg_name = SegName(seg_ea);
+            if (seg_name == 0)
+                seg_name = "";
+            dump_seg_functions(handle, seg_idx, seg_ea, seg_name, seg_end);
+            ovr_count = ovr_count + 1;
+        }
 
         seg_idx = seg_idx + 1;
         seg_ea  = NextSeg(seg_ea);
     }
 
     fclose(handle);
-    Message("ida55_ovr_func_map: wrote %d segments -> %s\n", seg_idx, out_path);
+    Message("ida55_ovr_func_map: wrote %d overlay segments (%d total) -> %s\n",
+            ovr_count, seg_idx, out_path);
 
     Batch(0);
 }

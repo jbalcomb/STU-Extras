@@ -66,7 +66,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--timeout-seconds", type=int, default=DEFAULT_TIMEOUT_SECONDS, help=f"Seconds to wait for each IDA run. Use 0 to disable. Default: {DEFAULT_TIMEOUT_SECONDS}")
     parser.add_argument("--no-startup-enter", action="store_true", help="Do not send an initial Enter to IDA after launch.")
     parser.add_argument("--copy", action="store_true", help="Copy exported MAP/ASM/INC/LST files into in/ after export.")
-    parser.add_argument("--post-process", action="store_true", help="Run run_post_ida55_dump_pipeline.py after copy/export.")
     parser.add_argument("--python", default=sys.executable, help="Python interpreter for child scripts.")
     return parser.parse_args(argv)
 
@@ -311,13 +310,6 @@ def run_copy(project_root: Path, script_dir: Path, python: str, dry_run: bool) -
         raise RuntimeError(f"Copy step failed with exit code {result}.")
 
 
-def run_post_process(project_root: Path, python: str, dry_run: bool) -> None:
-    command = [python, "-B", str(project_root / "run_post_ida55_dump_pipeline.py")]
-    result = run_command(command, project_root, dry_run)
-    if result != 0:
-        raise RuntimeError(f"Post-processing failed with exit code {result}.")
-
-
 def print_plan(python: str, idaw_wrapper: Path, script_path: Path, jobs: Sequence[ExportJob]) -> None:
     print(f"IDAW wrapper:   {python} -B {denormalize_for_display(idaw_wrapper)}")
     print(f"IDC script:     {denormalize_for_display(script_path)}")
@@ -417,15 +409,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary.add_action("Copy step completed.")
         else:
             summary.add_skipped("Copy step not requested; pass --copy to enable it.")
-
-        if args.post_process:
-            run_post_process(repo_root, args.python, args.dry_run)
-            if args.dry_run:
-                summary.add_skipped("Post-processing command printed but not executed because --dry-run is set.")
-            else:
-                summary.add_action("Post-processing completed.")
-        else:
-            summary.add_skipped("Post-processing not requested; pass --post-process to enable it.")
 
         print_summary(summary, args.dry_run)
         return 0

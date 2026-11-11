@@ -5,10 +5,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
+
+from piethawn_sync.jsonio import write_json
 
 
 PROC_START_RE = re.compile(
@@ -145,11 +146,6 @@ def build_asm_body_evidence(text: str, database: str, source_path: str, default_
         "procedure_count": len(procedures),
         "procedures": procedures,
     }
-
-
-def write_json(path: Path, payload: Dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:

@@ -16,6 +16,8 @@ from typing import Dict, List, Optional, Sequence
 UNPACKED_DATABASE_TEXT = "IDA has found unpacked version of database"
 DEFAULT_IDA_EXE = r"C:\STU_DASM\IDA55\idaw.exe"
 DEFAULT_BACKUP_DIR = "C:\\STU_DASM\\IDA55_MOM131\\"
+IDA_PROCESS_NAMES = ("idaw.exe", "idag.exe", "idal.exe", "idaq.exe", "ida64.exe", "ida.exe")
+UNPACKED_PART_SUFFIXES = (".id0", ".id1", ".nam", ".til")
 
 
 class IdawError(RuntimeError):
@@ -27,6 +29,16 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         description="Backup the packed .idb, then launch IDA with the original arguments."
     )
     parser.add_argument("--dry-run", action="store_true", help="Print the backup and IDA command without running IDA.")
+    parser.add_argument(
+        "--allow-running-ida",
+        action="store_true",
+        help="Launch even if another IDA process is already running. Unsafe; can produce a 0-byte IDB.",
+    )
+    parser.add_argument(
+        "--allow-unpacked-parts",
+        action="store_true",
+        help="Launch even if .id0/.id1/.nam/.til already sit beside the IDB. Unsafe; the IDB may be mid-recovery.",
+    )
     parser.add_argument(
         "ida_args",
         nargs=argparse.REMAINDER,
@@ -132,6 +144,123 @@ def log_contains_unpacked_database_prompt(log_paths: Sequence[Path], offsets: Op
     return False
 
 
+def probe_process_list() -> str:
+    """Return the raw OS process listing, or fail closed if it cannot be read. Powered by Claude."""
+    command = ["tasklist", "/FO", "CSV", "/NH"] if os.name == "nt" else ["ps", "-eo", "comm="]
+    try:
+        completed = subprocess.run(command, capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError) as error:
+        raise IdawError(
+            f"Could not list running processes to check for a live IDA session: {error}. "
+            "Close all IDA windows and retry, or pass --allow-running-ida if you are certain none are open."
+        ) from error
+    if completed.returncode != 0:
+        raise IdawError(
+            f"Process listing command failed with exit code {completed.returncode}. "
+            "Close all IDA windows and retry, or pass --allow-running-ida if you are certain none are open."
+        )
+    return completed.stdout
+
+
+def find_running_ida_processes() -> List[str]:
+    """Return process-listing rows that look like a running IDA instance. Powered by Claude."""
+    matches: List[str] = []
+    for line in probe_process_list().splitlines():
+        lowered = line.lower()
+        if any(name in lowered for name in IDA_PROCESS_NAMES):
+            matches.append(line.strip())
+    return matches
+
+
+def find_unpacked_parts(idb_path: Path) -> List[Path]:
+    """Return the .id0/.id1/.nam/.til component files sitting beside an IDB. Powered by Claude."""
+    base = idb_path.with_suffix("")
+    return [candidate for candidate in (base.with_suffix(suffix) for suffix in UNPACKED_PART_SUFFIXES) if candidate.exists()]
+
+
+def preflight_checks(idb_path: Path, allow_running_ida: bool, allow_unpacked_parts: bool) -> None:
+    """Refuse to launch IDA when a concurrent session or a half-unpacked database is detected. Powered by Claude."""
+    if allow_running_ida:
+        print("PREFLIGHT: running-IDA check SKIPPED (--allow-running-ida).")
+    else:
+        running = find_running_ida_processes()
+        if running:
+            listing = "\n".join(f"    {row}" for row in running)
+            raise IdawError(
+                "Refusing to launch: another IDA process is already running.\n"
+                f"{listing}\n"
+                "  Two IDA sessions against the same database directory can leave a 0-byte .idb.\n"
+                "  Close every IDA window, confirm with: tasklist | findstr /I ida\n"
+                "  Then re-run. Use --allow-running-ida only if you know what you are doing."
+            )
+        print("PREFLIGHT: no other IDA process is running.")
+
+    if allow_unpacked_parts:
+        print("PREFLIGHT: unpacked-parts check SKIPPED (--allow-unpacked-parts).")
+    else:
+        parts = find_unpacked_parts(idb_path)
+        if parts:
+            listing = "\n".join(f"    {denormalize_for_display(part)}" for part in parts)
+            raise IdawError(
+                "Refusing to launch: unpacked database parts already sit beside the IDB.\n"
+                f"{listing}\n"
+                "  This means the database is open elsewhere, or a previous session died without re-packing.\n"
+                "  Resolve that first; launching now risks losing whichever copy is newer.\n"
+                "  Use --allow-unpacked-parts only if you know what you are doing."
+            )
+        print("PREFLIGHT: no unpacked database parts beside the IDB.")
+
+
+def print_recovery_guidance(idb_path: Path, backup_path: Path, reason: str) -> None:
+    """Explain, without changing anything, how to manually repair a damaged IDB. Powered by Claude."""
+    idb_display = denormalize_for_display(idb_path)
+    backup_display = denormalize_for_display(backup_path)
+    parts = find_unpacked_parts(idb_path)
+
+    lines = [
+        "",
+        "=" * 78,
+        f"DATABASE PROBLEM: {reason}",
+        "=" * 78,
+        f"  IDB:              {idb_display}",
+        f"  Pre-run backup:   {backup_display}",
+    ]
+    if parts:
+        lines.append("  Unpacked parts still on disk (these ARE the database, in expanded form):")
+        lines.extend(f"    {denormalize_for_display(part)}" for part in parts)
+    else:
+        lines.append("  Unpacked parts: none found.")
+
+    lines += [
+        "",
+        "  NOTHING HAS BEEN RESTORED OR DELETED. Recovery is left to you on purpose.",
+        "",
+        "  DO THIS FIRST -- stop running pipeline commands, and preserve the evidence:",
+        "    1. Close every IDA window.",
+        "    2. Copy the IDB, the pre-run backup, and any .id0/.id1/.nam/.til listed above",
+        "       into a new directory under emergency_ida55_db_parts_backup/ before touching them.",
+        "",
+        "  THEN PICK ONE RECOVERY PATH:",
+        "",
+        "  A. Rebuild from the unpacked parts (keeps the most recent state):",
+        f"       Open {idb_display} in the IDA GUI.",
+        "       Answer YES to 'IDA has found unpacked version of database'.",
+        "       Then File > Save to re-pack the .idb.",
+        "",
+        "  B. Restore the packed pre-run backup (discards anything done in the failed session):",
+        "       Move the .id0/.id1/.nam/.til aside first, or IDA will offer the unpacked copy.",
+        "       Preview:  python -B ida_automation/restore_ida_backup.py --game <MAGIC|WIZARDS>",
+        "       Apply:    python -B ida_automation/restore_ida_backup.py --game <MAGIC|WIZARDS> --apply",
+        "       It keeps a -damaged- copy of the current file and verifies the restore by sha256.",
+        "",
+        "  Verify when done: the .idb is non-zero and no .id0/.id1 remain beside it.",
+        "=" * 78,
+        "",
+    ]
+    for line in lines:
+        print(line, file=sys.stderr)
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     ida_args = strip_passthrough_separator(args.ida_args)
@@ -148,6 +277,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     print(f"IDB:    {denormalize_for_display(idb_path)}")
     print(f"Backup: {denormalize_for_display(backup_path)}")
+
+    preflight_checks(idb_path, args.allow_running_ida, args.allow_unpacked_parts)
+
     backup_idb(idb_path, backup_path, args.dry_run)
 
     command = [str(ida_exe)] + ida_args
@@ -156,10 +288,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 0
 
     result = subprocess.run(command)
+
     if idb_path.stat().st_size == 0:
+        print_recovery_guidance(idb_path, backup_path, "IDA left a 0-byte IDB.")
         raise IdawError(f"IDA left a 0-byte IDB: {denormalize_for_display(idb_path)}")
     if log_contains_unpacked_database_prompt(log_paths, offsets):
+        print_recovery_guidance(idb_path, backup_path, "IDA reported unpacked database state.")
         raise IdawError(f"IDA reported unpacked database state for: {denormalize_for_display(idb_path)}")
+
+    leftover_parts = find_unpacked_parts(idb_path)
+    if leftover_parts:
+        print_recovery_guidance(
+            idb_path,
+            backup_path,
+            "IDA exited without re-packing the database; unpacked parts remain.",
+        )
+        raise IdawError(f"IDA left unpacked database parts beside: {denormalize_for_display(idb_path)}")
+
     return result.returncode
 
 

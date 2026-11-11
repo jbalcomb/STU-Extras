@@ -1446,8 +1446,8 @@ UE_Righteousness  = 4000h
 UE_Invulnerability  = 8000h
 ; enum Research_Status
 S_Unknown  = 0
-S_Knowable  = 1
-S_Known  = 2
+sls_Knowable  = 1
+sls_Known  = 2
 sls_Researchable  = 3
 ; enum UE_FLAGS_L (bitfield)
 UE_Immolation  = 1
@@ -4479,3 +4479,7 @@ scr_Load_Screen  = 1
 scr_NewGame_Screen  = 2
 scr_Settings_Screen  = 3
 scr_HoF_Screen  = 4
+; enum enum_COMBAT_NODE_TYPE
+cnt_Sorcery  = 0
+cnt_Nature  = 1
+cnt_Chaos  = 2

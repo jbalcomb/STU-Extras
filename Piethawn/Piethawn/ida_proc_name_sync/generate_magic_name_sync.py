@@ -4,17 +4,18 @@
 from __future__ import annotations
 
 import argparse
-import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from piethawn_sync.jsonio import load_json
 
 
 DEFAULT_RENAMES = Path("ida_proc_name_sync/magic_sync_names_from_wzd.json")
 DEFAULT_OUTPUT = Path("ida_proc_name_sync/magic_sync_names_from_wzd.idc")
-
-
-def load_json(path: Path) -> Dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def escape_idc_string(value: object) -> str:
@@ -96,10 +97,11 @@ def render_idc(renames: Iterable[Dict[str, Any]]) -> str:
         [
             "",
             "    Message(\"magic-name-sync-summary,attempted=%d,ok=%d,failed=%d\\n\", attempted, ok, attempted - ok);",
+            "    if ( !SaveBase(\"\", 0) )",
+            "        Message(\"magic-name-sync-save-failed\\n\");",
+            "    else",
+            "        Message(\"magic-name-sync-saved\\n\");",
             "    Batch(0);",
-            "    if ( ok == attempted )",
-            "        Exit(0);",
-            "    Exit(1);",
             "}",
             "",
         ]
@@ -116,6 +118,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    print(f"Input renames: {args.renames}")
     renames = load_renames(args.renames)
     args.output_idc.parent.mkdir(parents=True, exist_ok=True)
     args.output_idc.write_text(render_idc(renames), encoding="utf-8")

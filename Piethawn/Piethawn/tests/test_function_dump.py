@@ -5,11 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ida_proc_data_export.ida55_function_dump import parse_dump
+from piethawn_sync.function_dump import build_function_dump, read_function_dump
 
 
-class Ida55FunctionDumpTests(unittest.TestCase):
-    def test_parse_dump_combines_bytes_hashes_and_color_fields(self) -> None:
+class FunctionDumpTests(unittest.TestCase):
+    def test_read_function_dump_combines_bytes_hashes_and_color_fields(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             dump_path = Path(temp_dir) / "MAGIC.idb.ida55-functions.txt"
             dump_path.write_text(
@@ -40,7 +40,7 @@ class Ida55FunctionDumpTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            payload = parse_dump(dump_path)
+            payload = read_function_dump(dump_path)
 
         function = payload["functions"][0]
         self.assertEqual(function["bytes_hex"], "B800")
@@ -51,7 +51,7 @@ class Ida55FunctionDumpTests(unittest.TestCase):
         self.assertIs(function["has_user_color"], True)
         self.assertIs(function["is_default_color"], False)
 
-    def test_parse_dump_marks_default_color(self) -> None:
+    def test_read_function_dump_marks_default_color(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             dump_path = Path(temp_dir) / "WIZARDS.idb.ida55-functions.txt"
             dump_path.write_text(
@@ -67,11 +67,42 @@ class Ida55FunctionDumpTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            payload = parse_dump(dump_path)
+            payload = read_function_dump(dump_path)
 
         function = payload["functions"][0]
         self.assertIs(function["has_user_color"], False)
         self.assertIs(function["is_default_color"], True)
+
+    def test_all_digit_color_hex_stays_a_string_counterexample(self) -> None:
+        # Regression: 00808080 used to become the integer 808080 (48 functions in the real dumps).
+        payload = build_function_dump(
+            "function[0].name=Gray\nfunction[0].funcattr_color_hex=00808080\nfunction[0].item_color_hex=00808080\n"
+        )
+
+        function = payload["functions"][0]
+        self.assertEqual(function["funcattr_color_hex"], "00808080")
+        self.assertEqual(function["item_color_hex"], "00808080")
+        self.assertIs(function["is_default_color"], False)
+
+    def test_numeric_fields_are_integers(self) -> None:
+        payload = build_function_dump(
+            "default_color=-1\nsegment_count=1\nsegment[0].name=seg001\nsegment[0].align=1\n"
+            "function[0].name=Example\nfunction[0].size=2\nfunction[0].chunk[0].size=2\nfunction[0].chunk[0].bytes=B800\n"
+        )
+
+        self.assertEqual(payload["meta"], {"default_color": -1, "segment_count": 1})
+        self.assertEqual(payload["segments"], [{"name": "seg001", "align": 1}])
+        self.assertEqual(payload["functions"][0]["size"], 2)
+        self.assertEqual(payload["functions"][0]["chunks"][0]["size"], 2)
+
+    def test_function_without_chunks_gets_empty_hashes(self) -> None:
+        payload = build_function_dump("function[0].name=NoChunks\n")
+
+        function = payload["functions"][0]
+        self.assertNotIn("chunks", function)
+        self.assertEqual(function["bytes_hex"], "")
+        self.assertEqual(function["bytes_sha256"], "")
+        self.assertEqual(function["chunk_bytes_sha256"], [])
 
 
 if __name__ == "__main__":

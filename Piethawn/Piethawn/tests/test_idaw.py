@@ -6,8 +6,13 @@ from io import StringIO
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from ida_automation import idaw
+
+
+NO_IDA_RUNNING = '"chrome.exe","999","Console","1","1 K"'
+IDA_GUI_RUNNING = '"idag.exe","16028","Console","1","69,744 K"'
 
 
 class IdawTests(unittest.TestCase):
@@ -58,7 +63,7 @@ class IdawTests(unittest.TestCase):
             idb.write_bytes(b"idb-data")
             output = StringIO()
 
-            with redirect_stdout(output):
+            with redirect_stdout(output), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
                 result = idaw.main(["--dry-run", "--", "-A", "-Sscript.idc", str(idb)])
 
             self.assertEqual(result, 0)
@@ -68,6 +73,73 @@ class IdawTests(unittest.TestCase):
             self.assertIn("idaw.exe", text)
             self.assertIn(str(idb), text)
 
+
+    def test_find_running_ida_processes_matches_gui_instance(self) -> None:
+        with patch.object(idaw, "probe_process_list", return_value=f"{IDA_GUI_RUNNING}\n{NO_IDA_RUNNING}"):
+            self.assertEqual(idaw.find_running_ida_processes(), [IDA_GUI_RUNNING])
+
+    def test_find_running_ida_processes_ignores_unrelated_processes(self) -> None:
+        with patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
+            self.assertEqual(idaw.find_running_ida_processes(), [])
+
+    def test_find_unpacked_parts_detects_expanded_database(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"")
+            for suffix in (".id0", ".id1"):
+                idb.with_suffix(suffix).write_bytes(b"part")
+
+            names = sorted(part.name for part in idaw.find_unpacked_parts(idb))
+
+            self.assertEqual(names, ["MAGIC.id0", "MAGIC.id1"])
+
+    def test_find_unpacked_parts_returns_empty_for_packed_database(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+
+            self.assertEqual(idaw.find_unpacked_parts(idb), [])
+
+    def test_preflight_accepts_packed_database_with_no_ida_running(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+
+            with redirect_stdout(StringIO()), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
+                idaw.preflight_checks(idb, False, False)
+
+    def test_preflight_rejects_concurrent_ida_session_counterexample(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+
+            with redirect_stdout(StringIO()), patch.object(idaw, "probe_process_list", return_value=IDA_GUI_RUNNING):
+                with self.assertRaisesRegex(idaw.IdawError, "already running"):
+                    idaw.preflight_checks(idb, False, False)
+
+    def test_preflight_rejects_unpacked_parts_counterexample(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+            idb.with_suffix(".id0").write_bytes(b"part")
+
+            with redirect_stdout(StringIO()), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
+                with self.assertRaisesRegex(idaw.IdawError, "unpacked database parts"):
+                    idaw.preflight_checks(idb, False, False)
+
+    def test_preflight_allow_flags_bypass_both_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+            idb.with_suffix(".id0").write_bytes(b"part")
+
+            with redirect_stdout(StringIO()), patch.object(idaw, "probe_process_list", return_value=IDA_GUI_RUNNING):
+                idaw.preflight_checks(idb, True, True)
+
+    def test_probe_process_list_fails_closed_when_listing_unavailable_counterexample(self) -> None:
+        with patch.object(idaw.subprocess, "run", side_effect=OSError("tasklist missing")):
+            with self.assertRaisesRegex(idaw.IdawError, "Could not list running processes"):
+                idaw.probe_process_list()
 
     def test_log_contains_unpacked_database_prompt_ignores_old_content(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
