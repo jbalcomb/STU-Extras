@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-from ida_automation import idaw
+from ida55py import idaw
 
 
 NO_IDA_RUNNING = '"chrome.exe","999","Console","1","1 K"'
@@ -33,9 +33,42 @@ class IdawTests(unittest.TestCase):
             idaw.find_idb_argument(["MAGIC.idb", "WIZARDS.idb"])
 
     def test_backup_path_for_idb_uses_timestamped_stem(self) -> None:
-        result = idaw.backup_path_for_idb(Path("/ida/MAGIC.idb"), "202604302134")
-        expected = idaw.normalize_path(idaw.DEFAULT_BACKUP_DIR) / "MAGIC-202604302134.idb"
-        self.assertEqual(result, expected)
+        result = idaw.backup_path_for_idb(Path("/ida/MAGIC.idb"), "202604302134", Path("/backups"))
+        self.assertEqual(result, Path("/backups") / "MAGIC-202604302134.idb")
+
+    def test_resolve_backup_dir_prefers_cli_then_env_then_idb_folder(self) -> None:
+        idb = Path("/ida/MAGIC.idb")
+        with patch.dict(idaw.os.environ, {idaw.BACKUP_DIR_ENV: "/from-env"}):
+            self.assertEqual(idaw.resolve_backup_dir("/from-cli", idb), idaw.normalize_path("/from-cli"))
+            self.assertEqual(idaw.resolve_backup_dir(None, idb), idaw.normalize_path("/from-env"))
+        with patch.dict(idaw.os.environ, {}, clear=True):
+            self.assertEqual(idaw.resolve_backup_dir(None, idb), Path("/ida"))
+
+    def test_resolve_ida_exe_prefers_cli_then_env_then_default(self) -> None:
+        with patch.dict(idaw.os.environ, {idaw.IDA_EXE_ENV: "/env/idaw.exe"}):
+            self.assertEqual(idaw.resolve_ida_exe("/cli/idaw.exe"), idaw.normalize_path("/cli/idaw.exe"))
+            self.assertEqual(idaw.resolve_ida_exe(None), idaw.normalize_path("/env/idaw.exe"))
+        with patch.dict(idaw.os.environ, {}, clear=True):
+            self.assertEqual(idaw.resolve_ida_exe(None), idaw.normalize_path(idaw.DEFAULT_IDA_EXE))
+
+    def test_main_dry_run_uses_cli_ida_exe_and_backup_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb = Path(temp_dir) / "MAGIC.idb"
+            idb.write_bytes(b"idb-data")
+            backup_dir = Path(temp_dir) / "backups"
+            output = StringIO()
+
+            with redirect_stdout(output), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
+                result = idaw.main(
+                    ["--dry-run", "--ida-exe", "X:/ida/idag.exe", "--backup-dir", str(backup_dir),
+                     "--", "-A", "-Sscript.idc", str(idb)]
+                )
+
+            self.assertEqual(result, 0)
+            text = output.getvalue()
+            self.assertIn(str(backup_dir / "MAGIC-"), text)
+            self.assertIn("idag.exe", text)
+            self.assertFalse(backup_dir.exists())
 
     def test_backup_idb_backs_up_non_empty_idb(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -63,13 +96,14 @@ class IdawTests(unittest.TestCase):
             idb.write_bytes(b"idb-data")
             output = StringIO()
 
-            with redirect_stdout(output), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING):
+            with redirect_stdout(output), patch.object(idaw, "probe_process_list", return_value=NO_IDA_RUNNING), \
+                    patch.dict(idaw.os.environ, {}, clear=True):
                 result = idaw.main(["--dry-run", "--", "-A", "-Sscript.idc", str(idb)])
 
             self.assertEqual(result, 0)
             text = output.getvalue()
             self.assertIn("Backup:", text)
-            self.assertIn("MAGIC-", text)
+            self.assertIn(str(Path(temp_dir) / "MAGIC-"), text)
             self.assertIn("idaw.exe", text)
             self.assertIn(str(idb), text)
 

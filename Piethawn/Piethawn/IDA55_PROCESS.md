@@ -6,6 +6,10 @@ Still need a better way to represent this spider-web of overlapping projects...
 Processes/Pipelines, End-To-End:
    1. sync MAGIC names to WIZARDS
    2. sync MAGIC and WIZARDS names to ReMoM
+   2. sync MAGIC and WIZARDS status to ReMoM
+   3. snapshot of ReMoM names
+   4. snapshot of drake178's names
+   5. snapshot of binaryalgorithm's names
 
 entry:
 C:\STU_DASM\IDA55_MOM131\MAGIC.idb
@@ -30,7 +34,7 @@ Terminating Nodes / Exit Nodes / Outputs:
 
 
 
-ida55_registry_dump.py  >>>   ida55_registry_settings.json
+..\..\IDA55-Py\ida55py\registry_dump.py  >>>   ..\..\IDA55-Py\snapshots\ida55_registry_settings.json
 
 ida55_clean_export.py   >>>   ida55-reg-before.reg
 ida55_clean_export.py   >>>   ida55-reg-after.reg
@@ -42,11 +46,11 @@ END:  2026-11-11-14:48
 
 
 IDA Automation:
-ida_automation/idaw.py
+..\..\IDA55-Py\ida55py\idaw.py   (shared; see ..\..\IDA55-Py\README.md)
 Everything that runs an IDC script goes through it.
 It refuses to start if another IDA is running or unpacked .id0/.id1/.nam/.til files sit beside the IDB.
-It backs up the .idb to C:\STU_DASM\IDA55_MOM131\
-runs C:\STU_DASM\IDA55\idaw.exe with the arguments you pass
+It backs up the .idb to --backup-dir (the exporters pass C:\STU_DASM\IDA55_MOM131\)
+runs --ida-exe (the exporters pass C:\STU_DASM\IDA55\idaw.exe) with the arguments you pass
 afterwards checks for a 0-byte IDB, unpacked-database warnings and leftover unpacked files
 
 

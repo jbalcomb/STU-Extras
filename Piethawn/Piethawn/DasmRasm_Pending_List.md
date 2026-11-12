@@ -1,4 +1,14 @@
 
+C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\seg021\VGA_SlideColors__STUB.asm
+[] .\Rasm-Agy.cmd out\WIZARDS\seg021\VGA_SlideColors__STUB.asm --force
+
+C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr141\VGA_SlideColors__STUB.asm
+[] .\Rasm-Agy.cmd out\WIZARDS\ovr141\VGA_SlideColors__STUB.asm --force
+
+
+
+
+
 ## Raw Working Notes
 
 prep IDA settings
@@ -461,148 +471,6 @@ Here's the list: 36 items, 42 IDA functions in your format. #43, #335, #338, #33
 All 42 asm files exist. The same list is saved as C:\Users\jbalcomb\AppData\Local\Temp\claude\c00932cd21261fca\b8775e42-472b-43e5-a9eb-08f89368ed55\scratchpad\missing36.md.
 
 
-#43 -- ReMoM: CITYCALC.c:4626
-// WZD o142p33
-// CTY_Gold_Breakdown()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr142\CTY_Gold_Breakdown.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr142\CTY_Gold_Breakdown.asm
-
-#43 -- ReMoM: CITYCALC.c:4629
-// WZD o142p34
-// CTY_Prod_Breakdown()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr142\CTY_Prod_Breakdown.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr142\CTY_Prod_Breakdown.asm
-
-#43 -- ReMoM: CITYCALC.c:4635
-// WZD o142p36
-// CTY_Pwr_Breakdown()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr142\CTY_Pwr_Breakdown.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr142\CTY_Pwr_Breakdown.asm
-
-// WZD o142p36
-// CTY_Rsrc_Breakdown()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr142\CTY_Rsrc_Breakdown.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr142\CTY_Rsrc_Breakdown.asm
-
-// WZD o161p08
-// TILE_GetSilverGold   
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr161\TILE_GetSilverGold.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr161\TILE_GetSilverGold.asm
-
-// WZD o161p09
-// TILE_GetGoldOreGold  
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr161\TILE_GetGoldOreGold.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr161\TILE_GetGoldOreGold.asm
-
-// WZD o161p10
-// TILE_GetGemGold      
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr161\TILE_GetGemGold.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr161\TILE_GetGemGold.asm
-
-// WZD o161p14
-// drake178: TILE_GetQuorkPower   
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr161\TILE_GetQuorkPower.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr161\TILE_GetQuorkPower.asm
-
-// WZD o161p15
-// drake178: TILE_GetCrysxPower   
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr161\TILE_GetCrysxPower.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr161\TILE_GetCrysxPower.asm
-
-// WZD o55p38
-// drake178: N/A  sub_4D5EA()
-void Resource_Breakdown__STUB(int16_t resource_id)
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr055\Resource_Breakdown__STUB.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr055\Resource_Breakdown__STUB.asm
-
-// WZD o55p39
-// drake178: N/A  sub_4DA19()
-void Resource_Breakdown_Draw__STUB(void)
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr055\Resource_Breakdown_Draw__STUB.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr055\Resource_Breakdown_Draw__STUB.asm
-
-// WZD o55p40
-// drake178: N/A
-// sub_4E507()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr055\sub_4E507.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr055\sub_4E507.asm
-
-
-
-
-
-#62 -- ReMoM: DIPLOMAC.c:1659
-// WZD o84p09
-// IDK_Npc_Counteroffer__STUB()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr084\IDK_Npc_Counteroffer__STUB.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr084\IDK_Npc_Counteroffer__STUB.asm
-
-#64 -- ReMoM: DIPLOMAC.c:815
-// WZD o84p03
-// IDK_Diplo_Add_Spell_Or_Gold_To_Message()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr084\IDK_Diplo_Add_Spell_Or_Gold_To_Message.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr084\IDK_Diplo_Add_Spell_Or_Gold_To_Message.asm
-
-#78 -- ReMoM: Items.c:102
-// WZD o109p04
-// AI_EquipHeroFirst()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr109\AI_EquipHeroFirst.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr109\AI_EquipHeroFirst.asm
-
-// WZD o109p05
-// AI_EquipHeroFirst()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr109\AI_EquipRemainder.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr109\AI_EquipRemainder.asm
-
-#130 -- ReMoM: NEXTTURN.c:3148
-// WZD o140p13
-// WIZ_RemoveUEs()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr140\WIZ_RemoveUEs.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr140\WIZ_RemoveUEs.asm
-
-// WZD o140p11
-// drake178: WIZ_RemoveCEs()
-// WIZ_RemoveCEs()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr140\WIZ_RemoveCEs.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr140\WIZ_RemoveCEs.asm
-
-// WZD o140p12
-// drake178: WIZ_RemoveGEs()
-// WIZ_RemoveGEs()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr140\WIZ_RemoveGEs.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr140\WIZ_RemoveGEs.asm
-
-// WZD o140p14
-// drake178: N/A
-// sub_C538E()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr140\sub_C538E.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr140\sub_C538E.asm
-
-// WZD o140p15
-// drake178: N/A
-// sub_C53FA()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr140\sub_C53FA.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr140\sub_C53FA.asm
-
-
-
-#173 -- ReMoM: MainScr.c:6870
-// WZD o97p06
-// CTY_CheckSpellWard__STUB()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr097\CTY_CheckSpellWard__STUB.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr097\CTY_CheckSpellWard__STUB.asm
-
-#175 -- ReMoM: MainScr.c:6829
-// WZD o97p05
-// RP_CTY_CheckSpellWard__STUB()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr097\RP_CTY_CheckSpellWard__STUB.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr097\RP_CTY_CheckSpellWard__STUB.asm
-
-#259 -- ReMoM: Spells132.c:1287
-// WZD o132p12
-// CTY_GaiasBlessing()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr132\CTY_GaiasBlessing.asm
-[x] .\Rasm-Agy.cmd out\WIZARDS\ovr132\CTY_GaiasBlessing.asm
 
 #333 -- ReMoM: Timer.c:75
 // WZD s02p03
@@ -616,26 +484,76 @@ C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\seg002\Release_Time.asm
 C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\seg036\RP_GUI_KeyInputOnly.asm
 [] .\Rasm-Agy.cmd out\WIZARDS\seg036\RP_GUI_KeyInputOnly.asm --force
 
-#377, #391 -- ReMoM: GENDRAW.c:1885
-// WZD o149p18
-// HLP_DrawExpandLines__TODO()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr149\HLP_DrawExpandLines__TODO.asm
-[] .\Rasm-Agy.cmd out\WIZARDS\ovr149\HLP_DrawExpandLines__TODO.asm --force
 
-#388 -- ReMoM: paragrph.c:198
-// WZD s19p03
-// UU_GUI_CreateHelpLinks()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\seg019\UU_GUI_CreateHelpLinks.asm
-[] .\Rasm-Agy.cmd out\WIZARDS\seg019\UU_GUI_CreateHelpLinks.asm --force
 
-#470 -- ReMoM: GENDRAW.c:1798
-// WZD o149p16
-// HLP_DrawExpanding__TODO()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\ovr149\HLP_DrawExpanding__TODO.asm
-[] .\Rasm-Agy.cmd out\WIZARDS\ovr149\HLP_DrawExpanding__TODO.asm --force
+There are three lists of open work: 34 open rows in the BQ triage table, about 40 open follow-ups, and 182 open entries in stub_wip_todo.md. Seven of the 34 rows are now stale, because this session reconstructed their code but the rows still say pending.
 
-#485 -- ReMoM: Fields.c:1366
-// WZD s36p59
-// UU_GUI_ScrollableTxtDlg()
-C:\STU\devel\STU-Extras\Piethawn\Piethawn\out\WIZARDS\seg036\UU_GUI_ScrollableTxtDlg.asm
-[] .\Rasm-Agy.cmd out\WIZARDS\seg036\UU_GUI_ScrollableTxtDlg.asm --force
+3. Engine and MoX rows, all pending (25)
+Waits and timing:
+#333 Wait_Ticks;
+#383 Wait_Ticks_Or_Input.
+DOS and file I/O:
+#334 DOS_File_Open;
+#384 DOS_Drive_Ready.
+EMS / LBX loaders:
+#335 EMS_LBX_Load_Entry;
+#374 EMS_Cache_LBX_Range_Core;
+#399 Pic_EMS_Next_Pages;
+#459 EMS_Cache_LBX_File;
+#460 EMS_LBX_Uncache;
+#461 EMS_LBX_Reload_Into_Handle.
+Input:
+#338 UI_Poll_Input_Keyboard;
+#485 UI_Text_List_Select_Scrolling.
+Picture drawing:
+#339 Pic_Blit_Clipped_Planar;
+#378 Pic_Draw_Warped_Core;
+#386 Pic_Load_Palette;
+#394 Pic_Keep_Rect;
+#396 Pic_Draw_Rect_Outline.
+Window zoom:
+#377 and #391 Window_Zoom_Draw;
+#470 Window_Zoom_Open.
+Sound: #346 and #397 Sound_Fatal_Error.
+Other:
+#388 Paragraph_Add_Hotkey_Regions;
+#407 Engine_Init_Short;
+#488 Wizard_Info_Draw.
+#378 is the one you set aside for a full 1:1 review of Draw_Bitmap_Animation_Block.
+
+4. Open follow-ups
+
+The follow-ups table has about 40 rows. The 8 that have been checked against the asm:
+
+the area-dispel battle_units[99] overrun;
+the _ITEMS[-1] read in Choose_Target_And_Action;
+the uninitialised Melee_Unit_List[0];
+the byte store that should be a word in Modifier_Diplomacy_Adjustments;
+Retreat_From_Combat returns void where the asm returns 0;
+Draw_Bitmap_Animation_Block;
+the Set_Font_Style third colour set, which needs a DOSBox measurement;
+the road-connection and mouse-page GUI checks.
+The rest haven't been checked against the asm.
+
+Items carried over from earlier in the session:
+
+OVL_SpellWardError;
+the incentive block in DIPL_sub_72DB6;
+the REBUG comment for the moved block at DIPLOMAC.c:5664.
+5. Functions: stub_wip_todo.md has 182 entries unchecked and 237 checked. The biggest groups:
+
+AI overland: AI_Set_Unit_Orders, AI_Next_Turn, the CONTX_* chain builders, and the AITP_* overland targeters.
+Combat AI (L117-L140): implemented, but each still needs its done-done review.
+City screen: the Cityscape_Roads_* and City_Screen_*__WIP functions.
+Astrologer: the WIZ_Get_Astr_* stubs.
+The bq-base squash still waits on sections 1–3 at least.
+
+
+
+Still open: after that, the move code reads and writes _UNITS[-1]. I haven't checked whether that is undefined behaviour in ReMoM.
+
+#259 (Gaia's Blessing): added an OGBUG note at Spells132.c:1509. I checked ovr161/Square_Is_Volcano.asm: it does cmp cx, tt_ChaosNode / jz → TRUE, so a Chaos Node square counts as a volcano.
+
+
+
+Can't-fail branch: Resource_Breakdown_Draw's grey "negative food" branch can only fire if a breakdown value is negative, and I didn't check whether any can be.

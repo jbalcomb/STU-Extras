@@ -14,7 +14,9 @@ from typing import Iterable, List, Optional, Sequence
 
 
 DEFAULT_IDB_DIR = r"C:\STU_DASM\IDA55_MOM131"
-DEFAULT_IDAW_WRAPPER = Path("ida_automation") / "idaw.py"
+DEFAULT_IDA_EXE = r"C:\STU_DASM\IDA55\idaw.exe"
+# Shared IDA launcher, relative to the Piethawn repo root (STU-Extras/Piethawn/Piethawn -> STU-Extras/IDA55-Py).
+DEFAULT_IDAW_WRAPPER = Path("..") / ".." / "IDA55-Py" / "ida55py" / "idaw.py"
 DEFAULT_GAMES = ("MAGIC", "WIZARDS")
 OUTPUT_SUFFIXES = (".map", ".asm", ".inc", ".lst")
 REGISTRY_KEY = r"HKCU\Software\Hex-Rays\IDA"
@@ -55,6 +57,7 @@ def make_summary() -> RunSummary:
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run clean IDA 5.5 exports for MAGIC/WIZARDS IDBs.")
     parser.add_argument("--idb-dir", default=DEFAULT_IDB_DIR, help=f"Directory containing MAGIC/WIZARDS IDBs. Default: {DEFAULT_IDB_DIR}")
+    parser.add_argument("--ida-exe", default=DEFAULT_IDA_EXE, help=f"IDA executable passed to idaw.py. Default: {DEFAULT_IDA_EXE}")
     parser.add_argument("--script", type=Path, default=Path("ida55_clean_export.idc"), help="IDC export script.")
     parser.add_argument("--game", choices=DEFAULT_GAMES, action="append", help="Game to export. May be specified twice.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned actions without running IDA or child scripts.")
@@ -93,7 +96,8 @@ def denormalize_for_display(path: Path) -> str:
 
 
 def resolve_idaw_wrapper(repo_root: Path) -> Path:
-    wrapper_path = repo_root / DEFAULT_IDAW_WRAPPER
+    """Locate the shared IDA55-Py idaw.py launcher relative to the Piethawn repo root. Powered by Claude."""
+    wrapper_path = (repo_root / DEFAULT_IDAW_WRAPPER).resolve()
     if not wrapper_path.exists():
         raise FileNotFoundError(f"IDAW wrapper not found: {wrapper_path}")
     if not wrapper_path.is_file():
@@ -109,8 +113,23 @@ def expected_outputs_for_idb(idb_path: Path) -> List[Path]:
     return [base.with_suffix(suffix) for suffix in OUTPUT_SUFFIXES]
 
 
-def build_ida_command(python: str, idaw_wrapper: Path, script_path: Path, idb_path: Path, log_path: Optional[Path] = None) -> List[str]:
-    command = [python, "-B", str(idaw_wrapper), "--", "-A"]
+def build_ida_command(
+    python: str,
+    idaw_wrapper: Path,
+    script_path: Path,
+    idb_path: Path,
+    log_path: Optional[Path] = None,
+    *,
+    ida_exe: Optional[Path] = None,
+    backup_dir: Optional[Path] = None,
+) -> List[str]:
+    """Build the idaw.py command line; idaw.py options go before '--', IDA's after. Powered by Claude."""
+    command = [python, "-B", str(idaw_wrapper)]
+    if ida_exe is not None:
+        command.extend(["--ida-exe", str(ida_exe)])
+    if backup_dir is not None:
+        command.extend(["--backup-dir", str(backup_dir)])
+    command.extend(["--", "-A"])
     if log_path is not None:
         command.append(f"-L{log_path}")
     command.extend([f"-S{script_path}", str(idb_path)])
@@ -257,6 +276,8 @@ def run_exports(
     no_ida_log: bool,
     timeout_seconds: int,
     startup_enter: bool,
+    ida_exe: Optional[Path] = None,
+    backup_dir: Optional[Path] = None,
 ) -> None:
     if not dry_run:
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -270,7 +291,15 @@ def run_exports(
         summary.add_check(f"{job.game}: IDB exists: {denormalize_for_display(job.idb_path)}")
         ida_log_path = log_dir / f"{job.game}.ida.log"
         transcript_path = log_dir / f"{job.game}.process.log"
-        command = build_ida_command(python, idaw_wrapper, script_path, job.idb_path, None if no_ida_log else ida_log_path)
+        command = build_ida_command(
+            python,
+            idaw_wrapper,
+            script_path,
+            job.idb_path,
+            None if no_ida_log else ida_log_path,
+            ida_exe=ida_exe,
+            backup_dir=backup_dir,
+        )
         result = run_command(
             command,
             repo_root,
@@ -384,6 +413,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             args.no_ida_log,
             args.timeout_seconds,
             not args.no_startup_enter,
+            ida_exe=normalize_path(args.ida_exe, repo_root),
+            backup_dir=idb_dir,
         )
 
         if not args.skip_verify and not args.dry_run:

@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Launch IDA Pro 5.5 after backing up the packed IDB file."""
+"""Launch IDA Pro 5.5 after backing up the packed IDB file.
+
+Usage:
+    python -B idaw.py [--ida-exe EXE] [--backup-dir DIR] [--dry-run] -- <IDA arguments, exactly one .idb>
+
+IDA executable:   --ida-exe, else %IDA55_EXE%, else C:\\STU_DASM\\IDA55\\idaw.exe
+Backup directory: --backup-dir, else %IDA55_BACKUP_DIR%, else the IDB's own folder
+Backups are named <stem>-YYYYMMDDHHMM.idb; restore_ida_backup.py reads the same names.
+"""
 
 from __future__ import annotations
 
@@ -15,7 +23,9 @@ from typing import Dict, List, Optional, Sequence
 
 UNPACKED_DATABASE_TEXT = "IDA has found unpacked version of database"
 DEFAULT_IDA_EXE = r"C:\STU_DASM\IDA55\idaw.exe"
-DEFAULT_BACKUP_DIR = "C:\\STU_DASM\\IDA55_MOM131\\"
+IDA_EXE_ENV = "IDA55_EXE"
+BACKUP_DIR_ENV = "IDA55_BACKUP_DIR"
+RESTORE_SCRIPT = Path(__file__).resolve().parent / "restore_ida_backup.py"
 IDA_PROCESS_NAMES = ("idaw.exe", "idag.exe", "idal.exe", "idaq.exe", "ida64.exe", "ida.exe")
 UNPACKED_PART_SUFFIXES = (".id0", ".id1", ".nam", ".til")
 
@@ -29,6 +39,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         description="Backup the packed .idb, then launch IDA with the original arguments."
     )
     parser.add_argument("--dry-run", action="store_true", help="Print the backup and IDA command without running IDA.")
+    parser.add_argument(
+        "--ida-exe",
+        help=f"IDA executable to run. Default: %%{IDA_EXE_ENV}%%, else {DEFAULT_IDA_EXE}",
+    )
+    parser.add_argument(
+        "--backup-dir",
+        help=f"Directory for the pre-run .idb backup. Default: %%{BACKUP_DIR_ENV}%%, else the IDB's own folder.",
+    )
     parser.add_argument(
         "--allow-running-ida",
         action="store_true",
@@ -85,9 +103,20 @@ def find_idb_argument(ida_args: Sequence[str]) -> Path:
     return normalize_path(candidates[0])
 
 
-def backup_path_for_idb(idb_path: Path, timestamp: str) -> Path:
-    destination_dir = normalize_path(DEFAULT_BACKUP_DIR)
-    return destination_dir / f"{idb_path.stem}-{timestamp}{idb_path.suffix}"
+def resolve_ida_exe(cli_value: Optional[str]) -> Path:
+    """Pick the IDA executable: --ida-exe, then the IDA55_EXE variable, then the built-in path. Powered by Claude."""
+    return normalize_path(cli_value or os.environ.get(IDA_EXE_ENV) or DEFAULT_IDA_EXE)
+
+
+def resolve_backup_dir(cli_value: Optional[str], idb_path: Path) -> Path:
+    """Pick the backup folder: --backup-dir, then the IDA55_BACKUP_DIR variable, then the IDB's folder. Powered by Claude."""
+    value = cli_value or os.environ.get(BACKUP_DIR_ENV)
+    return normalize_path(value) if value else idb_path.parent
+
+
+def backup_path_for_idb(idb_path: Path, timestamp: str, backup_dir: Path) -> Path:
+    """Return <backup_dir>/<stem>-<timestamp>.idb. Powered by Claude."""
+    return backup_dir / f"{idb_path.stem}-{timestamp}{idb_path.suffix}"
 
 
 def backup_idb(idb_path: Path, backup_path: Path, dry_run: bool = False) -> None:
@@ -216,6 +245,12 @@ def print_recovery_guidance(idb_path: Path, backup_path: Path, reason: str) -> N
     idb_display = denormalize_for_display(idb_path)
     backup_display = denormalize_for_display(backup_path)
     parts = find_unpacked_parts(idb_path)
+    restore_command = (
+        f'python -B "{denormalize_for_display(RESTORE_SCRIPT)}"'
+        f' --idb-dir "{denormalize_for_display(idb_path.parent)}"'
+        f' --backup-dir "{denormalize_for_display(backup_path.parent)}"'
+        f" --idb {idb_path.stem}"
+    )
 
     lines = [
         "",
@@ -238,7 +273,7 @@ def print_recovery_guidance(idb_path: Path, backup_path: Path, reason: str) -> N
         "  DO THIS FIRST -- stop running pipeline commands, and preserve the evidence:",
         "    1. Close every IDA window.",
         "    2. Copy the IDB, the pre-run backup, and any .id0/.id1/.nam/.til listed above",
-        "       into a new directory under emergency_ida55_db_parts_backup/ before touching them.",
+        "       into a new, empty directory before touching them.",
         "",
         "  THEN PICK ONE RECOVERY PATH:",
         "",
@@ -249,8 +284,8 @@ def print_recovery_guidance(idb_path: Path, backup_path: Path, reason: str) -> N
         "",
         "  B. Restore the packed pre-run backup (discards anything done in the failed session):",
         "       Move the .id0/.id1/.nam/.til aside first, or IDA will offer the unpacked copy.",
-        "       Preview:  python -B ida_automation/restore_ida_backup.py --game <MAGIC|WIZARDS>",
-        "       Apply:    python -B ida_automation/restore_ida_backup.py --game <MAGIC|WIZARDS> --apply",
+        f"       Preview:  {restore_command}",
+        f"       Apply:    {restore_command} --apply",
         "       It keeps a -damaged- copy of the current file and verifies the restore by sha256.",
         "",
         "  Verify when done: the .idb is non-zero and no .id0/.id1 remain beside it.",
@@ -267,10 +302,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if not ida_args:
         raise IdawError("No IDA arguments were provided.")
 
-    ida_exe = normalize_path(DEFAULT_IDA_EXE)
+    ida_exe = resolve_ida_exe(args.ida_exe)
     idb_path = find_idb_argument(ida_args)
     stamp = timestamp()
-    backup_path = backup_path_for_idb(idb_path, stamp)
+    backup_path = backup_path_for_idb(idb_path, stamp, resolve_backup_dir(args.backup_dir, idb_path))
 
     log_paths = extract_log_paths(ida_args)
     offsets = log_offsets(log_paths)

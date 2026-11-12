@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ida_automation import restore_ida_backup as restore_backup
+from ida55py import restore_ida_backup as restore_backup
 
 
 class RestoreIdaBackupTests(unittest.TestCase):
@@ -50,6 +50,37 @@ class RestoreIdaBackupTests(unittest.TestCase):
             self.assertEqual(current.read_bytes(), b"backup")
             self.assertEqual(damaged.read_bytes(), b"")
             self.assertIn("status=restored", lines)
+
+    def test_apply_reads_backup_from_separate_backup_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            idb_dir = Path(temp_dir) / "idbs"
+            backup_dir = Path(temp_dir) / "backups"
+            idb_dir.mkdir()
+            backup_dir.mkdir()
+            current = idb_dir / "WIZARDS.idb"
+            current.write_bytes(b"")
+            (backup_dir / "WIZARDS-202605051200.idb").write_bytes(b"backup")
+
+            lines = restore_backup.restore_game(
+                idb_dir,
+                "WIZARDS",
+                apply=True,
+                allow_overwrite_nonzero=False,
+                stamp="202605051400",
+                backup_dir=backup_dir,
+            )
+
+            self.assertEqual(current.read_bytes(), b"backup")
+            self.assertIn("status=restored", lines)
+
+    def test_idb_names_lists_idbs_but_not_backups_or_damaged_copies(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            for name in ("MAGIC.idb", "WIZARDS.idb", "MAGIC-202605051200.idb", "MAGIC-damaged-202605051400.idb", "notes.txt"):
+                (root / name).write_bytes(b"x")
+
+            self.assertEqual(restore_backup.idb_names(root, None), ["MAGIC", "WIZARDS"])
+            self.assertEqual(restore_backup.idb_names(root, ["ORION2.idb", "MAGIC"]), ["ORION2", "MAGIC"])
 
 
 if __name__ == "__main__":

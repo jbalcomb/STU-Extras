@@ -7,7 +7,7 @@ Run the IDA 5.5 file dumps for MAGIC and WIZARDS, then split the ASM into per-pr
   3. ida_dasm_export/ida55_check_clean_asm.py                -> fails on a dirty ASM listing
   4. remove existing out/<GAME>/<segment>/*.asm, then ida55_split_asm.py -> out/MAGIC, out/WIZARDS
 
-Close every IDA window first: both exports run IDA through ida_automation/idaw.py.
+Close every IDA window first: both exports run IDA through ../../IDA55-Py/ida55py/idaw.py.
 --skip-ida runs only steps 3-4, on the files already in in/.
 """
 

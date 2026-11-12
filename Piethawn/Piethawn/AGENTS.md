@@ -11,7 +11,7 @@
 - Keep legacy/evaluation data clearly separated from approved process inputs.
 
 ## AI Agent Operating Notes
-- Run IDA IDC scripts through `ida_automation\idaw.py` instead of raw `idaw.exe` and instead of asking the user to run them, unless blocked by a real execution failure or missing input.
+- Run IDA IDC scripts through `..\..\IDA55-Py\ida55py\idaw.py` (via the exporters' Python launchers, which pass `--ida-exe` and `--backup-dir`) instead of raw `idaw.exe` and instead of asking the user to run them, unless blocked by a real execution failure or missing input.
 
 ## Codex Requested Guidance
  * Do not invent new top-level functions unless they exist in the original or I explicitly ask.

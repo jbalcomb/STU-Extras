@@ -1,33 +1,30 @@
 # IDA55 IDC Notes
 
-Last updated: 2026-11-10.
+Last updated: 2026-11-11.
+
+Generic IDA 5.5 scripting notes (batch vs GUI IDCs, `Exit()`/`SaveBase`, startup prompts, the CMD screen-buffer
+limit, killing IDA, first-run probe, dry-run meaning) moved to
+[IDA55-Py/NOTES.md](../../../IDA55-Py/NOTES.md). The launcher (`idaw.py`), the backup restore, the probe and
+settings IDCs, `eg_idc/` and the registry snapshots moved to [IDA55-Py](../../../IDA55-Py/README.md). This file
+keeps what is specific to the MAGIC/WIZARDS exports.
 
 ## Source Files Consulted
 
-- `eg_idc/stu_config.idc`
-- `eg_idc/stu_produce.idc`
-- `eg_idc/analysis.idc`
-- `eg_idc/idc.idc`
-- `ida55_dump_settings.idc`
+- `IDA55-Py\eg_idc\stu_config.idc`
+- `IDA55-Py\eg_idc\stu_produce.idc`
+- `IDA55-Py\eg_idc\analysis.idc`
+- `IDA55-Py\eg_idc\idc.idc`
+- `IDA55-Py\idc\ida55_dump_settings.idc`
 - `ida_proc_data_export\ida55_dump_functions.idc`
 - `run_post_ida55_dump_pipeline.py`
 
-## Confirmed From Local IDC Files
+## Confirmed For These Exports
 
-- `GenerateFile(type, handle, ea1, ea2, flags)` exists and returns generated line count or `-1` on error.
-- Output file constants are available: `OFILE_MAP`, `OFILE_LST`, and `OFILE_ASM`.
-- `GENFLG_ASMTYPE | GENFLG_ASMINC` is the known local pattern for INC generation.
-- `SetCharPrm`, `SetShortPrm`, and `SetLongPrm` all exist.
-- `INF_MAXREF` is documented as `int32`, so the clean export script uses `SetLongPrm`.
-- `Batch(1)` exists and should suppress dialogs in automation.
-- IDA 5.5's bundled `analysis.idc` documents command-line script execution as `idag -A -Sanalysis.idc file`.
-- IDC arrays are persistent database objects and must be created with `CreateArray()` before `SetArrayLong()`/`GetArrayElement()` use.
+- The clean export IDC uses `GenerateFile` with `OFILE_MAP`/`OFILE_LST`/`OFILE_ASM`, and `GENFLG_ASMTYPE | GENFLG_ASMINC` for the INC (see [IDA55-Py/NOTES.md](../../../IDA55-Py/NOTES.md)).
+- `INF_MAXREF` is `int32`, so the clean export script uses `SetLongPrm`.
 - The production clean export IDC no longer depends on IDC arrays; original settings are kept in local `auto` variables to reduce first-run failure surface.
-- `ida55_probe.idc` is a minimal command-line IDC probe that writes `*.idb.ida55-probe.txt` without changing export settings or generating MAP/ASM/INC/LST files.
-- The live `MAGIC.ida.log` showed IDA stopping at the startup support-plan prompt ending in `Thank you for using IDA Pro! -> Continue`, before the probe IDC could prove script execution.
-- After decreasing a CMD terminal's Screen Buffer Size from the default `9001` to `300` and accepting IDA's license prompt in the blue IDA window, the probe IDC did execute and wrote `C:\STU_DASM\IDA55_MOM131\MAGIC.idb.ida55-probe.txt`.
-- IDA 5.5 has a known legacy console limitation with very large CMD screen buffers; keep the CMD Screen Buffer Size near `300` for these automation runs.
-- The successful probe reported `input_file_path=C:\moo\MAGICDV\MAGIC.EXE`, so the IDB can still refer to its original loaded executable path while the database itself lives under `C:\STU_DASM\IDA55_MOM131`.
+- After accepting IDA's license prompt and setting the CMD Screen Buffer Size to `300`, the probe IDC executed and wrote `C:\STU_DASM\IDA55_MOM131\MAGIC.idb.ida55-probe.txt`.
+- The successful probe reported `input_file_path=C:\moo\MAGICDV\MAGIC.EXE`, so the IDB still refers to its original loaded executable path while the database itself lives under `C:\STU_DASM\IDA55_MOM131`.
 - The full clean export IDC has executed successfully for both `MAGIC` and `WIZARDS`, with process return code `0` for each game.
 - The live clean export generated non-empty `MAP`, `ASM`, `INC`, and `LST` files for both games under `C:\STU_DASM\IDA55_MOM131`.
 - The `before` and `after` settings snapshots matched for both games, so the clean export IDC restored the tracked `INF_*` settings after generation.
@@ -35,10 +32,9 @@ Last updated: 2026-11-10.
 
 ## Current Inferences To Validate In IDA
 
-- `ida_automation\idaw.py` is the shared launcher for automation; it invokes `idaw.exe` after making the required packed-IDB backup and checking for hard-stop database-state warnings.
+- Both exporters launch IDA through `IDA55-Py\ida55py\idaw.py`, passing `--ida-exe C:\STU_DASM\IDA55\idaw.exe` and `--backup-dir C:\STU_DASM\IDA55_MOM131` (the `--idb-dir`). `idaw.py` makes the packed-IDB backup and checks for hard-stop database-state warnings.
 - `INF_ASMTYPE = 1` should produce Borland TASM Ideal mode, matching the old notes, but parser stability should be compared with `INF_ASMTYPE = 0`.
 - Suppressing comments with `SW_NOCMT` should reduce noisy ASM, but it may hide useful named comments for some reverse-engineering tasks.
-- Registry snapshots are useful for recovery, but clean ASM formatting appears to be controlled by IDB/session `INF_*` settings.
 
 ## Current Clean Export Profile
 
@@ -84,7 +80,7 @@ Last updated: 2026-11-10.
 Run the minimal IDC probe first:
 
 ```powershell
-c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game MAGIC --skip-registry-snapshot --script .\ida55_probe.idc --skip-verify --timeout-seconds 30
+c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game MAGIC --skip-registry-snapshot --script C:\STU\devel\STU-Extras\IDA55-Py\idc\ida55_probe.idc --skip-verify --timeout-seconds 30
 ```
 
 Expected success signal:
@@ -93,9 +89,7 @@ Expected success signal:
 - `out\ida55-clean-export-logs\MAGIC.process.log` records the IDA process return code.
 - `out\ida55-clean-export-logs\MAGIC.ida.log` records IDA's own log if IDA 5.5 accepts `-L`.
 
-If the probe fails, investigate command-line IDC loading, `-S` path handling, or `-L` compatibility before changing export settings.
-
-If IDA still waits at the support-plan prompt, run the same command once without `--no-startup-enter` and once with `--no-ida-log`; the next distinction to isolate is whether the prompt reads from stdin or from an IDA-owned console/window.
+If the probe fails, see "First-Run Triage" in [IDA55-Py/NOTES.md](../../../IDA55-Py/NOTES.md) before changing export settings. To isolate the support-plan prompt, run the same command once without `--no-startup-enter` and once with `--no-ida-log`.
 
 If the probe passes but clean export fails, inspect:
 
@@ -127,41 +121,11 @@ c:/python314/python.exe .\run_post_ida55_dump_pipeline.py
 
 If `ida_proc_name_sync\magic_sync_names_from_wzd.json` lists any renames, apply the generated rename IDC to `MAGIC.idb` in the IDA GUI: open `MAGIC.idb`, then File > IDC file... > `ida_proc_name_sync\magic_sync_names_from_wzd.idc`. It is generated by `ida_proc_name_sync\generate_magic_name_sync.py` as the last step of `run_post_ida55_dump_pipeline.py`. See [NAME_SYNC_PROCESS.md](../NAME_SYNC_PROCESS.md).
 
-This IDC is a GUI-mode script: it calls `SaveBase` but not `Exit()`. Do not run it through `ida55_clean_export.py --script` or `idaw.py -A -S...` as it stands; see "GUI vs Batch IDC Scripts" below.
+This IDC is a GUI-mode script: it calls `SaveBase` but not `Exit()`. Do not run it through `ida55_clean_export.py --script` or `idaw.py -A -S...` as it stands; see "GUI vs Batch IDC Scripts" in [IDA55-Py/NOTES.md](../../../IDA55-Py/NOTES.md).
 
 The rename modifies `MAGIC.idb`; it does not update already-copied `in\*.asm` or already-split `out\*\*\*.asm` files. After the rename IDC applies changes, re-run the clean export, function data export, and post-IDA pipeline steps so the repository exports reflect the new procedure names. The handoff should then list 0 renames.
 
 Superseded: earlier versions of these notes ran `out\ida55-sync\magic_rename_to_wizards.idc` from the command line. That IDC came from `ida55_generate_magic_rename_idc.py` (driven by `ida55_match_functions.py`), and both scripts have been removed. Its template called neither `SaveBase` nor `Exit()`, so a command-line run stayed alive until the timeout killed IDA, without saving the renames.
-
-## GUI vs Batch IDC Scripts
-
-An IDC script is written for one of two ways of running it, and the end of `main()` differs.
-
-| | GUI (interactive) | Batch (command line) |
-|---|---|---|
-| How it is run | Open the IDB in the IDA window, File > IDC file... | `ida_automation\idaw.py -- -A -L<log> -S<script> <idb>`, usually via an exporter's Python launcher |
-| Who closes IDA | You | The script, with `Exit(code)` |
-| `Exit()` | Must not call it: it closes your IDA window (commit d88bad5) | Must call it on every path, or IDA stays open until the launcher's timeout kills it |
-| Exit code | Not used | `0` = success, non-zero = failure; the launcher checks the process return code |
-| Saving changes | `SaveBase("", 0)`, or choose Save when closing IDA | `SaveBase("", 0)` before `Exit()` if the script changes the database |
-| Dialogs | `Batch(1)` while working is still useful | `Batch(1)` is required; any dialog stalls the run |
-| Results | `Message(...)` to the Output window | `Message(...)` goes to the `-L` log; files written by the script |
-
-Killing IDA while a database is open, such as when a timeout fires on a script that never calls `Exit()`, can leave a 0-byte `.idb` or unpacked `.id0/.id1/.nam/.til` parts. `idaw.py` backs up the packed IDB before each run and checks for both afterwards. Read-only export scripts lose nothing on a kill, but a script that renames or recolors loses its unsaved changes.
-
-Because `Exit()` behaves differently in the two modes, one IDC cannot serve both. A script needed both ways should be generated in two variants, for example a generator `--batch` option that appends `SaveBase` (when needed) and `Exit()`.
-
-Current IDCs by mode:
-
-| IDC | Mode | Ends with |
-|---|---|---|
-| `ida55_probe.idc` | Batch | `Exit(0)` / `Exit(2)` |
-| `ida_dasm_export\ida55_clean_export.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
-| `ida_proc_data_export\ida55_dump_functions.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
-| `ida_proc_name_sync\magic_sync_names_from_wzd.idc` | GUI | `SaveBase`, `Batch(0)`, no `Exit()` |
-| `ida_proc_status_sync\mgc_proc_status_sync.idc`, `wzd_proc_status_sync.idc` | GUI | neither `SaveBase` nor `Exit()`; choose Save when closing IDA ([COLOR_SYNC_PROCESS.md](../COLOR_SYNC_PROCESS.md)) |
-
-The `ida55_dseg_dump.idc`, `ida55_ovr_func_map.idc` and `ida55_seg_attr_dump.idc` dumps are now under `DEPRECATED\ida_proc_data_export\`. `ida55_dseg_dump.idc` had its `Exit()` calls removed for GUI use.
 
 After splitting/post-processing, audit translated C files against current procedure names:
 
@@ -169,20 +133,16 @@ After splitting/post-processing, audit translated C files against current proced
 c:/python314/python.exe .\rasm_sync_translations.py
 ```
 
-## Dry-Run Meaning
+## IDCs By Mode
 
-Dry-run proves:
+What each mode requires is in "GUI vs Batch IDC Scripts" in [IDA55-Py/NOTES.md](../../../IDA55-Py/NOTES.md).
 
-- the Python script starts and parses arguments
-- the IDA executable path resolves
-- the IDC script exists
-- the requested IDB paths exist when present
-- the exact IDA commands can be constructed
+| IDC | Mode | Ends with |
+|---|---|---|
+| `IDA55-Py\idc\ida55_probe.idc` | Batch | `Exit(0)` / `Exit(2)` |
+| `ida_dasm_export\ida55_clean_export.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
+| `ida_proc_data_export\ida55_dump_functions.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
+| `ida_proc_name_sync\magic_sync_names_from_wzd.idc` | GUI | `SaveBase`, `Batch(0)`, no `Exit()` |
+| `ida_proc_status_sync\mgc_proc_status_sync.idc`, `wzd_proc_status_sync.idc` | GUI | neither `SaveBase` nor `Exit()`; choose Save when closing IDA ([COLOR_SYNC_PROCESS.md](../COLOR_SYNC_PROCESS.md)) |
 
-Dry-run does not prove:
-
-- IDA accepts the IDC script
-- the IDC script syntax is valid inside IDA 5.5
-- settings are restored
-- `MAP`/`ASM`/`INC`/`LST` files are generated
-- generated files are non-empty or parseable
+The `ida55_dseg_dump.idc`, `ida55_ovr_func_map.idc` and `ida55_seg_attr_dump.idc` dumps are under `DEPRECATED\ida_proc_data_export\`. `ida55_dseg_dump.idc` had its `Exit()` calls removed for GUI use.

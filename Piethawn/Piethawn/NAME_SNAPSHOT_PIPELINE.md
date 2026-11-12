@@ -55,7 +55,7 @@ flowchart LR
         COLOR["completion-color sync<br/>(by name; after renames)"]
     end
 
-    subgraph EXP["Export (IDA 5.5 via ida_automation/idaw.py)"]
+    subgraph EXP["Export (IDA 5.5 via IDA55-Py/ida55py/idaw.py)"]
         COPY["copy IDB to out/ work dir<br/>(original never opened)"]
         NSIDC["ida55_name_snapshot.idc<br/>(port of export_map.idc)"]
         FDIDC["ida55_dump_functions.idc<br/><i>exists</i>"]
@@ -200,9 +200,9 @@ New package `ida_name_snapshot/`:
 | File | Change |
 |---|---|
 | `ida_name_snapshot/ida55_name_snapshot.idc` | New. Port of `export_map.idc`, with the same TSV columns so existing drake TSVs and `mom_patch_diff` stay compatible. The output path is `GetIdbPath() + ".ida55-names.tsv"` (Piethawn convention) instead of the `@@OUTPUT_PATH@@` placeholder. |
-| `ida_name_snapshot/ida55_export_name_snapshot.py` | New thin wrapper. `--source drake178\|current` (or `--idb-dir`), `--game`, `--dry-run`, `--timeout-seconds`. It copies the `.idb` to `out/ida55-name-snapshots/work/<source>/` and refuses if unpacked parts sit beside the source. It runs the IDC on the **copy** through `ida_automation/idaw.py`, verifies the TSV, then writes `in/name-snapshots/<source>/<GAME>.ida55-names.tsv` plus `<GAME>.ida55-names.manifest.json` (source path, size, mtime, sha256 of the IDB, timestamp). |
+| `ida_name_snapshot/ida55_export_name_snapshot.py` | New thin wrapper. `--source drake178\|current` (or `--idb-dir`), `--game`, `--dry-run`, `--timeout-seconds`. It copies the `.idb` to `out/ida55-name-snapshots/work/<source>/` and refuses if unpacked parts sit beside the source. It runs the IDC on the **copy** through `IDA55-Py/ida55py/idaw.py`, verifies the TSV, then writes `in/name-snapshots/<source>/<GAME>.ida55-names.tsv` plus `<GAME>.ida55-names.manifest.json` (source path, size, mtime, sha256 of the IDB, timestamp). |
 | `piethawn_sync/name_snapshot.py` | New shared loader: TSV to records `(game, kind, segment, proc, name, ea, size, bytes)`, plus `key_text()` giving `MGC s001p02` / `WZD o076p01`, identical to `mom_patch_diff`. |
-| `ida_automation/idaw.py` | Add `--backup-dir`, so a run on a disposable copy does not drop backups into `C:\STU_DASM\IDA55_MOM131\`. The default is unchanged. |
+| `IDA55-Py/ida55py/idaw.py` | Done (2026-11-11): `idaw.py` now takes `--backup-dir` (default `%IDA55_BACKUP_DIR%`, else the IDB's own folder) and `--ida-exe`. Pass a backup folder under `out/ida55-name-snapshots/work/` so runs on a disposable copy do not drop backups into `C:\STU_DASM\IDA55_MOM131\`. |
 | `ida_name_snapshot/compare_name_snapshots.py` | New. Joins drake178 and current by `(game, ea)` with a fallback on masked bytes. Writes `out/name-snapshots/drake178-vs-current.report.{json,md}` with same / renamed / only-drake / only-current. Report only, no mutation. |
 | `tests/test_ida55_name_snapshot.py` | New. Covers loader parsing, key formatting and command building, plus counterexamples: the original IDB path is never passed to IDA, and an empty TSV is rejected. |
 

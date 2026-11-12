@@ -19,7 +19,9 @@ if __package__ in (None, ""):
 from piethawn_sync.function_dump import json_path_for_dump, write_function_dump_json
 
 DEFAULT_IDB_DIR = r"C:\STU_DASM\IDA55_MOM131"
-DEFAULT_IDAW_WRAPPER = Path("ida_automation") / "idaw.py"
+DEFAULT_IDA_EXE = r"C:\STU_DASM\IDA55\idaw.exe"
+# Shared IDA launcher, relative to the Piethawn repo root (STU-Extras/Piethawn/Piethawn -> STU-Extras/IDA55-Py).
+DEFAULT_IDAW_WRAPPER = Path("..") / ".." / "IDA55-Py" / "ida55py" / "idaw.py"
 DEFAULT_GAMES = ("MAGIC", "WIZARDS")
 DEFAULT_LOG_DIR = Path("out") / "ida55-function-data-export-logs"
 DEFAULT_TIMEOUT_SECONDS = 900
@@ -34,6 +36,7 @@ class FunctionDataExportJob:
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run IDA 5.5 function data exports for MAGIC/WIZARDS IDBs.")
     parser.add_argument("--idb-dir", default=DEFAULT_IDB_DIR, help=f"Directory containing MAGIC/WIZARDS IDBs. Default: {DEFAULT_IDB_DIR}")
+    parser.add_argument("--ida-exe", default=DEFAULT_IDA_EXE, help=f"IDA executable passed to idaw.py. Default: {DEFAULT_IDA_EXE}")
     parser.add_argument("--script", type=Path, default=Path("ida55_dump_functions.idc"), help="IDC function dump script.")
     parser.add_argument("--game", choices=DEFAULT_GAMES, action="append", help="Game to export. May be specified twice.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned actions without running IDA or copying files.")
@@ -73,7 +76,8 @@ def resolve_repo_root() -> Path:
 
 
 def resolve_idaw_wrapper(repo_root: Path) -> Path:
-    wrapper = repo_root / DEFAULT_IDAW_WRAPPER
+    """Locate the shared IDA55-Py idaw.py launcher relative to the Piethawn repo root. Powered by Claude."""
+    wrapper = (repo_root / DEFAULT_IDAW_WRAPPER).resolve()
     if not wrapper.is_file():
         raise FileNotFoundError(f"IDAW wrapper not found: {wrapper}")
     return wrapper
@@ -91,8 +95,23 @@ def repo_dump_path(repo_root: Path, idb_path: Path) -> Path:
     return repo_root / "in" / expected_dump_for_idb(idb_path).name
 
 
-def build_ida_command(python: str, idaw_wrapper: Path, script_path: Path, idb_path: Path, log_path: Optional[Path] = None) -> List[str]:
-    command = [python, "-B", str(idaw_wrapper), "--", "-A"]
+def build_ida_command(
+    python: str,
+    idaw_wrapper: Path,
+    script_path: Path,
+    idb_path: Path,
+    log_path: Optional[Path] = None,
+    *,
+    ida_exe: Optional[Path] = None,
+    backup_dir: Optional[Path] = None,
+) -> List[str]:
+    """Build the idaw.py command line; idaw.py options go before '--', IDA's after. Powered by Claude."""
+    command = [python, "-B", str(idaw_wrapper)]
+    if ida_exe is not None:
+        command.extend(["--ida-exe", str(ida_exe)])
+    if backup_dir is not None:
+        command.extend(["--backup-dir", str(backup_dir)])
+    command.extend(["--", "-A"])
     if log_path is not None:
         command.append(f"-L{log_path}")
     command.extend([f"-S{script_path}", str(idb_path)])
@@ -178,7 +197,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         json_path = json_path_for_dump(dump_path)
         print(f"  expects: {denormalize_for_display(dump_path)}")
         print(f"  writes:  {denormalize_for_display(json_path)}")
-        command = build_ida_command(args.python, idaw_wrapper, script_path, job.idb_path, ida_log)
+        command = build_ida_command(
+            args.python,
+            idaw_wrapper,
+            script_path,
+            job.idb_path,
+            ida_log,
+            ida_exe=normalize_path(args.ida_exe, repo_root),
+            backup_dir=idb_dir,
+        )
         result = run_command(command, repo_root, args.dry_run, args.timeout_seconds)
         if result != 0:
             raise RuntimeError(f"IDA function data export failed for {job.game} with exit code {result}.")

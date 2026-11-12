@@ -20,7 +20,7 @@ class FunctionDataExportTests(unittest.TestCase):
     def test_build_ida_command_uses_shared_wrapper(self) -> None:
         command = export_function_data.build_ida_command(
             sys.executable,
-            Path("ida_automation") / "idaw.py",
+            Path("IDA55-Py") / "ida55py" / "idaw.py",
             Path("ida55_dump_functions.idc"),
             Path("MAGIC.idb"),
             Path("MAGIC.ida.log"),
@@ -30,7 +30,7 @@ class FunctionDataExportTests(unittest.TestCase):
             [
                 sys.executable,
                 "-B",
-                str(Path("ida_automation") / "idaw.py"),
+                str(Path("IDA55-Py") / "ida55py" / "idaw.py"),
                 "--",
                 "-A",
                 "-LMAGIC.ida.log",
@@ -39,14 +39,29 @@ class FunctionDataExportTests(unittest.TestCase):
             ],
         )
 
+
+    def test_build_ida_command_passes_ida_exe_and_backup_dir_before_separator(self) -> None:
+        command = export_function_data.build_ida_command(
+            sys.executable,
+            Path("idaw.py"),
+            Path("script.idc"),
+            Path("MAGIC.idb"),
+            ida_exe=Path("idaw.exe"),
+            backup_dir=Path("backups"),
+        )
+        self.assertEqual(
+            command,
+            [sys.executable, "-B", "idaw.py", "--ida-exe", "idaw.exe", "--backup-dir", "backups", "--", "-A", "-Sscript.idc", "MAGIC.idb"],
+        )
     def test_resolve_idaw_wrapper_accepts_shared_wrapper(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo_root = Path(temp_dir)
-            wrapper = repo_root / "ida_automation" / "idaw.py"
-            wrapper.parent.mkdir()
+            repo_root = Path(temp_dir) / "Piethawn" / "Piethawn"
+            repo_root.mkdir(parents=True)
+            wrapper = Path(temp_dir) / "IDA55-Py" / "ida55py" / "idaw.py"
+            wrapper.parent.mkdir(parents=True)
             wrapper.write_text("# wrapper", encoding="utf-8")
 
-            self.assertEqual(export_function_data.resolve_idaw_wrapper(repo_root), wrapper)
+            self.assertEqual(export_function_data.resolve_idaw_wrapper(repo_root), wrapper.resolve())
 
     def test_resolve_idaw_wrapper_rejects_missing_wrapper_counterexample(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

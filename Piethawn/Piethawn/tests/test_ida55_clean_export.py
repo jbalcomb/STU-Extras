@@ -34,33 +34,48 @@ class CleanExportTests(unittest.TestCase):
     def test_build_ida_command(self) -> None:
         command = clean_export.build_ida_command(
             sys.executable,
-            Path("ida_automation") / "idaw.py",
+            Path("IDA55-Py") / "ida55py" / "idaw.py",
             Path("ida55_clean_export.idc"),
             Path("MAGIC.idb"),
         )
-        self.assertEqual(command, [sys.executable, "-B", str(Path("ida_automation") / "idaw.py"), "--", "-A", "-Sida55_clean_export.idc", "MAGIC.idb"])
+        self.assertEqual(command, [sys.executable, "-B", str(Path("IDA55-Py") / "ida55py" / "idaw.py"), "--", "-A", "-Sida55_clean_export.idc", "MAGIC.idb"])
 
     def test_build_ida_command_with_log(self) -> None:
         command = clean_export.build_ida_command(
             sys.executable,
-            Path("ida_automation") / "idaw.py",
+            Path("IDA55-Py") / "ida55py" / "idaw.py",
             Path("ida55_clean_export.idc"),
             Path("MAGIC.idb"),
             Path("MAGIC.ida.log"),
         )
         self.assertEqual(
             command,
-            [sys.executable, "-B", str(Path("ida_automation") / "idaw.py"), "--", "-A", "-LMAGIC.ida.log", "-Sida55_clean_export.idc", "MAGIC.idb"],
+            [sys.executable, "-B", str(Path("IDA55-Py") / "ida55py" / "idaw.py"), "--", "-A", "-LMAGIC.ida.log", "-Sida55_clean_export.idc", "MAGIC.idb"],
         )
 
+
+    def test_build_ida_command_passes_ida_exe_and_backup_dir_before_separator(self) -> None:
+        command = clean_export.build_ida_command(
+            sys.executable,
+            Path("idaw.py"),
+            Path("script.idc"),
+            Path("MAGIC.idb"),
+            ida_exe=Path("idaw.exe"),
+            backup_dir=Path("backups"),
+        )
+        self.assertEqual(
+            command,
+            [sys.executable, "-B", "idaw.py", "--ida-exe", "idaw.exe", "--backup-dir", "backups", "--", "-A", "-Sscript.idc", "MAGIC.idb"],
+        )
     def test_resolve_idaw_wrapper_accepts_repo_wrapper(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo_root = Path(temp_dir)
-            wrapper = repo_root / "ida_automation" / "idaw.py"
-            wrapper.parent.mkdir()
+            repo_root = Path(temp_dir) / "Piethawn" / "Piethawn"
+            repo_root.mkdir(parents=True)
+            wrapper = Path(temp_dir) / "IDA55-Py" / "ida55py" / "idaw.py"
+            wrapper.parent.mkdir(parents=True)
             wrapper.write_text("# wrapper", encoding="utf-8")
 
-            self.assertEqual(clean_export.resolve_idaw_wrapper(repo_root), wrapper)
+            self.assertEqual(clean_export.resolve_idaw_wrapper(repo_root), wrapper.resolve())
 
     def test_resolve_idaw_wrapper_rejects_missing_wrapper_counterexample(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

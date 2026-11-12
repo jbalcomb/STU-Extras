@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Restore packed IDA databases from timestamped backups."""
+"""Restore packed IDA databases from timestamped backups made by idaw.py.
+
+Usage:
+    python -B restore_ida_backup.py --idb-dir DIR [--backup-dir DIR] [--idb NAME ...] [--apply]
+
+--idb-dir      folder holding <NAME>.idb (default: %IDA55_IDB_DIR%)
+--backup-dir   folder holding <NAME>-YYYYMMDDHHMM.idb backups (default: %IDA55_BACKUP_DIR%, else --idb-dir)
+--idb NAME     IDB to restore, by stem or file name; repeatable (default: every <NAME>.idb in --idb-dir)
+Without --apply it only prints the plan.
+"""
 
 from __future__ import annotations
 
@@ -13,9 +22,10 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 
-DEFAULT_IDB_DIR = r"C:\STU_DASM\IDA55_MOM131"
-GAME_NAMES = ("MAGIC", "WIZARDS")
+IDB_DIR_ENV = "IDA55_IDB_DIR"
+BACKUP_DIR_ENV = "IDA55_BACKUP_DIR"
 BACKUP_RE_TEMPLATE = r"^{game}-(\d{{12}})\.idb$"
+DERIVED_IDB_RE = re.compile(r"-(\d{12}|damaged-\d{12})\.idb$", re.IGNORECASE)
 
 
 class RestoreBackupError(RuntimeError):
@@ -54,10 +64,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def game_list(game: str) -> list[str]:
-    if game == "BOTH":
-        return list(GAME_NAMES)
-    return [game]
+def idb_names(idb_dir: Path, requested: Optional[Sequence[str]]) -> list[str]:
+    """Return the IDB stems to restore: the requested ones, else every non-backup .idb in idb_dir. Powered by Claude."""
+    if requested:
+        return [Path(name).stem if name.lower().endswith(".idb") else name for name in requested]
+    names = sorted(
+        path.stem
+        for path in idb_dir.iterdir()
+        if path.is_file() and path.suffix.lower() == ".idb" and not DERIVED_IDB_RE.search(path.name)
+    )
+    if not names:
+        raise RestoreBackupError(f"No .idb files found in {denormalize_path(idb_dir)}")
+    return names
 
 
 def idb_path_for_game(idb_dir: Path, game: str) -> Path:
@@ -108,8 +126,10 @@ def restore_game(
     apply: bool,
     allow_overwrite_nonzero: bool,
     stamp: str,
+    backup_dir: Optional[Path] = None,
 ) -> list[str]:
-    backup_path = latest_backup(idb_dir, game)
+    """Restore one IDB from its newest nonzero backup (backups looked up in backup_dir, else idb_dir). Powered by Claude."""
+    backup_path = latest_backup(backup_dir or idb_dir, game)
     idb_path = idb_path_for_game(idb_dir, game)
     damaged_path = damaged_copy_path(idb_path, stamp)
     lines = [
@@ -148,8 +168,19 @@ def restore_game(
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Restore IDA .idb files from timestamped idaw.py backups.")
-    parser.add_argument("--game", choices=("MAGIC", "WIZARDS", "BOTH"), default="BOTH")
-    parser.add_argument("--idb-dir", default=DEFAULT_IDB_DIR)
+    parser.add_argument(
+        "--idb",
+        "--game",
+        dest="names",
+        action="append",
+        help="IDB to restore, by stem (MAGIC) or file name (MAGIC.idb). Repeatable. Default: every .idb in --idb-dir.",
+    )
+    parser.add_argument("--idb-dir", default=os.environ.get(IDB_DIR_ENV), help=f"Folder holding the IDBs. Default: %%{IDB_DIR_ENV}%%")
+    parser.add_argument(
+        "--backup-dir",
+        default=os.environ.get(BACKUP_DIR_ENV),
+        help=f"Folder holding the timestamped backups. Default: %%{BACKUP_DIR_ENV}%%, else --idb-dir.",
+    )
     parser.add_argument("--apply", action="store_true", help="Actually restore. Without this, only prints the plan.")
     parser.add_argument(
         "--allow-overwrite-nonzero",
@@ -161,15 +192,19 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
+    if not args.idb_dir:
+        raise SystemExit(f"error: --idb-dir is required (or set {IDB_DIR_ENV})")
     idb_dir = normalize_path(args.idb_dir)
+    backup_dir = normalize_path(args.backup_dir) if args.backup_dir else idb_dir
     stamp = timestamp()
-    for game in game_list(args.game):
+    for name in idb_names(idb_dir, args.names):
         for line in restore_game(
             idb_dir,
-            game,
+            name,
             apply=args.apply,
             allow_overwrite_nonzero=args.allow_overwrite_nonzero,
             stamp=stamp,
+            backup_dir=backup_dir,
         ):
             print(line)
     return 0
