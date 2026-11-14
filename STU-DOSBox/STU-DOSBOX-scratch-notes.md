@@ -1,7 +1,57 @@
 
-Are all of the _UNITS divergences in compare-gd-stage2.py showing as 'Status' for OG-MoM = 0 and ReMoM = 3?
+Matched — all three belong to neutral cities building unit type 104:
 
-Add a capture on the OG-MoM side for event_pressure_accumulator at bp-2, in Determine_Event(), in /home/jbalcomb/STU/devel/ReMoM/MoM/src/EVENTS.c. Also capture the global _event_delay_count, at 36AA:4A32 in WZD.
+Unit coord	City	wp	owner	construction	production_units	Prod_Accu (entry)
+(29,32)	_CITIES[9]	0	5	204	9	0
+(41,12)	_CITIES[13]	0	5	204	11	0
+(24,22)	_CITIES[17]	0	5	204	10	0
+construction = 204 → unit type 204 − 100 = 104 ✓. Prod_Accu starts at 0 and production_units (9/11/10) pushes it over product_cost in one turn, so all three complete their defender this turn — in City_Apply_Production, well before Volcano_Counts.
+
+So you can gate the probe precisely. To pin the first divergence, fire right after the first unit-producing city (index 9):
+
+
+{ static int gdcap_done = 0; if(!gdcap_done && itr_cities == 9) { gdcap_done = 1; gd_dump_units("623_City_Apply_Production_Return_U"); } }
+That captures _units immediately after City_Apply_Production(9) — you'll see 49 | 48 (OG already created the first defender, ReMoM didn't), long before Volcano_Counts runs. Or gate on itr_cities == 17 to catch all three (51 | 48). Either way it moves the divergence back to City_Apply_Production, confirming the Create_Unit guard is the culprit.
+
+Want me to make that probe change (city 9) and re-run to show the 49|48, and/or apply the Create_Unit guard fix?
+
+CITIES[9], _CITIES[13], _CITIES[17]
+
+
+
+The user is right — the OG-side 618 didn't fire. (640 "only in OG" is expected — it's OG-only by design.)
+Let me diagnose why the OG far-return never matched.
+My suspicion: AI_Next_Turn is huge and evicts Next_Turn_Calc's overlay (ovr119),
+  which reloads at a different segment,
+  so the captured return segment goes stale. Let me verify:
+
+
+
+Are compare-gd-stage2.py, compare-stage2.py, analyze-saved-players-stage2.py disagreeing on the state of the divergence?
+e.g., compare-gd-stage2.py shows 902_Save_Players_P is 100% match, but compare-stage2.py shows _players has 16 differing bytes
+
+jbalcomb@iMustAi:~/STU_DBWD/dosbox-capture/prng-port/baselines$ ./analyze-saved-players-stage2.py 
+== _players diff (decoded per instance) ==
+  OG    : /home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/stage2-next-turn/canonical-save5.GAM
+  ReMoM : /home/jbalcomb/STU_DBWD/dosbox-capture/prng-port/baselines/stage2-next-turn/remom-save5.GAM
+  divergent instances: 1   divergent fields: 2
+
+_players[5]
+    Dipl                               [+270] OG=0 ReMoM=36  [+272] OG=0 ReMoM=39  [+274] OG=0 ReMoM=34  [+276] OG=0 ReMoM=33  [+294] OG=0 ReMoM=16  [+296] OG=0 ReMoM=32  [+298] OG=0 ReMoM=16  [+300] OG=0 ReMoM=19
+    spells_list                        [+14] OG=16 ReMoM=0  [+16] OG=32 ReMoM=0  [+18] OG=16 ReMoM=0  [+20] OG=19 ReMoM=0  [+26] OG=36 ReMoM=0  [+28] OG=39 ReMoM=0  [+30] OG=34 ReMoM=0  [+32] OG=33 ReMoM=0
+
+both just writing to different place, maybe because OOB?
+
+Where your 16 diverging bytes land
+Overlay array                                      OG record (in spells_list) ReMoM record (in Dipl)  values
+_ai_reevaluate_continents_countdown (int16, 16B)   0x27C → spells_list[+24…]  0x234 → Dipl[+268…]     36,39,34,33
+_ai_landmass_war_targets[1] (int16, 12B)           0x270 → spells_list[+12…]  0x24C → Dipl[+292…]     16,32,16,19
+
+_players[5]
+    spells_list                        [+14] OG=16 ReMoM=0  [+16] OG=32 ReMoM=0  [+18] OG=16 ReMoM=0  [+20] OG=19 ReMoM=0  [+26] OG=36 ReMoM=16  [+28] OG=39 ReMoM=32  [+30] OG=34 ReMoM=16  [+32] OG=33 ReMoM=19  [+50] OG=0 ReMoM=36  [+52] OG=0 ReMoM=39  [+54] OG=0 ReMoM=34  [+56] OG=0 ReMoM=33
+
+
+
 
 
 stage1 need post-process and compare-gd scripts
@@ -12,8 +62,6 @@ stage2 uses save slot 4 as its intput game-save and uses save slot 5 as its outp
 if we're unsure of some result, we can always compare output of the previous stage with the input of the current satge.
 
 
-
-[] Add GD points for _UNITS before and after AI_Execute_Orders()
 
 
 
