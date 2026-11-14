@@ -2552,7 +2552,7 @@ SEG_ SEG_EA   SEG_NAME   FUNC_EA  FUNC_NAME
 0173 00052970 ovr060     00052970 Delete_Dead_Units
 0173 00052970 ovr060     00052A4F Player_Units_Max_Range
 0173 00052970 ovr060     00052B04 o060p03_empty_function
-0173 00052970 ovr060     00052B09 Next_Turn_Proc__WIP
+0173 00052970 ovr060     00052B09 Next_Turn_Proc
 0173 00052970 ovr060     00052E09 All_AI_Refresh_Units_Movement
 0173 00052970 ovr060     00052F3C Update_Units_MvsSts
 0173 00052970 ovr060     00053055 All_AI_Players_Contacted
