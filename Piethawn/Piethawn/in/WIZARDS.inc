@@ -6,12 +6,15 @@
 ; |                              Valued Client                              |
 ; +-------------------------------------------------------------------------+
 ;
+
 struc s_SPELL_BOOK_PAGE__1 ; (sizeof=0x1E)
 title db 16 dup(?)
 spells dw 6 dup(?)
 count db ?
 Unused_1Dh db ?
 ends s_SPELL_BOOK_PAGE__1
+
+
 struc MoveType_Matrix ; (sizeof=0xC, standard type)
 UU_Cavalry dw ?
 Forester dw ?
@@ -20,6 +23,8 @@ Swimming dw ?
 Sailing dw ?
 Flying dw ?
 ends MoveType_Matrix
+
+
 struc s_BATTLE_UNIT ; (sizeof=0x6E)
 melee db ?
 ranged db ?
@@ -33,7 +38,7 @@ cost dw ?
 upkeep db ?
 race db ?
 portrait_idx db ?
-figure_cnt db ?
+Cur_Figures db ?
 bufpi dw ?
 hits db ?
 scout_range db ?
@@ -99,6 +104,8 @@ Grey_Defense db ?
 Grey_Resist db ?
 Unused_Grey_Hits db ?
 ends s_BATTLE_UNIT
+
+
 struc s_UNIT ; (sizeof=0x20)
 wx db ?
 wy db ?
@@ -128,12 +135,16 @@ Rd_From_X db ?
 Rd_From_Y db ?
 Unknown_1Fh db ?
 ends s_UNIT
+
+
 struc s_UV_List ; (sizeof=0x5F0)
 names db 1200 dup(?)
 flags dd 40 dup(?)
 picts dw 40 dup(?)
 helps dw 40 dup(?)
 ends s_UV_List
+
+
 struc s_MOUSE_LIST ; (sizeof=0xC)
 image_num dw ?
 center_offset dw ?
@@ -142,6 +153,8 @@ y1 dw ?
 x2 dw ?
 y2 dw ?
 ends s_MOUSE_LIST
+
+
 struc s_CMBT_ENTITY ; (sizeof=0x1E)
 draw_x dw ?
 draw_y dw ?
@@ -158,6 +171,8 @@ Blood_Frame dw ?
 Blood_Amt dw ?
 draw_order_value dd ?
 ends s_CMBT_ENTITY
+
+
 struc s_BATTLEFIELD ; (sizeof=0x1598)
 Tile_Terrain dw 462 dup(?)
 terrain_group db 462 dup(?)
@@ -188,6 +203,8 @@ wp dw ?
 city_enchantments CTY_ENCH ?
 Nightshades db ?
 ends s_BATTLEFIELD
+
+
 struc s_CITY ; (sizeof=0x72)
 name db 14 dup(?)
 race db ?
@@ -217,6 +234,8 @@ research_units db ?
 food_units db ?
 road_connections db 13 dup(?)
 ends s_CITY
+
+
 struc s_BLDG_DATA ; (sizeof=0x34)
 name db 20 dup(?)
 reqd_bldg_1 dw ?
@@ -236,6 +255,8 @@ Unknown_2Eh dw ?
 shape dw ?
 Category dw ?
 ends s_BLDG_DATA
+
+
 struc s_SPELL_DATA ; (sizeof=0x24)
 name db 19 dup(?)
 AI_Group db ?
@@ -253,6 +274,8 @@ Param0 db ?
 Param1 db ?
 Params2_3 dw ?
 ends s_SPELL_DATA
+
+
 struc s_ITEM_DATA ; (sizeof=0x38)
 name db 30 dup(?)
 field_1E db ?
@@ -277,6 +300,8 @@ field_31 db ?
 spellranks db 5 dup(?)
 flag db ?
 ends s_ITEM_DATA
+
+
 struc s_ITEM ; (sizeof=0x32)
 name db 30 dup(?)
 icon_idx db ?
@@ -295,10 +320,14 @@ embed_spell_idx db ?
 embed_spell_cnt dw ?
 enchantments dd ?
 ends s_ITEM
+
+
 struc s_ITEM_TYPE_ICONS_ENTRY ; (sizeof=0x4)
 start dw ?
 count dw ?
 ends s_ITEM_TYPE_ICONS_ENTRY
+
+
 struc s_ITEM_POWER ; (sizeof=0x1E)
 name db 18 dup(?)
 item_types dw ?
@@ -308,32 +337,44 @@ magic_realm db ?
 Books_or_Bonus dw ?
 powers dd ?
 ends s_ITEM_POWER
+
+
 struc CON_EVENT ; (sizeof=0x4)
 Status dw ?
 Duration dw ?
 ends CON_EVENT
+
+
 struc STD_EVENT ; (sizeof=0x6)
 Status dw ?
 Player dw ?
 Data dw ?
 ends STD_EVENT
+
+
 struc REV_EVENT ; (sizeof=0x6, standard type)
 Status dw ?
 Data dw ?
 Player dw ?
 ends REV_EVENT
+
+
 struc s_FORTRESS ; (sizeof=0x4)
 wx db ?
 wy db ?
 wp db ?
 active db ?
 ends s_FORTRESS
+
+
 struc s_TOWER ; (sizeof=0x4)
 wx db ?
 wy db ?
 owner_idx db ?
 Unused_03h db ?
 ends s_TOWER
+
+
 struc s_NODE ; (sizeof=0x30)
 wx db ?
 wy db ?
@@ -346,6 +387,8 @@ type db ?
 flags db ?
 Unused_2Fh db ?
 ends s_NODE
+
+
 struc s_LAIR ; (sizeof=0x18)
 wx db ?
 wy db ?
@@ -365,6 +408,8 @@ Item_Count db ?
 Unused_11h db ?
 Item_Values dw 3 dup(?)
 ends s_LAIR
+
+
 struc s_HERO ; (sizeof=0xC)
 Level dw ?
 abilities dd ?
@@ -372,10 +417,14 @@ Casting_Skill db ?
 Spells db 4 dup(?)
 Unused_0Bh db ?
 ends s_HERO
+
+
 struc INACTV_HERO ; (sizeof=0x10, standard type)
 Name db 14 dup(?)
 XP dw ?
 ends INACTV_HERO
+
+
 struc s_EVENT_DATA ; (sizeof=0x64)
 last_event_turn dw ?
 meteor_status dw ?
@@ -404,6 +453,8 @@ Conjunction_Nature CON_EVENT ?
 Conjunction_Sorcery CON_EVENT ?
 Mana_Short CON_EVENT ?
 ends s_EVENT_DATA
+
+
 struc s_COMBAT_ENCHANTMENTS ; (sizeof=0x1E)
 True_Light s_COMBAT_ENCHANTMENT_STATUS ?
 Darkness s_COMBAT_ENCHANTMENT_STATUS ?
@@ -421,14 +472,20 @@ Entangle s_COMBAT_ENCHANTMENT_STATUS ?
 Mana_Leak s_COMBAT_ENCHANTMENT_STATUS ?
 Blur s_COMBAT_ENCHANTMENT_STATUS ?
 ends s_COMBAT_ENCHANTMENTS
+
+
 struc s_COMBAT_ENCHANTMENT_ICON ; (sizeof=0x4)
 icon_seg dw ?
 help_idx dw ?
 ends s_COMBAT_ENCHANTMENT_ICON
+
+
 struc s_COMBAT_ENCHANTMENT_ICON_DATA ; (sizeof=0x4)
 icon_idx dw ?
 help_idx dw ?
 ends s_COMBAT_ENCHANTMENT_ICON_DATA
+
+
 struc s_FOOD_BREAKDOWN ; (sizeof=0x11)
 Farmers dw ?
 Animists_Guild dw ?
@@ -440,6 +497,8 @@ Gaias_Blessing dw ?
 Famine_POS dw ?
 field_10 db ?
 ends s_FOOD_BREAKDOWN
+
+
 struc s_GOLD_BREAKDOWN ; (sizeof=0x16)
 Taxes dw ?
 Trade_Goods dw ?
@@ -453,6 +512,8 @@ Bank dw ?
 Merchants_Guild dw ?
 Prosperity dw ?
 ends s_GOLD_BREAKDOWN
+
+
 struc s_PRODUCTION_BREAKDOWN ; (sizeof=0x14)
 Workers dw ?
 Farmers dw ?
@@ -465,6 +526,8 @@ Gaias_Blessing dw ?
 Inspirations dw ?
 CursedLnds_POS dw ?
 ends s_PRODUCTION_BREAKDOWN
+
+
 struc s_POWER_BREAKDOWN ; (sizeof=0x1E)
 Fortress dw ?
 Townsfolk dw ?
@@ -482,9 +545,13 @@ Miners_Guild dw ?
 Dark_Rituals dw ?
 Evil_Prs_POS dw ?
 ends s_POWER_BREAKDOWN
+
+
 struc s_MOVE_COST_MAP ; (sizeof=0x960)
 moves2 db 2400 dup(?)
 ends s_MOVE_COST_MAP
+
+
 struc s_MOVE_MODE_COST_MAPS ; (sizeof=0x3840)
 UU_MvMd s_MOVE_COST_MAP ?
 walking s_MOVE_COST_MAP ?
@@ -493,12 +560,16 @@ mountaineer s_MOVE_COST_MAP ?
 swimming s_MOVE_COST_MAP ?
 sailing s_MOVE_COST_MAP ?
 ends s_MOVE_MODE_COST_MAPS
+
+
 struc s_MOVE_PATH ; (sizeof=0x2780)
 moves2 db 2400 dup(?)
 Reach_Costs db 2400 dup(?)
 Reach_From dw 2400 dup(?)
 Reverse_Path dw 256 dup(?)
 ends s_MOVE_PATH
+
+
 struc BLD_LIST ; (sizeof=0x24, standard type)
 None db ?
 Housing db ?
@@ -537,11 +608,15 @@ Mechanicians db ?
 Miners_Gld db ?
 City_Walls db ?
 ends BLD_LIST
+
+
 struc LOC_8BIT ; (sizeof=0x3)
 world_x db ?
 world_y db ?
 world_plane db ?
 ends LOC_8BIT
+
+
 struc CTY_ENCH ; (sizeof=0x19)
 WALL_OF_FIRE db ?
 CHAOS_RIFT db ?
@@ -569,6 +644,8 @@ CONSECRATION db ?
 WALL_OF_DARKNESS db ?
 ALTAR_OF_BATTLE db ?
 ends CTY_ENCH
+
+
 struc XP_TABLE ; (sizeof=0x12, standard type)
 Hero_or_Recruit dw ?
 Myrmidon_or_Regular dw ?
@@ -580,12 +657,16 @@ Grand_Lord dw ?
 Super_Hero dw ?
 Demi_God dw ?
 ends XP_TABLE
+
+
 struc s_SPELL_BOOK_PAGE__2 ; (sizeof=0x1E)
 title db 16 dup(?)
 spell dw 6 dup(?)
 count db ?
 Unused_1Dh db ?
 ends s_SPELL_BOOK_PAGE__2
+
+
 struc BLDNG_GFX ; (sizeof=0x40, standard type)
 Barracks@ dw ?
 Armory@ dw ?
@@ -620,6 +701,8 @@ Mechanicians@ dw ?
 Miners_Guild@ dw ?
 Foresters_Guild@ dw ?
 ends BLDNG_GFX
+
+
 struc RNGD_ANIM ; (sizeof=0x10, standard type)
 Up dw ?
 UpRight dw ?
@@ -630,6 +713,8 @@ DnLeft dw ?
 Left dw ?
 UpLeft dw ?
 ends RNGD_ANIM
+
+
 struc s_RACE ; (sizeof=0x18)
 name dw ?
 CantBuild_Count dw ?
@@ -638,10 +723,14 @@ outpost_growth_rate dw ?
 Growth_Mod dw ?
 house_type dw ?
 ends s_RACE
+
+
 struc s_COMBAT_ENCHANTMENT_STATUS ; (sizeof=0x2)
 Attkr db ?
 Dfndr db ?
 ends s_COMBAT_ENCHANTMENT_STATUS
+
+
 struc s_AI_TARGET ; (sizeof=0x6)
 wx db ?
 wy db ?
@@ -649,6 +738,8 @@ wp db ?
 field_3 db ?
 value dw ?
 ends s_AI_TARGET
+
+
 struc s_AI_STACK_DATA ; (sizeof=0xA)
 wx db ?
 wy db ?
@@ -660,6 +751,8 @@ unit_count db ?
 landmass_idx db ?
 unit_status db ?
 ends s_AI_STACK_DATA
+
+
 struc s_UNIT_TYPE ; (sizeof=0x24)
 name dw ?
 Melee db ?
@@ -669,7 +762,7 @@ Ammo db ?
 To_Hit db ?
 Defense db ?
 Resist db ?
-Move_Halves db ?
+moves2_base db ?
 cost dw ?
 Upkeep db ?
 race_type db ?
@@ -690,13 +783,19 @@ Abilities dw ?
 attack_attributes dw ?
 Sound dw ?
 ends s_UNIT_TYPE
+
+
 struc s_Building_Portrait ; (sizeof=0x1)
 field_0 db ?
 ends s_Building_Portrait
+
+
 union u_ReqdBldg1_HeroPortraitIdx ; (sizeof=0x1)
 u_reqd_bldg_1 db ?
 u_hero_portrait_idx db ?
 ends u_ReqdBldg1_HeroPortraitIdx
+
+
 struc s_CONTINENTS_TABLE ; (sizeof=0x384)
 Player_0 s_LANDMASSES ?
 Player_1 s_LANDMASSES ?
@@ -704,6 +803,8 @@ Player_2 s_LANDMASSES ?
 Player_3 s_LANDMASSES ?
 Player_4 s_LANDMASSES ?
 ends s_CONTINENTS_TABLE
+
+
 struc s_OVERLAND_ENCHANTMENTS ; (sizeof=0x18)
 ETERNAL_NIGHT db ?
 EVIL_OMENS db ?
@@ -730,6 +831,8 @@ Charm_of_Life db ?
 DETECT_MAGIC db ?
 Awareness db ?
 ends s_OVERLAND_ENCHANTMENTS
+
+
 struc s_DIFFICULTY_MODIFIERS ; (sizeof=0x10)
 population_growth dw ?
 outpost_growth dw ?
@@ -740,16 +843,22 @@ research dw ?
 food dw ?
 maintenance dw ?
 ends s_DIFFICULTY_MODIFIERS
+
+
 struc Astr_Data ; (sizeof=0x6, standard type)
 Magic_Power dw ?
 Spell_Research dw ?
 Army_Strength dw ?
 ends Astr_Data
+
+
 struc s_DIPLOMSG_RECORD ; (sizeof=0x6)
 IDK_mood dw ?
 IDK_group dw ?
 IDK_count dw ?
 ends s_DIPLOMSG_RECORD
+
+
 struc WIZ_DIPL ; (sizeof=0x132)
 Contacted db 6 dup(?)
 treaty_modifier dw 6 dup(?)
@@ -785,12 +894,16 @@ field_120 db 6 dup(?)
 field_126 db 6 dup(?)
 G_Warning_Progress db 6 dup(?)
 ends WIZ_DIPL
+
+
 struc s_OWNED_HERO ; (sizeof=0x1C)
 unit_idx dw ?
 name db 14 dup(?)
 Items dw 3 dup(?)
 Item_Slots dw 3 dup(?)
 ends s_OWNED_HERO
+
+
 struc RETORTS ; (sizeof=0x12, standard type)
 Alchemy db ?
 Warlord db ?
@@ -811,6 +924,8 @@ Conjurer db ?
 Charismatic db ?
 Artificer db ?
 ends RETORTS
+
+
 struc BOOKSHELF ; (sizeof=0xA, standard type)
 Nature dw ?
 Sorcery dw ?
@@ -818,15 +933,21 @@ Chaos dw ?
 Life dw ?
 Death dw ?
 ends BOOKSHELF
+
+
 struc LOC_16BIT ; (sizeof=0x6)
 world_x dw ?
 world_y dw ?
 world_plane dw ?
 ends LOC_16BIT
+
+
 struc s_STACK ; (sizeof=0x4)
 unit_idx dw ?
 active dw ?
 ends s_STACK
+
+
 struc s_Movement_Modes ; (sizeof=0x12)
 mm_UU_Cavalry dw ?
 mm_Forester dw ?
@@ -838,6 +959,8 @@ mm_PlanarTravel dw ?
 mm_WindWalking dw ?
 mm_Walking dw ?
 ends s_Movement_Modes
+
+
 struc AI_Combat_Situ ; (sizeof=0xC, standard type)
 Hopeless dw ?
 Losing dw ?
@@ -846,11 +969,15 @@ Advantage dw ?
 Winning dw ?
 Certain dw ?
 ends AI_Combat_Situ
+
+
 struc s_CMB_InfoItem ; (sizeof=0x1E)
 Icon_IMG_Seg dw ?
 HLP_Index dw ?
 Name db 26 dup(?)
 ends s_CMB_InfoItem
+
+
 struc s_UNIT_ENCHANTMENT ; (sizeof=0xA)
 name dw ?
 flag dd ?
@@ -858,12 +985,16 @@ icon_idx db ?
 align2_07h db ?
 help_idx dw ?
 ends s_UNIT_ENCHANTMENT
+
+
 struc s_UNIT_MUTATION ; (sizeof=0x6)
 name dw ?
 flag db ?
 icon_idx db ?
 help_idx dw ?
 ends s_UNIT_MUTATION
+
+
 struc USW_CombatEffect ; (sizeof=0xA)
 name dw ?
 CEff_Flags dd ?
@@ -871,30 +1002,40 @@ icon_idx db ?
 Unused_7h db ?
 help_idx dw ?
 ends USW_CombatEffect
+
+
 struc USW_SR_Attack ; (sizeof=0x6)
 name dw ?
 ranged_type db ?
 icon_idx db ?
 help_idx dw ?
 ends USW_SR_Attack
+
+
 struc USW_AttackFlag ; (sizeof=0x8)
 name dw ?
 bit_idx dw ?
 icon_idx dw ?
 help_idx dw ?
 ends USW_AttackFlag
+
+
 struc USW_Attribute_2 ; (sizeof=0x8)
 name dw ?
 bit_idx dw ?
 icon_idx dw ?
 help_idx dw ?
 ends USW_Attribute_2
+
+
 struc USW_Attribute_1 ; (sizeof=0x8)
 name dw ?
 bit_idx dw ?
 icon_idx dw ?
 help_idx dw ?
 ends USW_Attribute_1
+
+
 struc USW_Ability ; (sizeof=0x8)
 name dw ?
 bit_idx dw ?
@@ -902,31 +1043,43 @@ icon_idx db ?
 Unused_5h db ?
 HLP_Index dw ?
 ends USW_Ability
+
+
 struc USW_HeroAbl ; (sizeof=0x8)
 bit_idx dd ?
 icon_idx dw ?
 help_idx dw ?
 ends USW_HeroAbl
+
+
 struc USW_ItemPower ; (sizeof=0xA)
 name dw ?
 field_2 dd ?
 icon_idx dw ?
 help_idx dw ?
 ends USW_ItemPower
+
+
 struc s_ITEM_VIEW_TEXT ; (sizeof=0x8)
 Name dw ?
 Text dw ?
 Flags dd ?
 ends s_ITEM_VIEW_TEXT
+
+
 struc SAVENAME ; (sizeof=0x14, standard type)
 Name db 20 dup(?)
 ends SAVENAME
+
+
 struc CSCAN_ICONS ; (sizeof=0x24, standard type)
 Stat STAT_ICONS ?
 White_XP@ dw ?
 Gold_XP@ dw ?
 Red_XP@ dw ?
 ends CSCAN_ICONS
+
+
 struc STAT_ICONS ; (sizeof=0x1E, standard type)
 Melee@ dw ?
 Ranged_Magic@ dw ?
@@ -944,6 +1097,8 @@ Flying_Movement@ dw ?
 Water_Movement@ dw ?
 Resist@ dw ?
 ends STAT_ICONS
+
+
 struc ATK_ICONS ; (sizeof=0x12, standard type)
 Melee@ dw ?
 Ranged_Magic@ dw ?
@@ -955,6 +1110,8 @@ Ranged_Rock@ dw ?
 Fire_Breath@ dw ?
 Thrown_Attack@ dw ?
 ends ATK_ICONS
+
+
 struc ITEM_ICONS ; (sizeof=0xE8, standard type)
 Swords@ dw 9 dup(?)
 Maces@ dw 11 dup(?)
@@ -972,6 +1129,8 @@ Helms@ dw 7 dup(?)
 Orbs@ dw 6 dup(?)
 Wands@ dw 9 dup(?)
 ends ITEM_ICONS
+
+
 struc IPOW_ICONS ; (sizeof=0x2C, standard type)
 Magic_Immunity@ dw ?
 Regeneration@ dw ?
@@ -996,6 +1155,8 @@ Dispel_Evil@ dw ?
 Giant_Strength@ dw ?
 Guardian_Wind@ dw ?
 ends IPOW_ICONS
+
+
 struc ISLT_ICONS ; (sizeof=0xC)
 Sword@ dw ?
 Bow@ dw ?
@@ -1004,6 +1165,8 @@ Staff@ dw ?
 Armor@ dw ?
 Accessory@ dw ?
 ends ISLT_ICONS
+
+
 struc Explore_Matching ; (sizeof=0xA, standard type)
 Tile_Value dw ?
 Adj_Scouting dw ?
@@ -1011,11 +1174,15 @@ Mark_Tile dw ?
 Mark_Adj dw ?
 Adj_Direction dw ?
 ends Explore_Matching
+
+
 struc CMOVE_ICONS ; (sizeof=0x6, standard type)
 Ground_Movement@ dw ?
 Flying_Movement@ dw ?
 Water_Movement@ dw ?
 ends CMOVE_ICONS
+
+
 struc SPBK_ICONS ; (sizeof=0xC, standard type)
 Nature@ dw ?
 Sorcery@ dw ?
@@ -1024,6 +1191,8 @@ Life@ dw ?
 Death@ dw ?
 Arcane@ dw ?
 ends SPBK_ICONS
+
+
 struc USWICONS ; (sizeof=0x122)
 Teleporting@ dw ?
 Forester@ dw ?
@@ -1171,6 +1340,8 @@ UU_Blue_Touch@ dw ?
 Agility@ dw ?
 UU_Guises@ dw ?
 ends USWICONS
+
+
 struc s_FONT_HEADER ; (sizeof=0xA9A)
 current_colors db 16 dup(?)
 height dw ?
@@ -1190,10 +1361,14 @@ vertical_spacing dw 8 dup(?)
 font_widths db 768 dup(?)
 data_offsets dw 768 dup(?)
 ends s_FONT_HEADER
+
+
 struc Key_Translator ; (sizeof=0x4, standard type)
 KBD_Read_Value dw ?
 Input_Value dw ?
 ends Key_Translator
+
+
 struc _stub_descr ; (sizeof=0x20)
 int_code db 2 dup(?)
 memswap dw ?
@@ -1204,6 +1379,8 @@ nentries dw ?
 prevstub dw ?
 workarea db 16 dup(?)
 ends _stub_descr
+
+
 struc AIL_drvr_desc ; (sizeof=0x18)
 min_API_version dw ?
 drvr_type dw ?
@@ -1216,6 +1393,8 @@ default_DRQ dw ?
 service_rate dw ?
 display_size dw ?
 ends AIL_drvr_desc
+
+
 struc Ovl_SwapRecord ; (sizeof=0x10, standard type)
 BufferStart dd ?
 BufferEnd dd ?
@@ -1223,6 +1402,8 @@ BreakLevel dd ?
 _Read_Fn dw ?
 _StubChain dw ?
 ends Ovl_SwapRecord
+
+
 struc GDT_Set_Desc ; (sizeof=0x8, standard type)
 limit dw ?
 base_00_15 dw ?
@@ -1230,6 +1411,8 @@ base_16_23 db ?
 type db ?
 res_zero dw ?
 ends GDT_Set_Desc
+
+
 struc Vdisk_Hdr ; (sizeof=0x2F, standard type)
 driver_header db 18 dup(?)
 driver_name db 11 dup(?)
@@ -1237,6 +1420,8 @@ unused_1Dh db 15 dup(?)
 ext_base_00_15 dw ?
 ext_base_16_23 db ?
 ends Vdisk_Hdr
+
+
 struc ExtMemMoveStruct ; (sizeof=0x10, standard type)
 Length dd ?
 SourceHandle dw ?
@@ -1244,6 +1429,8 @@ SourceOffset dd ?
 DestHandle dw ?
 DestOffset dd ?
 ends ExtMemMoveStruct
+
+
 struc s_BLDG_FIELD ; (sizeof=0xE)
 bldg_idx dw ?
 field_x1 dw ?
@@ -1253,6 +1440,8 @@ field_y2 dw ?
 print_sx dw ?
 print_sy dw ?
 ends s_BLDG_FIELD
+
+
 struc s_CITYSCAPE_R ; (sizeof=0xD2)
 row0 s_BLDG_FIELD ?
 row1 s_BLDG_FIELD ?
@@ -1270,6 +1459,8 @@ row12 s_BLDG_FIELD ?
 row13 s_BLDG_FIELD ?
 row14 s_BLDG_FIELD ?
 ends s_CITYSCAPE_R
+
+
 struc s_CITYSCAPE ; (sizeof=0x2E)
 bldg_idx dw ?
 field_2 dw ?
@@ -1295,6 +1486,8 @@ field_28 dw ?
 field_2A dw ?
 field_2C dw ?
 ends s_CITYSCAPE
+
+
 struc s_CITYSCAPE_WTF ; (sizeof=0x2B2)
 _R00 s_CITYSCAPE ?
 _R01 s_CITYSCAPE ?
@@ -1312,17 +1505,23 @@ _R12 s_CITYSCAPE ?
 _R13 s_CITYSCAPE ?
 _R14 s_CITYSCAPE ?
 ends s_CITYSCAPE_WTF
+
+
 struc s_BLDG_CR ; (sizeof=0x8)
 x1_ofs dw ?
 y1_ofs dw ?
 x2_ofs dw ?
 y2_ofs dw ?
 ends s_BLDG_CR
+
+
 struc FILE_DATE ; (sizeof=0x4, standard type)
 DD db ?
 MM db ?
 YYYY dw ?
 ends FILE_DATE
+
+
 struc BC_OVERLAY_STUB ; (sizeof=0x20)
 _Hook dw ?
 _RetOffset dw ?
@@ -1342,21 +1541,29 @@ _HoldCounter db ?
 _Next_Loaded dw ?
 _padding_1E dw ?
 ends BC_OVERLAY_STUB
+
+
 struc EMM_L2P_Map_Record ; (sizeof=0x4)
 logical_page dw ?
 Physical_Page dw ?
 ends EMM_L2P_Map_Record
+
+
 struc Cursor_Area_Copy ; (sizeof=0x186, standard type)
 VGA_Offset dw ?
 Width_Bytes dw ?
 Height_Lines dw ?
 Saved_Image db 384 dup(?)
 ends Cursor_Area_Copy
+
+
 struc GTL_Header_Record ; (sizeof=0x6, standard type)
 patch db ?
 bank db ?
 offset dd ?
 ends GTL_Header_Record
+
+
 struc PROJECTILE_REC ; (sizeof=0xE, standard type)
 Src_Scr_X dw ?
 Src_Scr_Y dw ?
@@ -1366,6 +1573,8 @@ Type dw ?
 Travel_Percent dw ?
 Proj_Direction dw ?
 ends PROJECTILE_REC
+
+
 struc s_GAME_DATA ; (sizeof=0x10)
 Current_Unit dw ?
 Turn dw ?
@@ -1376,6 +1585,8 @@ Magic dw ?
 Land_Size dw ?
 num_players dw ?
 ends s_GAME_DATA
+
+
 struc s_WIZARD ; (sizeof=0x4C8)
 wizard_id db ?
 name db 20 dup(?)
@@ -1459,6 +1670,8 @@ Unknown_4BEh db 6 dup(?)
 Prim_Realm dw ?
 Sec_Realm dw ?
 ends s_WIZARD
+
+
 struc s_MAGIC_SET ; (sizeof=0x1D2)
 sound_effects dw ?
 background_music dw ?
@@ -1491,6 +1704,8 @@ hof_names SAVENAME 10 dup(?)
 hof_scores dw 10 dup(?)
 hof_races dw 10 dup(?)
 ends s_MAGIC_SET
+
+
 struc s_MAGIC_VORTEX ; (sizeof=0xC)
 cgx dw ?
 cgy dw ?
@@ -1499,6 +1714,8 @@ move_cgy dw ?
 stage dw ?
 owner_idx dw ?
 ends s_MAGIC_VORTEX
+
+
 struc AI_BLD_Obj_Modifier ; (sizeof=0x5, standard type)
 Pragmatist db ?
 Militarist db ?
@@ -1506,6 +1723,8 @@ Theurgist db ?
 Perfectionist db ?
 Expansionist db ?
 ends AI_BLD_Obj_Modifier
+
+
 struc AI_BLD_Obj_Priorities ; (sizeof=0x32)
 Projects AI_BLD_Obj_Modifier ?
 Gold AI_BLD_Obj_Modifier ?
@@ -1518,37 +1737,51 @@ Navy AI_BLD_Obj_Modifier ?
 Combat_Unit AI_BLD_Obj_Modifier ?
 Builder AI_BLD_Obj_Modifier ?
 ends AI_BLD_Obj_Priorities
+
+
 struc s_MSG_BUILDING_COMPLETE ; (sizeof=0x4)
 city_idx db ?
 pad2B_01 db ?
 bldg_type_idx dw ?
 ends s_MSG_BUILDING_COMPLETE
+
+
 struc s_MSG_BUILDING_LOST ; (sizeof=0x4)
 city_idx db ?
 align2B_01h db ?
 bldg_type_idx dw ?
 ends s_MSG_BUILDING_LOST
+
+
 struc Unit_Killed_Msg_Item ; (sizeof=0x4, standard type)
 Unit_Type dw ?
 City db ?
 Spell db ?
 ends Unit_Killed_Msg_Item
+
+
 struc Unit_Lost_Msg_Item ; (sizeof=0x4)
 Unit_Type dw ?
 Cause dw ?
 ends Unit_Lost_Msg_Item
+
+
 struc Spiral_Anim_Step ; (sizeof=0x8)
 x dw ?
 y dw ?
 a dw ?
 s dw ?
 ends Spiral_Anim_Step
+
+
 struc PerBook_Spells ; (sizeof=0x8, standard type)
 Common dw ?
 Uncommon dw ?
 Rare dw ?
 Very_Rare dw ?
 ends PerBook_Spells
+
+
 struc find_t ; (sizeof=0x2B, standard type)
 reserved db 21 dup(?)
 attrib db ?
@@ -1557,6 +1790,8 @@ wr_date dw ?
 size dd ?
 name db 13 dup(?)
 ends find_t
+
+
 struc LdDesc ; (sizeof=0xFF, standard type)
 LdErrorMsg db 15 dup(?)
 LdStack db 128 dup(?)
@@ -1578,6 +1813,8 @@ LdCS dw ?
 LdLoadAddr dw ?
 LdRelocFactor dw ?
 ends LdDesc
+
+
 struc s_CONFIG_MOM_20 ; (sizeof=0x14)
 MIDI_IO dw ?
 midi_driver dw ?
@@ -1590,6 +1827,8 @@ NIU_0E dw ?
 NIU_10 dw ?
 NIU_12 dw ?
 ends s_CONFIG_MOM_20
+
+
 struc s_CONFIG_MOM_18 ; (sizeof=0x12)
 MIDI_IO dw ?
 midi_driver dw ?
@@ -1601,6 +1840,8 @@ DIGI_DMA dw ?
 NIU_0E dw ?
 NIU_10 dw ?
 ends s_CONFIG_MOM_18
+
+
 struc FILE ; (sizeof=0x10, standard type)
 level dw ?
 flags dw ?
@@ -1612,11 +1853,15 @@ curp dw ?
 istemp dw ?
 token dw ?
 ends FILE
+
+
 struc _start_exit_proc ; (sizeof=0x6)
 calltype db ?
 priority db ?
 address dd ?
 ends _start_exit_proc
+
+
 struc SAMB ; (sizeof=0x10)
 safety_malloc_bsize dw ?
 safety_malloc_prevreal dw ?
@@ -1627,6 +1872,8 @@ used dw ?
 unused_0C dw ?
 mark dw ?
 ends SAMB
+
+
 struc MALLOC_header ; (sizeof=0xC, standard type)
 bsize dw ?
 prev_real dw ?
@@ -1635,6 +1882,8 @@ next_free dw ?
 prev_real2 dw ?
 free_space dw ?
 ends MALLOC_header
+
+
 struc VIDEOREC ; (sizeof=0xF, standard type)
 windowx1 db ?
 windowy1 db ?
@@ -1649,18 +1898,24 @@ graphicsmode db ?
 snow db ?
 displayptr dd ?
 ends VIDEOREC
+
+
 struc SEGTABLE_entry ; (sizeof=0x8)
 SEG_PTR dw ?
 STUB_SIZE dw ?
 SEG_TYPE dw ?
 CODE_START dw ?
 ends SEGTABLE_entry
+
+
 struc DP_sndstruc ; (sizeof=0xC, standard type)
 sndptr dd ?
 sndlen dw ?
 sndstat dd ?
 sndfreq dw ?
 ends DP_sndstruc
+
+
 struc DP_sbuffer ; (sizeof=0xC, standard type)
 pack_type dw ?
 sample_rate dw ?
@@ -1668,6 +1923,8 @@ data dd ?
 len_l dw ?
 len_h dw ?
 ends DP_sbuffer
+
+
 struc s_Field ; (sizeof=0x26)
 x1 dw ?
 y1 dw ?
@@ -1689,20 +1946,28 @@ Param5__pict_seg__max_characters__orientation dw ?
 Param6 dw ?
 hotkey dw ?
 ends s_Field
+
+
 struc s_LANDMASSES ; (sizeof=0xB4)
 wx_array db 60 dup(?)
 wy_array db 60 dup(?)
 type_array db 60 dup(?)
 ends s_LANDMASSES
+
+
 struc DP_AIL_Converts ; (sizeof=0x4)
 AIL_Function dw ?
 DIGPAK_Function dw ?
 ends DP_AIL_Converts
+
+
 struc s_EMM_RECORD ; (sizeof=0xC)
 name db 9 dup(?)
 reserved db ?
 handle dw ?
 ends s_EMM_RECORD
+
+
 struc s_HELP_LIST ; (sizeof=0x1F4)
 help_00 s_HELP_ENTRY ?
 help_01 s_HELP_ENTRY ?
@@ -1755,6 +2020,8 @@ help_47 s_HELP_ENTRY ?
 help_48 s_HELP_ENTRY ?
 help_49 s_HELP_ENTRY ?
 ends s_HELP_LIST
+
+
 struc s_HELP_ENTRY ; (sizeof=0xA)
 help_idx dw ?
 x1 dw ?
@@ -1762,6 +2029,8 @@ y1 dw ?
 x2 dw ?
 y2 dw ?
 ends s_HELP_ENTRY
+
+
 struc s_HELP_DATA ; (sizeof=0x418)
 title db 30 dup(?)
 lbx_name db 14 dup(?)
@@ -1769,6 +2038,8 @@ lbx_entry dw ?
 Include_Entry dw ?
 help_text db 1000 dup(?)
 ends s_HELP_DATA
+
+
 struc s_AI_MOVE_PATH ; (sizeof=0x76)
 src_wx dw ?
 src_wy dw ?
@@ -1781,6 +2052,8 @@ wy_array db 35 dup(?)
 cost_array db 35 dup(?)
 Unused_75h db ?
 ends s_AI_MOVE_PATH
+
+
 struc s_FLIC_HDR ; (sizeof=0x10)
 width dw ?
 height dw ?
@@ -1792,6 +2065,8 @@ EMM_Logical_Page_Number db ?
 EMM_Logical_Page_Offset dw ?
 palette_header_offset dw ?
 ends s_FLIC_HDR
+
+
 struc s_TEST ; (sizeof=0x10)
 field_0 dw ?
 field_2 s_TEST_UNION ?
@@ -1802,10 +2077,14 @@ field_A dw ?
 field_C dw ?
 field_E dw ?
 ends s_TEST
+
+
 union s_TEST_UNION ; (sizeof=0x2)
 u_Test_1 dw ?
 u_Test_2 dw ?
 ends s_TEST_UNION
+
+
 struc s_SPELL_DATA_TABLE ; (sizeof=0x1E3C)
 sdt_000 s_SPELL_DATA ?
 field_24 s_SPELL_DATA ?
@@ -5488,6 +5767,8 @@ sdt_212 s_SPELL_DATA ?
 sdt_213 s_SPELL_DATA ?
 sdt_214 s_SPELL_DATA ?
 ends s_SPELL_DATA_TABLE
+
+
 struc s_SPELL_DECODE ; (sizeof=0xC)
 field_0 dw ?
 field_2 dw ?
@@ -5496,6 +5777,8 @@ field_6 dw ?
 field_8 dw ?
 field_A dw ?
 ends s_SPELL_DECODE
+
+
 ; enum I_TypeBits (bitfield)
 b_Sword  = 1
 b_Mace  = 2
@@ -5507,10 +5790,14 @@ b_Misc_Item  = 40h
 b_Shield  = 80h
 b_Chainmail  = 100h
 b_Platemail  = 200h
+
+
 ; enum enum_COMBAT_ENVIRONMENT_TYPE
 cnv_Enemy_Stack  = 0
 cnv_Enemy_City  = 1
 cnv_Lair  = 5
+
+
 ; enum enum_OSC_TARGET_TYPE
 stt_Friendly_Unit  = 0
 stt_Friendly_Group  = 1
@@ -5520,6 +5807,8 @@ stt_Map_Square  = 4
 stt_Friendly_City  = 5
 stt_Enemy_City  = 6
 stt_Magic_Node  = 7
+
+
 ; enum enum_BATTLE_UNIT_STATUS
 bus_Active  = 0
 bus_Recalled  = 1
@@ -5528,6 +5817,8 @@ bus_Uninvolved  = 3
 bus_Dead  = 4
 bus_Drained  = 5
 bus_Gone  = 6
+
+
 ; enum enum_UNIT_STATUS
 us_Ready  = 0
 us_Patrol  = 1
@@ -5548,6 +5839,8 @@ us_Unknown_15  = 15
 us_Move  = 16
 us_Unknown_100  = 100
 us_PurifyDone  = 111
+
+
 ; enum enum_COMBAT_SPELL_TARGET_TYPE
 cstt_Tile_NoUnit  = 1
 cstt_Tile  = 2
@@ -5560,6 +5853,8 @@ cstt_FriendlyUnit  = 20
 cstt_FriendlyNU  = 21
 cstt_FriendlyHero  = 23
 cstt_DispelMagic  = 30
+
+
 ; enum BU_Action
 bua_Ready  = 0
 bua_Finished  = 4
@@ -5577,6 +5872,8 @@ bua_SummonDemon  = 109
 bua_WebSpell  = 110
 bua_Flee  = 150
 BUA_No_Spells  = 333
+
+
 ; enum Cursor_Types
 crsr_None  = 0
 crsr_Finger  = 1
@@ -5592,6 +5889,8 @@ crsr_CastAnim2  = 10
 crsr_CastAnim3  = 11
 crsr_CastAnim4  = 12
 crsr_CastAnim5  = 13
+
+
 ; enum enum_BATTLE_UNIT_EFFECT (bitfield)
 bue_Vertigo  = 1
 bue_Confusion  = 2
@@ -5609,6 +5908,8 @@ bue_Web  = 1000h
 bue_Creature_Binding  = 2000h
 bue_Possession  = 4000h
 bue_NoEffect  = 8000h
+
+
 ; enum IPOW_LO (bitfield)
 IP_VAMPIRIC  = 1
 IP_Guardian_Wind  = 2
@@ -5626,6 +5927,8 @@ IP_Stoning  = 1000h
 IP_Endurance  = 2000h
 IP_Haste  = 4000h
 IP_Invisibility  = 8000h
+
+
 ; enum IPOW_HI (bitfield)
 IP_Death  = 1
 IP_Flight  = 2
@@ -5643,6 +5946,8 @@ IP_Planar_Travel  = 1000h
 IP_Merging  = 2000h
 IP_Righteousness  = 4000h
 IP_Invulnerability  = 8000h
+
+
 ; enum Hero_Ability_LO (bitfield)
 HSA_LO_Leadership  = 1
 HSA_LO_Leadership2  = 2
@@ -5655,6 +5960,8 @@ HSA_LO_Armsmaster2  = 400h
 HSA_LO_Constitution  = 1000h
 HSA_LO_Constitution2  = 2000h
 HSA_LO_MIGHT  = 8000h
+
+
 ; enum enum_HERO_SPECIAL_ABILITY (bitfield)
 HSA_HI_MIGHT2  = 1
 HSA_HI_Arcane_Power  = 4
@@ -5669,11 +5976,13 @@ HSA_HI_Charmed  = 1000h
 HSA_HI_NOBLE  = 2000h
 HSA_HI_Female  = 4000h
 HSA_HI_AGILITY  = 8000h
+
+
 ; enum UE_FLAGS_L (bitfield)
 UE_Immolation  = 1
 UE_Guardian_Wind  = 2
 UE_Berserk  = 4
-UE_Cloak_of_Fear  = 8
+UE_CLOAK_OF_FEAR  = 8
 UE_LO_BLACK_CHANNELS  = 10h
 UE_WRAITHFORM  = 20h
 UE_REGENERATION  = 40h
@@ -5686,6 +5995,8 @@ UE_IRONSKIN  = 1000h
 UE_Endurance  = 2000h
 UE_SPELLLOCK  = 4000h
 UE_INVISIBILITY  = 8000h
+
+
 ; enum UE_FLAGS_H (bitfield)
 UE_WINDWALKING  = 1
 UE_FLIGHT  = 2
@@ -5703,6 +6014,8 @@ UE_Planar_Travel  = 1000h
 UE_Holy_Armor  = 2000h
 UE_RIGHTEOUSNESS  = 4000h
 UE_INVULNERABILITY  = 8000h
+
+
 ; enum enum_UNIT_MUTATION (bitfield)
 WQ_MASK        = 3
 Wp_Magic  = 1
@@ -5714,6 +6027,8 @@ CC_BREATH  = 10h
 UM_UNDEAD  = 20h
 C_STASISINIT  = 40h
 C_STASISLINGER  = 80h
+
+
 ; enum e_ATK_FLAGS (bitfield)
 Att_ArmorPrc  = 1
 Att_1stStrike  = 2
@@ -5731,6 +6046,8 @@ Att_AREAFLAG  = 1000h
 Att_DMGLIMIT  = 2000h
 Att_EldrWeap  = 4000h
 Att_WarpLghtn  = 8000h
+
+
 ; enum e_UNIT_TYPE_ABILITIES (bitfield)
 UA_FANTASTIC  = 1
 USA_LARGE_SHIELD  = 2
@@ -5748,15 +6065,19 @@ UA_WINDWALKING  = 1000h
 UA_REGENERATION  = 2000h
 UA_PURIFY  = 4000h
 UA_NEGATEFIRSTSTRIKE  = 8000h
+
+
 ; enum ATTRIB_2 (bitfield)
 USA_HEALING  = 1
 USA_FIREBALL  = 2
 USA_DOOMBOLT  = 4
 Ab_Immolation  = 8
 USA_WEB  = 10h
-Ab_CauseFear  = 20h
+USA_CAUSEFEAR  = 20h
 Ab_ResistAll  = 40h
 Ab_HolyBonus  = 80h
+
+
 ; enum ATTRIB_1 (bitfield)
 USA_IMMUNITY_FIRE  = 1
 USA_IMMUNITY_STONING  = 2
@@ -5774,6 +6095,8 @@ USA_SUMMON_DEMON_2  = 1000h
 USA_CASTER_20  = 2000h
 USA_CASTER_40  = 4000h
 attr_RaceSpecificUnit  = 8000h
+
+
 ; enum AI_STK_Capabilities
 AICAP_None  = 0
 AICAP_Transport  = 1
@@ -5784,6 +6107,8 @@ AICAP_WindWalk  = 10h
 AICAP_Hero  = 20h
 AICAP_Melding  = 40h
 AICAP_Settler  = 80h
+
+
 ; enum e_EVENT_TYPE
 et_None  = 0
 et_Meteor  = 1
@@ -5804,6 +6129,8 @@ et_Conjunction_Chaos  = 15
 et_Conjunction_Nature  = 16
 et_Conjunction_Sorcery  = 17
 et_Mana_Short  = 18
+
+
 ; enum e_RETORTS
 _Alchemy  = 0
 rtt_Warlord  = 1
@@ -5823,6 +6150,8 @@ _Runemaster  = 14
 _Conjurer  = 15
 _Charismatic  = 16
 _Artificer  = 17
+
+
 ; enum e_AI_SPELL_GROUP
 SGRP_Scouting  = 0
 SGRP_Dispel  = 1
@@ -5899,6 +6228,8 @@ SGRP_SummonHero  = 87
 SGRP_SummonChamp  = 88
 SGRP_SummonCircle  = 89
 SGRP_SoM  = 90
+
+
 ; enum enum_OVERLAND_SPELL_CASTING_CATEGORY
 scc_Summoning  = 0
 scc_Unit_Enchantment  = 1
@@ -5922,20 +6253,30 @@ scc_Disjunction_Spell  = 20
 scc_Counter_Spell  = 21
 scc_Direct_Damage_Variable  = 22
 scc_Banish_Spell  = 23
+
+
 ; enum enum_NODE_FLAGS (bitfield)
 NF_WARPED  = 1
 NF_GUARDIAN  = 2
+
+
 ; enum enum_OVERLAND_ENCHANTMENT
 oe_TimeStop  = 6
 oe_NatureAwareness  = 7
+
+
 ; enum enum_COMBAT_NODE_TYPE
 cnt_Sorcery  = 0
 cnt_Chaos  = 1
 cnt_Nature  = 2
+
+
 ; enum e_NODE_TYPE
 nt_Sorcery  = 0
 nt_Nature  = 1
 nt_Chaos  = 2
+
+
 ; enum MOVEFLAGS
 MV_WALKING  = 0
 MV_CAVALRY  = 1
@@ -5946,14 +6287,20 @@ MV_TELEPORT  = 10h
 MV_FORESTER  = 20h
 MV_MOUNTAINEER  = 40h
 MV_MERGING  = 80h
+
+
 ; enum enum_UV_MOVES
 mt_Walking  = 0
+
+
 ; enum AI_Objective
 OBJ_Pragmatist  = 0
 OBJ_Militarist  = 1
 OBJ_Theurgist  = 2
 OBJ_Perfectionist  = 3
 OBJ_Expansionist  = 4
+
+
 ; enum AI_Personality
 PRS_Maniacal  = 0
 PRS_Ruthless  = 1
@@ -5961,12 +6308,16 @@ PRS_Aggressive  = 2
 PRS_Chaotic  = 3
 PRS_Lawful  = 4
 PRS_Peaceful  = 5
+
+
 ; enum e_GAME_OPTION_DIFFICULTY
 god_Intro  = 0
 god_Easy  = 1
 god_Normal  = 2
 god_Hard  = 3
 god_Impossible  = 4
+
+
 ; enum enum_Screen_Controls
 scr_City_Screen  = 0
 scr_Load_Screen  = 1
@@ -5985,11 +6336,15 @@ scr_NIU_13  = 0Dh
 scr_Advisors_Screen  = 0Eh
 scr_Diplomacy_Screen  = 0Fh
 scr_Next_Turn_Clicked  = 0FFFFh
+
+
 ; enum enum_SPELL_LIBRARY_STATUS
 sls_Unknown  = 0
 sls_Knowable  = 1
 sls_Known  = 2
 sls_Researchable  = 3
+
+
 ; enum enum_SPELLS
 spl_NONE  = 0
 spl_Earth_To_Mud  = 1
@@ -6206,6 +6561,8 @@ spl_Create_Artifact  = 211
 spl_Summon_Champion  = 212
 spl_Spell_Of_Mastery  = 213
 spl_Spell_Of_Return  = 214
+
+
 ; enum e_COMBAT_TERRAIN_TYPE
 cts_Water  = 0
 cts_Plains  = 1
@@ -6214,6 +6571,8 @@ cts_Desert  = 3
 cts_Mountains  = 4
 cts_Tundra  = 5
 cts_Forest  = 6
+
+
 ; enum Combat_TileGroup
 CTG_Grass  = 0
 CTG_Rough  = 1
@@ -6221,6 +6580,8 @@ CTG_Dirt  = 2
 CTG_River  = 3
 CTG_DeepWater  = 4
 CTG_IDK  = 5
+
+
 ; enum e_COMBAT_LOCATION_TYPE
 CLT_OpenField  = 0
 CLT_Outpost  = 1
@@ -6237,6 +6598,8 @@ CLT_Keep  = 11
 CLT_MonsterLair  = 12
 CLT_Ruins  = 13
 CLT_FallenTemple  = 14
+
+
 ; enum Central_Structures
 CS_None  = 0
 CS_Outpost  = 1
@@ -6251,6 +6614,8 @@ CS_SorceryNode  = 9
 CS_ChaosNode  = 10
 CS_NatureNode  = 11
 CS_Ruins  = 12
+
+
 ; enum HELP_TXT
 HLP_PAGE_BACK  = 214
 HLP_PAGE_FORWARD  = 215
@@ -6845,6 +7210,8 @@ HLP_YEAR  = 803
 HLP_SPELL_OF_MASTERY_HoF  = 804
 HLP_FINAL_SCORE  = 805
 HLP_RAZE_CITY  = 806
+
+
 ; enum Banner_Color
 BNR_Blue  = 0
 BNR_Green  = 1
@@ -6852,6 +7219,8 @@ BNR_Purple  = 2
 BNR_Red  = 3
 BNR_Yellow  = 4
 BNR_Brown  = 5
+
+
 ; enum e_RACE_TYPE
 rt_Barbarian  = 0
 rt_Beastman  = 1
@@ -6874,6 +7243,8 @@ rt_Sorcery  = 11h
 rt_Chaos  = 12h
 rt_Life  = 13h
 rt_Death  = 14h
+
+
 ; enum enum_SPELL_BOOK_REALM
 sbr_Nature  = 0
 sbr_Sorcery  = 1
@@ -6883,9 +7254,13 @@ sbr_Death  = 4
 sbr_Arcane  = 5
 sbr_NONE  = 0FFFFh
 sbr_UNDEFINED  = 0FFFFFFFFh
+
+
 ; enum enum_SPELLBOOK_MAGIC_REALM_DW
 sbr_Life_DW  = 6
 sbr_Death_DW  = 8
+
+
 ; enum enum_RANGED_ATTACK_TYPE (width 2 bytes)
 rat_NONE  = 0
 rat_Rock  = 10
@@ -6909,15 +7284,21 @@ srat_StoneGaze  = 103
 srat_MultiGaze  = 104
 srat_DeathGaze  = 105
 rat_None  = 255
+
+
 ; enum e_COMBAT_ATTACK_MODE
 am_Melee  = 0
 am_ThrownOrBreath  = 1
 am_Ranged  = 2
+
+
 ; enum enum_RANGED_ATTACK_GROUP
 rag_Boulder  = 1
 rag_Missile  = 2
 rag_Magic  = 3
 rag_Short  = 10
+
+
 ; enum enum_LANDMASS_TYPE
 lmt_Invalid  = 0
 lmt_Own  = 1
@@ -6926,6 +7307,8 @@ lmt_NoOwnCity  = 3
 lmt_NoOwnCityAndAllyHasCity  = 4
 lmt_Leaveable  = 5
 lmt_NoTargets  = 6
+
+
 ; enum enum_BLDG_TYPE (width 2 bytes)
 bt_NONE  = 0
 bt_TradeGoods  = 1
@@ -6977,6 +7360,8 @@ bt_BREQ_Water  = 110
 BREQ_Hill  = 200
 bt_GRANDVIZIER  = 65532
 bt_INVALID  = 65535
+
+
 ; enum Rough_Terrain_Type
 RTT_Invalid  = 0
 RTT_Ocean  = 1
@@ -6985,12 +7370,16 @@ RTT_Desert  = 3
 RTT_Hill  = 4
 RTT_Mountain  = 5
 RTT_Tundra  = 6
+
+
 ; enum enum_MAP_SQUARE_FLAGS (bitfield)
 MSF_ROAD  = 8
 MSF_EROAD  = 10h
 MSF_CORRUPTION  = 20h
 MSF_UNKNOWN_40H  = 40h
 TF_NoRoad80  = 80h
+
+
 ; enum e_LAIR_TYPE
 EZ_Tower  = 0
 EZ_Chaos_Node  = 1
@@ -7003,6 +7392,8 @@ EZ_Keep  = 7
 EZ_Monster_Lair  = 8
 lt_Ruins  = 9
 EZ_Fallen_Temple  = 10
+
+
 ; enum enum_Terrain_Specials
 TS_NONE  = 0
 TS_IRON  = 1
@@ -7018,11 +7409,15 @@ TS_HuntersLodge  = 10h
 TS_Unknown_20  = 20h
 TS_WILDGAME  = 40h
 ts_Nightshade  = 80h
+
+
 ; enum enum_WEAPON_QUALITY
 wq_Normal  = 0
 wq_Magic  = 1
 wq_Mithril  = 2
 wq_Adamantium  = 3
+
+
 ; enum MUSIC_Tracks
 MUSIC_Good_Arcane  = 0
 MUSIC_Good_Chaos  = 1
@@ -7140,6 +7535,8 @@ MUSIC_Intro  = 112
 MUSIC_Fanf_not_used  = 113
 MUSIC_Bad_Event  = 114
 MUSIC_Fanfare  = 115
+
+
 ; enum SOUND_FX
 SFX_Std_Btn_Clk  = 0
 SFX_IntroT2  = 1
@@ -7260,6 +7657,8 @@ SFX_IntroT1  = 115
 SFX_Unknown116  = 116
 SFX_Unknown117  = 117
 SFX_Unknown118  = 118
+
+
 ; enum enum_ITEM_TYPE
 it_Sword  = 0
 it_Mace  = 1
@@ -7271,6 +7670,8 @@ it_Misc  = 6
 it_Shield  = 7
 it_Chainmail  = 8
 it_Platemail  = 9
+
+
 ; enum enum_UNIT_TYPE
 _Dwarf  = 0
 _Barbarian  = 1
@@ -7471,12 +7872,16 @@ U_Djinn  = 195
 U_Sky_Drake  = 196
 U_Nagas  = 197
 UNIT_TYPES_Max  = 198
+
+
 ; enum DIPL_Status
 DIPL_NoTreaty  = 0
 DIPL_WizardPact  = 1
 DIPL_Alliance  = 2
 DIPL_War  = 3
 DIPL_Crusade  = 4
+
+
 ; enum Projectiles
 Prj_Lightning  = 0
 Prj_Arrow  = 1
@@ -7493,6 +7898,8 @@ Prj_Shimmer  = 0Bh
 Prj_Web  = 0Ch
 Prj_Green  = 0Dh
 Prj_Cloud  = 0Eh
+
+
 ; enum City_Sizes
 CTY_Outpost  = 0
 CTY_Hamlet  = 1
@@ -7500,6 +7907,8 @@ CTY_Village  = 2
 CTY_Town  = 3
 CTY_City  = 4
 CTY_Capital  = 5
+
+
 ; enum Proj_Dirs
 Proj_Up  = 0
 Proj_UpRight  = 1
@@ -7509,6 +7918,8 @@ Proj_Down  = 4
 Proj_DnLeft  = 5
 Proj_Left  = 6
 Proj_UpLeft  = 7
+
+
 ; enum File_Signatures
 SA_MEMSIG1  = 12FAh
 SA_MEMSIG2  = 4ECFh
@@ -7517,6 +7928,8 @@ e_FLIC_Decoded  = 0DE0Ah
 VOC_FormSig  = 0DEADh
 SND_FileSig  = 0DEAFh
 LBX_MAGSIG  = 0FEADh
+
+
 ; enum e_AUDIO_ERROR
 SND_bad_driver  = 0
 SND_driver_error  = 1
@@ -7535,10 +7948,14 @@ SND_Couldnt_Load_File  = 13
 SND_Invalid_File  = 14
 SND_Not_Sound_File  = 15
 SND_Couldnt_Load_SND_File  = 16
+
+
 ; enum segment_types (bitfield)
 SEG_CODE  = 1
 SEG_OVERLAY  = 2
 SEG_VIRTUAL  = 4
+
+
 ; enum CTypes (bitfield)
 _IS_SP  = 1
 _IS_DIG  = 2
@@ -7547,6 +7964,8 @@ _IS_LOW  = 8
 _IS_HEX  = 10h
 _IS_CTL  = 20h
 _IS_PUN  = 40h
+
+
 ; enum MSC_File_Attribs (bitfield)
 _A_RDONLY  = 1
 _A_HIDDEN  = 2
@@ -7554,11 +7973,15 @@ _A_SYSTEM  = 4
 _A_VOLID  = 8
 _A_SUBDIR  = 10h
 _A_ARCH  = 20h
+
+
 ; enum Alloc_Error_Types
 Alloc_too_small  = 1
 Alloc_Next_too_small  = 2
 Alloc_Space_corrupted  = 3
 sa_Alloc_EMM_too_small  = 4
+
+
 ; enum EKEYCODES
 EKey_Num7_Home  = 47h
 EKey_Num8_Up  = 48h
@@ -7638,6 +8061,8 @@ EKey_Ctrl_Up  = 8DE0h
 EKey_Ctrl_Num2  = 9100h
 EKey_Ctrl_Down  = 91E0h
 EKey_NumEnter  = 0E00Dh
+
+
 ; enum characterClass
 _si  = 0
 _af  = 1
@@ -7663,6 +8088,8 @@ _dc  = 14h
 _pc  = 15h
 _ne  = 16h
 _fa  = 17h
+
+
 ; enum VIDEO_INT_functions
 V_SET_MODE  = 0
 V_SET_CURSOR_POS  = 2
@@ -7674,10 +8101,14 @@ V_WR_CHAR_ATTR  = 9
 V_WR_CHAR  = 0Ah
 V_WR_TTY  = 0Eh
 V_GET_MODE  = 0Fh
+
+
 ; enum AIL_SEQ_STATUS
 SEQ_STOPPED  = 0
 SEQ_PLAYING  = 1
 SEQ_DONE  = 2
+
+
 ; enum e_Sound_Hardware
 No_Sound_HW  = 0
 PC_Speaker  = 1
@@ -7691,6 +8122,8 @@ AdLib_Gold  = 34
 Roland_MT32  = 48
 Roland_LAPC  = 49
 General_MIDI  = 56
+
+
 ; enum syntaxStages
 flagStage  = 0
 fillzStage  = 1
@@ -7699,6 +8132,8 @@ dotStage  = 3
 precStage  = 4
 ellStage  = 5
 typeStage  = 6
+
+
 ; enum e_SND_DRV
 SND_NONE  = 0
 SND_Speaker  = 1
@@ -7711,17 +8146,23 @@ SND_PAS16  = 7
 SND_ALG  = 8
 SND_Roland  = 9
 SND_GMIDI  = 10
+
+
 ; enum fnsplit_fields (bitfield)
 SP_WILDCARDS  = 1
 SP_EXTENSION  = 2
 SP_FILENAME  = 4
 SP_DIRECTORY  = 8
 SP_DRIVE  = 10h
+
+
 ; enum SCOUT_BITS (bitfield)
 SCT_BottomLeft  = 1
 SCT_TopLeft  = 2
 SCT_TopRight  = 4
 SCT_BottomRight  = 8
+
+
 ; enum Key_Press
 KP_NumMult  = 0
 KP_Left  = 1
@@ -7792,6 +8233,8 @@ KP_Alt_w  = 0B6h
 KP_Alt_x  = 0B7h
 KP_Alt_y  = 0B8h
 KP_Alt_z  = 0B9h
+
+
 ; enum flagBits (bitfield)
 altFormatBit  = 1
 leftJustBit  = 2
@@ -7802,6 +8245,8 @@ farPtrBit  = 20h
 alt0xBit  = 40h
 floatBit  = 80h
 LongDoubleBit  = 100h
+
+
 ; enum AIL_driver_functions
 MODULATION  = 1
 PART_VOLUME  = 7
@@ -7895,6 +8340,8 @@ AIL_LOCK_CHAN  = 0BFh
 AIL_MAP_SEQ_CHAN  = 0C0h
 AIL_RELEASE_CHAN  = 0C1h
 AIL_TRUE_SEQ_CHAN  = 0C2h
+
+
 ; enum text_modes
 BW40  = 0
 C40  = 1
@@ -7903,6 +8350,8 @@ C80  = 3
 MONO  = 7
 C4350  = 40h
 LASTMODE  = 0FFFFFFFFh
+
+
 ; enum MoveType_Icons
 M_Sail_Icon  = 0
 M_Swim_Icon  = 1
@@ -7913,6 +8362,8 @@ M_Pathf_Icon  = 5
 M_PShift_Icon  = 6
 M_WWalk_Icon  = 7
 M_Grnd_Icon  = 8
+
+
 ; enum DOS_Error_Codes
 e_badFunction  = 1
 e_fileNotFound  = 2
@@ -7980,6 +8431,8 @@ e_dupRedirection  = 55h
 e_password  = 56h
 e_parameter  = 57h
 e_netDevice  = 58h
+
+
 ; enum OVR_MULTISEG_OFF
 __OVRTRAP__@  = 110h
 __OvrMemorySwap@  = 112h
@@ -7999,12 +8452,16 @@ __ExtRec@  = 130h
 __EmsRec@  = 140h
 __SEGTABLE__@  = 1A0h
 __SEGTABEND__@  = 720h
+
+
 ; enum DP_attributes (bitfield)
 BKGND_PLAY  = 1
 MODIFIES_DATA  = 2
 DOWNSAMPLES  = 4
 USES_TICK  = 8
 SHARES_TIMER  = 10h
+
+
 ; enum Open_Modes (bitfield)
 O_RDONLY  = 1
 O_WRONLY  = 2
@@ -8023,11 +8480,15 @@ O_CHANGED  = 1000h
 O_DEVICE  = 2000h
 O_TEXT  = 4000h
 O_BINARY  = 8000h
+
+
 ; enum AIL_DAC_STATUS
 DAC_STOPPED  = 0
 DAC_PAUSED  = 1
 DAC_PLAYING  = 2
 DAC_DONE  = 3
+
+
 ; enum enum_LBX_ERROR
 le_not_found  = 1
 le_corrupted  = 2
@@ -8044,6 +8505,8 @@ le_cantload_reserved  = 13
 le_low_ResEM  = 14
 le_emm_swap_fail  = 15
 le_anim_over_64k  = 16
+
+
 ; enum Field_Types
 ft_Button  = 0
 ft_RadioButton  = 1
@@ -8058,6 +8521,8 @@ ft_ClickLink  = 9
 ft_StringList  = 10
 ft_ContinuousStringInput  = 11
 ft_Grid  = 12
+
+
 ; enum File_Status_Flags (bitfield)
 _F_READ  = 1
 _F_WRIT  = 2
@@ -8069,6 +8534,8 @@ _F_BIN  = 40h
 _F_IN  = 80h
 _F_OUT  = 100h
 _F_TERM  = 200h
+
+
 ; enum SystemV_Error_Codes
 EZERO  = 0
 EINVFNC  = 1
@@ -8120,6 +8587,8 @@ EBUSY  = 2Ch
 ENOTDIR  = 2Dh
 EISDIR  = 2Eh
 EUCLEAN  = 2Fh
+
+
 ; enum OVL_Tiles_Extended
 tte_Ocean  = 0
 _Land  = 1
@@ -8884,12 +9353,16 @@ _Tundra00101111  = 2F7h
 _Tundra10100111  = 2F8h
 _Tundra10101111  = 2F9h
 _TerType_Count  = 2FAh
+
+
 ; enum Outline_Style
 e_Font_Shadow_Down  = 1
 e_Font_Shadow_Up  = 2
 e_Font_Shadow_Heavy  = 3
 Outline_Full  = 4
 e_Font_Shadow_Outline_Heavy  = 5
+
+
 ; enum TER_TYPES
 tt_Ocean  = 0
 tt_BugGrass  = 1
@@ -8920,7 +9393,7 @@ tt_Tundra3  = 182
 tt_Forest2  = 183
 tt_Forest3  = 184
 TT_RiverM_1st  = 185
-TT_RiverM_end  = 196
+tt_RiverM_end  = 196
 TT_Lake1  = 197
 TT_Lake2  = 198
 TT_Lake3  = 199
@@ -8941,13 +9414,15 @@ TT_4WRiver1  = 468
 TT_4WRiver2  = 469
 TT_4WRiver3  = 470
 TT_4WRiver4  = 471
-TT_4WRiver5  = 472
+tt_4WRiver5  = 472
 TT_Shore3_1st  = 473
 TT_Shore3_end  = 600
 tt_OceanAnim  = 601
 tt_Tundra_1st  = 602
 TT_Tundra_Last  = 761
 NUM_TERRAIN_TYPES  = 762
+
+
 ; enum CTILE_GFX
 CTILE_Base1  = 0
 CTILE_Base2  = 1
@@ -9017,6 +9492,8 @@ CTILE_UpLeftRiver2  = 64
 CTILE_UpRightRiver2  = 65
 CTILE_DownRightRiver2  = 66
 CTILE_DownLeftRiver2  = 67
+
+
 ; enum enum_ITEM_SLOT_TYPES
 ist_Sword_Slot  = 1
 ist_Bow_Slot  = 2
@@ -9024,6 +9501,8 @@ ist_SwordStaff_Slot  = 3
 ist_Staff_Slot  = 4
 ist_Armor_Slot  = 5
 ist_Misc_Slot  = 6
+
+
 ; enum enum_ITEM_POWER_TYPES
 IP_Attack  = 0
 IP_ToHit  = 1
@@ -9035,11 +9514,15 @@ IP_Resist  = 6
 IP_ElementDEF  = 7
 IP_MagicDEF  = 8
 ipt_Special  = 9
+
+
 ; enum e_BUILDING_STATUS
 bs_Replaced  = 0
 bs_Built  = 1
 bs_Removed  = 2
 bs_NotBuilt  = 255
+
+
 ; enum Item_Icon
 Sword_1  = 0
 Sword_2  = 1
@@ -9156,6 +9639,8 @@ Wand_5  = 111
 Wand_6  = 112
 Wand_7  = 113
 Wand_8  = 114
+
+
 ; enum enum_ST_DEF
 e_ST_FALSE  = 0
 e_ST_NULL  = 0
@@ -9169,6 +9654,8 @@ e_NEAR_BUFFER_UNRESERVED  = 1030h
 e_NEAR_BUFFER_SIZE  = 1130h
 e_ST_UNDEFINED  = 0FFFFh
 e_ST_SUCCESS  = 0FFFFh
+
+
 ; enum enum_MoX_DEF
 e_MAP_START_X  = 0
 e_HUMAN_PLAYER_IDX  = 0
@@ -9247,6 +9734,8 @@ e_WORLD_SIZE  = 2400
 e_WORLD_SIZE_DB  = 4800
 e_INVALID_FIELD  = 64536
 e_TODO_what_was_this  = 64537
+
+
 ; enum enum_MoM_DEF
 e_ARCANUS_PLANE  = 0
 e_MYRROR_PLANE  = 1
@@ -9259,11 +9748,15 @@ e_MAX_UNIT_COUNT  = 3E8h
 e_AI_TARGET_FORTRESS  = 3FFFh
 e_AI_TARGET_NONHOSTILE  = 4000h
 e_AI_TARGET_SITE  = 8000h
+
+
 ; enum enum_VGA
 e_SC_MAPMASK  = 2
 e_SC_MEMORY_MODE  = 4
 e_SC_INDEX  = 3C4h
 e_SC_DATA  = 3C5h
+
+
 ; enum enum_COLORS
 e_ST_TRANSPARENT  = 0
 e_ST_BLACK  = 1
@@ -9273,12 +9766,16 @@ e_Damage_Green_Bar  = 10h
 e_ST_BROWN  = 10h
 e_Damage_Yellow_Bar  = 11h
 e_Damage_Red_Bar  = 12h
+
+
 ; enum enum_SizeOf
 e_SZ_FLIC_HDR  = 10h
 e_SZ_PARAGRAPH_B  = 10h
 e_sizeof_FIELD  = 26h
 e_SZ_32K_PR  = 800h
 e_SZ_32K_B  = 8000h
+
+
 ; enum enum_Magic_Realm
 mr_Chaos  = 0
 mr_Death  = 1
@@ -9287,11 +9784,15 @@ mr_Nature  = 3
 mr_Sorcery  = 4
 mr_NoMagicRealm  = 65535
 mr_NONE  = -1
+
+
 ; enum enum_Screen_Layout
 slo_ReducedMap_Y  = 15h
 slo_ReducedMap_H  = 1Eh
 slo_ReducedMap_W  = 3Ah
 slo_ReducedMap_X  = 0FBh
+
+
 ; enum enum_COMBAT_STRUCTURE
 cs_NONE  = 0
 cs_City  = 1
@@ -9300,6 +9801,8 @@ cs_NatureNode  = 3
 cs_ChaosNode  = 4
 cs_UNKOWN  = 5
 cs_OceanTerrainType  = 6
+
+
 ; enum enum_DIPLOMATIC_ORDERS
 do_None  = 0
 dipact_Overextension  = 14
@@ -9313,13 +9816,20 @@ do_IDK_exchange  = 48
 do_IDK_peace  = 49
 do_IDK_gift_spell  = 54
 do_IDK_exchange_spell_goodbye  = 71
+
+
 ; enum enum_Unit_View_Type
 uvt_Prod  = 0
 uvt_Stat  = 1
 uvt_Cmbt  = 2
+
+
 ; enum enum_SPELL_LIST_TYPE
 slt_Overland  = 0
 slt_Combat  = 1
 slt_Library  = 2
+
+
 ; enum enum_COMBAT_ENTITY_TYPE
 cet_Battle_Unit_Figure  = 1
+

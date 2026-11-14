@@ -11,9 +11,9 @@ between drake178's IDBs, the current IDBs, ReMoM, and BinAlgo's mom131-source-ma
 | # | Milestone | State |
 |---|---|---|
 | 1 | Usable name snapshot from drake178's original IDBs | Data exists (Nov 2), made outside Piethawn; needs to be reproducible in-pipeline |
-| 2 | Usable name snapshot from the current IDBs (`C:\STU_DASM\IDA55_MOM131\`) | Partial: function names are in `in/*.idb.ida55-functions.txt`; no data-item names, no `proc` key column, IDB is opened in place |
+| 2 | Usable name snapshot from the current IDBs (`C:\STU_DASM\IDA55_MOM131\`) | Partial: function names are in `in/*.idb.ida55-functions.json`; no data-item names, no `proc` key column, IDB is opened in place |
 | 3 | ReMoM name extraction | Tooling *exists* in ReMoM-Mod `tools/mom_patch_diff/`; known regex gaps |
-| 4 | mom131-source-map name extraction | No tooling; sources are TLINK `.MAP` publics + C sources |
+| 4 | mom131-source-map name extraction | Done (2026-11-12): `mom131_name_sync/mom131_functions.py` → `in/name-snapshots/mom131/mom131_functions.tsv`, from the source; map to ReMoM `in/name-snapshots/mom131-remom.name-map.tsv`; see NAME_SYNC_PROCESS.md Part C |
 | 5 | MoO2 debug-symbol names (`ORION2.EXE`) | No tooling; source is `C:\STU\devel\ReMoM\doc\@MoO2\MasterOfOrion2-DebugSymbols.md` |
 
 ## Process order
@@ -66,7 +66,7 @@ flowchart LR
         DSNAP["drake178/{MGC,WZD}.ida55-names.tsv<br/>+ manifest.json"]
         CSNAP["current/{MGC,WZD}.ida55-names.tsv<br/>+ manifest.json"]
         RIDX["remom/remom_index.tsv"]
-        BIDX["mom131/{MGC,WZD}.names.tsv<br/>(project format)"]
+        BIDX["mom131/mom131_functions.tsv<br/>(project format)"]
         OIDX["moo2/ORION2.symbols.tsv<br/>module, kind, name, address"]
     end
 
@@ -92,7 +92,7 @@ flowchart LR
     CIDB --> ASMX --> SYNC
 
     REMOM -->|remom_index.py| RIDX
-    BMAP -->|new: mom131_map_names.py| BIDX
+    BMAP -->|mom131_name_sync/mom131_functions.py| BIDX
     MOO2 -->|new: moo2_symbols.py| OIDX
     OIDX --> VOCAB
     CSNAP --> VOCAB
@@ -147,7 +147,7 @@ Known gaps:
 
 Nothing in Piethawn reads ReMoM function markers today. `dseg_map_compare.py` reads only dseg address comments.
 
-**mom131-source-map (milestone 4).** There is no export tool.
+**mom131-source-map (milestone 4).** Done: `mom131_name_sync/mom131_functions.py`, read from the source (NAME_SYNC_PROCESS.md Part C). The notes below are how it was worked out.
 
 Name sources:
 - `work\W\WIZARDS.MAP` and `work\L\MAGIC.MAP`: TLINK publics, `ssss:oooo _Name`. These are git-ignored local build output.
@@ -214,4 +214,4 @@ Validation for milestone 1: re-export drake178 with the in-repo IDC and diff it 
 ## Later (milestones 3 + 4), not in this diff
 
 - **ReMoM.** Keep `remom_index.py` in ReMoM-Mod as the single extractor rather than re-implementing it here. Fix the `ovr`/`seg` regex gap there. Piethawn then copies the TSV into `in/name-snapshots/remom/`.
-- **mom131-source-map.** Write a new `mom131_map_names.py` that parses the `.MAP` publics with `MODULES.TSV` and maps `ssss:oooo` to IDA `ea`. Resident segments map arithmetically; overlay stubs need a stub-to-ovr table. The output uses `address_table.py --project` format (`exe segment proc function file line`).
+- **mom131-source-map.** Done: `mom131_name_sync/mom131_functions.py` (MODULES.TSV segment + definition order; the `.MAP` checks). Output: `in/name-snapshots/mom131/mom131_functions.tsv`; joined with ReMoM in `in/name-snapshots/mom131-remom.name-map.tsv`.

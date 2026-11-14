@@ -32,7 +32,9 @@ keeps what is specific to the MAGIC/WIZARDS exports.
 
 ## Current Inferences To Validate In IDA
 
-- Both exporters launch IDA through `IDA55-Py\ida55py\idaw.py`, passing `--ida-exe C:\STU_DASM\IDA55\idaw.exe` and `--backup-dir C:\STU_DASM\IDA55_MOM131` (the `--idb-dir`). `idaw.py` makes the packed-IDB backup and checks for hard-stop database-state warnings.
+- Both exporters launch IDA through `IDA55-Py\ida55py\idaw.py` with `--ida-exe C:\STU_DASM\IDA55\idaw.exe`.
+  - `ida55_export_function_data.py` passes `--work-dir out\ida55-work\<GAME>-<stamp>`: IDA runs on a copy of the IDB, the real IDB is never opened, the raw `.txt` dump lands in the work folder, and only `in\<GAME>.idb.ida55-functions.json` is kept. The work folder is deleted on success (`--keep-work` keeps it); after a hang or kill, delete it and re-run.
+  - `ida55_clean_export.py` passes `--work-dir out\ida55-work\<GAME>-clean-<stamp>` the same way, copies `<GAME>.map/.asm/.inc/.lst` into `in\` (no `--copy` needed), and puts the `before/active/after` settings dumps in `out\ida55-clean-export-logs\`. The IDC expands hidden areas and switches export settings while it runs; on the work copy those changes are discarded instead of being saved into the real IDB.
 - `INF_ASMTYPE = 1` should produce Borland TASM Ideal mode, matching the old notes, but parser stability should be compared with `INF_ASMTYPE = 0`.
 - Suppressing comments with `SW_NOCMT` should reduce noisy ASM, but it may hide useful named comments for some reverse-engineering tasks.
 
@@ -95,23 +97,17 @@ If the probe passes but clean export fails, inspect:
 
 - `out\ida55-clean-export-logs\MAGIC.ida.log`
 - `out\ida55-clean-export-logs\MAGIC.process.log`
-- `C:\STU_DASM\IDA55_MOM131\MAGIC.ida55-clean-export-before.txt`
-- `C:\STU_DASM\IDA55_MOM131\MAGIC.ida55-clean-export-active.txt`
-- `C:\STU_DASM\IDA55_MOM131\MAGIC.ida55-clean-export-after.txt`
+- `out\ida55-clean-export-logs\MAGIC.ida55-clean-export-before.txt`, `-active.txt`, `-after.txt` (copied from the work folder when the run gets that far)
+- the work folder itself, kept after a failure: `out\ida55-work\MAGIC-clean-<stamp>\` (delete it when done)
 
 Once the probe passes, run the clean export:
 
 ```powershell
-c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game MAGIC --copy --timeout-seconds 120
-c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game WIZARDS --copy --timeout-seconds 120
+c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game MAGIC --timeout-seconds 120
+c:/python314/python.exe .\ida_dasm_export\ida55_clean_export.py --game WIZARDS --timeout-seconds 120
 ```
-c:/python314/python.exe -B .\ida_dasm_export\ida55_clean_export.py --timeout-seconds 120 --copy --post-process
 
-After both clean exports pass, copy the outputs into the repository:
-
-```powershell
-c:/python314/python.exe .\ida_dasm_export\ida55_copy_outputs.py
-```
+Each run copies `<GAME>.map/.asm/.inc/.lst` into `in\` itself. `ida55_copy_outputs.py` (copy from `C:\STU_DASM\IDA55_MOM131`) is no longer part of the flow.
 
 After copying, run the post-IDA pipeline. This clears old split `.asm` files under `out/*/*/`, preserves translated `.c` files, checks clean ASM formatting, and re-splits the fresh IDA exports:
 
@@ -143,6 +139,7 @@ What each mode requires is in "GUI vs Batch IDC Scripts" in [IDA55-Py/NOTES.md](
 | `ida_dasm_export\ida55_clean_export.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
 | `ida_proc_data_export\ida55_dump_functions.idc` | Batch | `Exit(0)` / `Exit(1)` (read-only export, no `SaveBase`) |
 | `ida_proc_name_sync\magic_sync_names_from_wzd.idc` | GUI | `SaveBase`, `Batch(0)`, no `Exit()` |
+| `ida_proc_name_sync\magic_sync_names_from_wzd.batch.idc` | Batch, writes | `SaveBase`, then `Exit(0)` / `Exit(1)` (an entry failed) / `Exit(2)` (save failed); run by `run_rename_sync.py` through `idaw.py --work-dir --write-back` |
 | `ida_proc_status_sync\mgc_proc_status_sync.idc`, `wzd_proc_status_sync.idc` | GUI | neither `SaveBase` nor `Exit()`; choose Save when closing IDA ([COLOR_SYNC_PROCESS.md](../COLOR_SYNC_PROCESS.md)) |
 
 The `ida55_dseg_dump.idc`, `ida55_ovr_func_map.idc` and `ida55_seg_attr_dump.idc` dumps are under `DEPRECATED\ida_proc_data_export\`. `ida55_dseg_dump.idc` had its `Exit()` calls removed for GUI use.

@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
-"""Orchestrate clean IDA Pro 5.5 exports for MAGIC and WIZARDS."""
+"""Orchestrate clean IDA Pro 5.5 exports for MAGIC and WIZARDS, running IDA on a work copy of each IDB.
+
+For each game:
+  1. idaw.py copies <idb-dir>\\<GAME>.idb into a new work folder (<work-root>\\<GAME>-clean-<timestamp>) and runs
+     ida55_clean_export.idc on the copy. The real IDB is never opened by IDA. (The IDC changes export settings and
+     expands hidden areas while it works; on a copy those changes are thrown away.)
+  2. The IDC writes <GAME>.map/.asm/.inc/.lst plus settings dumps next to the copy.
+  3. The four exports are copied into <out-dir> (default in\\); the settings dumps go to the log folder.
+  4. The work folder is deleted on success (--keep-work keeps it). If IDA hangs, is killed or damages the copy,
+     the real IDB is unchanged: delete the work folder and re-run.
+"""
 
 from __future__ import annotations
 
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence
 
@@ -19,9 +31,12 @@ DEFAULT_IDA_EXE = r"C:\STU_DASM\IDA55\idaw.exe"
 DEFAULT_IDAW_WRAPPER = Path("..") / ".." / "IDA55-Py" / "ida55py" / "idaw.py"
 DEFAULT_GAMES = ("MAGIC", "WIZARDS")
 OUTPUT_SUFFIXES = (".map", ".asm", ".inc", ".lst")
+SETTINGS_DUMP_SUFFIXES = (".ida55-clean-export-before.txt", ".ida55-clean-export-active.txt", ".ida55-clean-export-after.txt")
 REGISTRY_KEY = r"HKCU\Software\Hex-Rays\IDA"
+DEFAULT_OUT_DIR = Path("in")
+DEFAULT_WORK_ROOT = Path("out") / "ida55-work"
 DEFAULT_LOG_DIR = Path("out") / "ida55-clean-export-logs"
-DEFAULT_TIMEOUT_SECONDS = 120
+DEFAULT_TIMEOUT_SECONDS = 900  # WIZARDS takes over 2 minutes to generate and re-pack.
 
 
 @dataclass(frozen=True)
@@ -68,7 +83,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--no-ida-log", action="store_true", help="Do not pass IDA's -L logfile option.")
     parser.add_argument("--timeout-seconds", type=int, default=DEFAULT_TIMEOUT_SECONDS, help=f"Seconds to wait for each IDA run. Use 0 to disable. Default: {DEFAULT_TIMEOUT_SECONDS}")
     parser.add_argument("--no-startup-enter", action="store_true", help="Do not send an initial Enter to IDA after launch.")
-    parser.add_argument("--copy", action="store_true", help="Copy exported MAP/ASM/INC/LST files into in/ after export.")
+    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR, help=f"Where MAP/ASM/INC/LST are copied. Default: {DEFAULT_OUT_DIR}")
+    parser.add_argument("--work-root", type=Path, default=DEFAULT_WORK_ROOT, help=f"Parent of the per-run work folders. Default: {DEFAULT_WORK_ROOT}")
+    parser.add_argument("--keep-work", action="store_true", help="Keep the work folder (IDB copy and raw outputs) after a successful export.")
+    parser.add_argument("--copy", action="store_true", help=argparse.SUPPRESS)  # Old flag: outputs now always go to --out-dir.
     parser.add_argument("--python", default=sys.executable, help="Python interpreter for child scripts.")
     return parser.parse_args(argv)
 
@@ -113,6 +131,40 @@ def expected_outputs_for_idb(idb_path: Path) -> List[Path]:
     return [base.with_suffix(suffix) for suffix in OUTPUT_SUFFIXES]
 
 
+def work_dir_for_job(work_root: Path, game: str, stamp: str) -> Path:
+    """Return the per-run work folder <work_root>/<GAME>-clean-<stamp>. Powered by Claude."""
+    return work_root / f"{game}-clean-{stamp}"
+
+
+def work_idb_for_job(work_root: Path, job: "ExportJob", stamp: str) -> Path:
+    """Return where idaw.py puts the IDB copy for this job. Powered by Claude."""
+    return work_dir_for_job(work_root, job.game, stamp) / job.idb_path.name
+
+
+def copy_file_atomically(source: Path, destination: Path) -> None:
+    """Copy source to destination through a temporary file, so a failed copy never leaves a partial file. Powered by Claude."""
+    temp_path = destination.with_name(destination.name + ".tmp")
+    shutil.copy2(source, temp_path)
+    os.replace(temp_path, destination)
+
+
+def collect_outputs(work_idb: Path, out_dir: Path, log_dir: Path, game: str, dry_run: bool) -> List[Path]:
+    """Copy MAP/ASM/INC/LST from the work folder into out_dir, and the settings dumps into log_dir. Powered by Claude."""
+    copied: List[Path] = []
+    for source in expected_outputs_for_idb(work_idb):
+        destination = out_dir / source.name
+        print(f"{'would copy' if dry_run else 'copy'} {denormalize_for_display(source)} -> {denormalize_for_display(destination)}")
+        if not dry_run:
+            copy_file_atomically(source, destination)
+        copied.append(destination)
+    base = work_idb.with_suffix("")
+    for suffix in SETTINGS_DUMP_SUFFIXES:
+        source = Path(str(base) + suffix)
+        if not dry_run and source.exists():
+            shutil.copy2(source, log_dir / f"{game}{suffix}")
+    return copied
+
+
 def build_ida_command(
     python: str,
     idaw_wrapper: Path,
@@ -122,6 +174,7 @@ def build_ida_command(
     *,
     ida_exe: Optional[Path] = None,
     backup_dir: Optional[Path] = None,
+    work_dir: Optional[Path] = None,
 ) -> List[str]:
     """Build the idaw.py command line; idaw.py options go before '--', IDA's after. Powered by Claude."""
     command = [python, "-B", str(idaw_wrapper)]
@@ -129,6 +182,8 @@ def build_ida_command(
         command.extend(["--ida-exe", str(ida_exe)])
     if backup_dir is not None:
         command.extend(["--backup-dir", str(backup_dir)])
+    if work_dir is not None:
+        command.extend(["--work-dir", str(work_dir)])
     command.extend(["--", "-A"])
     if log_path is not None:
         command.append(f"-L{log_path}")
@@ -138,6 +193,19 @@ def build_ida_command(
 
 def build_registry_export_command(output_path: Path) -> List[str]:
     return ["reg", "export", REGISTRY_KEY, str(output_path), "/y"]
+
+
+def terminate_process_tree(process: subprocess.Popen) -> None:
+    """Kill a child process plus any grandchildren (idaw.py and the idaw.exe it started). Powered by Claude."""
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/T", "/F", "/PID", str(process.pid)], capture_output=True, check=False)
+    else:
+        process.kill()
+    try:
+        process.wait(timeout=30)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
 
 
 def run_command(
@@ -180,28 +248,18 @@ def run_command(
             return_code = process.wait(timeout=timeout_seconds if timeout_seconds and timeout_seconds > 0 else None)
         except subprocess.TimeoutExpired as error:
             if transcript_handle is not None:
-                transcript_handle.write(f"\n[timeout]\nProcess exceeded {timeout_seconds} seconds; terminating.\n")
+                transcript_handle.write(f"\n[timeout]\nProcess exceeded {timeout_seconds} seconds; killing the process tree.\n")
                 transcript_handle.flush()
-            process.terminate()
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                if transcript_handle is not None:
-                    transcript_handle.write("Terminate did not finish within 10 seconds; killing.\n")
-                    transcript_handle.flush()
-                process.kill()
-                process.wait()
-            raise TimeoutError(f"Command timed out after {timeout_seconds} seconds: {' '.join(command)}") from error
+            terminate_process_tree(process)
+            raise TimeoutError(
+                f"Command timed out after {timeout_seconds} seconds (only the work copy is at risk; "
+                f"delete its work folder and re-run, or raise --timeout-seconds): {' '.join(command)}"
+            ) from error
         except KeyboardInterrupt:
             if transcript_handle is not None:
-                transcript_handle.write("\n[interrupted]\nKeyboardInterrupt received; terminating child process.\n")
+                transcript_handle.write("\n[interrupted]\nKeyboardInterrupt received; killing the process tree.\n")
                 transcript_handle.flush()
-            process.terminate()
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()
+            terminate_process_tree(process)
             raise
 
         if transcript_handle is not None:
@@ -277,11 +335,21 @@ def run_exports(
     timeout_seconds: int,
     startup_enter: bool,
     ida_exe: Optional[Path] = None,
-    backup_dir: Optional[Path] = None,
+    work_root: Optional[Path] = None,
+    stamp: str = "",
+    out_dir: Optional[Path] = None,
+    skip_verify: bool = False,
+    keep_work: bool = False,
 ) -> None:
+    """Export each job on a work copy, then collect its outputs and remove the work folder. Powered by Claude."""
+    work_root = work_root or DEFAULT_WORK_ROOT
+    out_dir = out_dir or DEFAULT_OUT_DIR
     if not dry_run:
         log_dir.mkdir(parents=True, exist_ok=True)
+        out_dir.mkdir(parents=True, exist_ok=True)
     for job in jobs:
+        work_dir = work_dir_for_job(work_root, job.game, stamp)
+        work_idb = work_idb_for_job(work_root, job, stamp)
         if not job.idb_path.exists():
             if dry_run:
                 summary.add_skipped(f"{job.game}: IDB missing during dry-run: {denormalize_for_display(job.idb_path)}")
@@ -298,8 +366,9 @@ def run_exports(
             job.idb_path,
             None if no_ida_log else ida_log_path,
             ida_exe=ida_exe,
-            backup_dir=backup_dir,
+            work_dir=work_dir,
         )
+        print(f"{job.game} work:     {denormalize_for_display(work_dir)}")
         result = run_command(
             command,
             repo_root,
@@ -327,25 +396,33 @@ def run_exports(
             if not no_ida_log:
                 add_log_tail(summary, f"{job.game}: IDA log", ida_log_path)
             add_log_tail(summary, f"{job.game}: process transcript", transcript_path)
-            raise RuntimeError(f"IDA export failed for {job.game} with exit code {result}.")
+            raise RuntimeError(
+                f"IDA export failed for {job.game} with exit code {result}. "
+                f"The real IDB is unchanged; delete the work folder: {denormalize_for_display(work_dir)}"
+            )
+
+        if dry_run:
+            collect_outputs(work_idb, out_dir, log_dir, job.game, dry_run=True)
+            continue
+        if not skip_verify:
+            verify_files(expected_outputs_for_idb(work_idb))
+            summary.add_check(f"{job.game}: MAP/ASM/INC/LST exist and are non-empty in the work folder.")
+        copied = collect_outputs(work_idb, out_dir, log_dir, job.game, dry_run=False)
+        summary.add_action(f"{job.game}: copied {', '.join(path.name for path in copied)} into {denormalize_for_display(out_dir)}")
+        if keep_work:
+            summary.add_action(f"{job.game}: kept work folder {denormalize_for_display(work_dir)}")
+        else:
+            shutil.rmtree(work_dir)
+            summary.add_action(f"{job.game}: removed work folder {denormalize_for_display(work_dir)}")
 
 
-def run_copy(project_root: Path, script_dir: Path, python: str, dry_run: bool) -> None:
-    command = [python, str(script_dir / "ida55_copy_outputs.py")]
-    if dry_run:
-        command.append("--dry-run")
-    result = run_command(command, project_root, dry_run)
-    if result != 0:
-        raise RuntimeError(f"Copy step failed with exit code {result}.")
-
-
-def print_plan(python: str, idaw_wrapper: Path, script_path: Path, jobs: Sequence[ExportJob]) -> None:
+def print_plan(python: str, idaw_wrapper: Path, script_path: Path, jobs: Sequence[ExportJob], out_dir: Path = DEFAULT_OUT_DIR) -> None:
     print(f"IDAW wrapper:   {python} -B {denormalize_for_display(idaw_wrapper)}")
     print(f"IDC script:     {denormalize_for_display(script_path)}")
     for job in jobs:
-        print(f"{job.game} IDB:      {denormalize_for_display(job.idb_path)}")
+        print(f"{job.game} IDB:      {denormalize_for_display(job.idb_path)}  (read only; IDA runs on a work copy)")
         for output_path in expected_outputs_for_idb(job.idb_path):
-            print(f"  expects:     {denormalize_for_display(output_path)}")
+            print(f"  writes:      {denormalize_for_display(out_dir / output_path.name)}")
 
 
 def print_summary(summary: RunSummary, dry_run: bool) -> None:
@@ -385,12 +462,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         idb_dir = normalize_path(args.idb_dir, repo_root)
         script_path = normalize_path(args.script, script_dir)
         log_dir = normalize_path(args.log_dir, repo_root)
+        out_dir = normalize_path(args.out_dir, repo_root)
+        work_root = normalize_path(args.work_root, repo_root)
+        stamp = datetime.now().strftime("%Y%m%d%H%M%S")
         idaw_wrapper = resolve_idaw_wrapper(repo_root)
         summary.add_check(f"IDAW wrapper resolved: {denormalize_for_display(idaw_wrapper)}")
         check_readable_file(script_path, "IDC script", summary)
 
         jobs = build_jobs(games, idb_dir)
-        print_plan(args.python, idaw_wrapper, script_path, jobs)
+        print_plan(args.python, idaw_wrapper, script_path, jobs, out_dir)
 
         if not args.skip_registry_snapshot:
             snapshot_registry(repo_root, "before", args.dry_run, args.allow_registry_snapshot_failure)
@@ -414,32 +494,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             args.timeout_seconds,
             not args.no_startup_enter,
             ida_exe=normalize_path(args.ida_exe, repo_root),
-            backup_dir=idb_dir,
+            work_root=work_root,
+            stamp=stamp,
+            out_dir=out_dir,
+            skip_verify=args.skip_verify,
+            keep_work=args.keep_work,
         )
 
-        if not args.skip_verify and not args.dry_run:
-            for job in jobs:
-                verify_files(expected_outputs_for_idb(job.idb_path))
-                summary.add_check(f"{job.game}: expected output files exist and are non-empty.")
-        elif args.dry_run:
-            summary.add_skipped("Output verification skipped because --dry-run is set.")
+        if args.dry_run:
+            summary.add_skipped("Output verification and copy skipped because --dry-run is set.")
             summary.add_unproven("No MAP/ASM/INC/LST files were created or verified.")
-        else:
+        elif args.skip_verify:
             summary.add_skipped("Output verification disabled by --skip-verify.")
 
         if not args.skip_registry_snapshot:
             snapshot_registry(repo_root, "after", args.dry_run, args.allow_registry_snapshot_failure)
             if not args.dry_run:
                 summary.add_action("Registry snapshot after export completed.")
-
-        if args.copy:
-            run_copy(repo_root, script_dir, args.python, args.dry_run)
-            if args.dry_run:
-                summary.add_skipped("Copy step command printed but not executed because --dry-run is set.")
-            else:
-                summary.add_action("Copy step completed.")
-        else:
-            summary.add_skipped("Copy step not requested; pass --copy to enable it.")
 
         print_summary(summary, args.dry_run)
         return 0

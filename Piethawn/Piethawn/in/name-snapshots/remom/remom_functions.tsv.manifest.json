@@ -1,0 +1,17 @@
+{
+  "remom": "C:\\STU\\devel\\ReMoM",
+  "commit": "fdbec9ab5eb0847d2cd5e9071a1e3c25eb91c994-dirty",
+  "taken": "2026-11-13T21:11:25-05:00",
+  "ida": {
+    "WZD": {
+      "ida_functions": "C:\\STU\\devel\\STU-Extras\\Piethawn\\Piethawn\\in\\WIZARDS.idb.ida55-functions.json",
+      "ida_functions_sha256": "666d1f964f0b2b0ceecc56aa350f19646d4a29487e1adf5fac297ef0a59f5048"
+    },
+    "MGC": {
+      "ida_functions": "C:\\STU\\devel\\STU-Extras\\Piethawn\\Piethawn\\in\\MAGIC.idb.ida55-functions.json",
+      "ida_functions_sha256": "f8e3c02948e24906414e3e9873839f08c24917cd8b348952cc6ea39b0ccf137f"
+    }
+  },
+  "rows": 2021,
+  "not_placed": 1
+}

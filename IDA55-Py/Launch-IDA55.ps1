@@ -44,6 +44,10 @@ function Backup-Idbs([string]$Phase) {
     $live = Get-ChildItem -Path $IdbDir -Filter '*.idb' -File | Where-Object { $_.BaseName -notmatch '[- ]' }
     foreach ($idb in $live) {
         try {
+            if ($idb.Length -eq 0) {
+                Write-Log "[$Phase] WARNING $($idb.Name) is 0 bytes, NOT backed up"
+                continue
+            }
             $newest = Get-ChildItem -Path $IdbDir -Filter "$($idb.BaseName)-*.idb" -File |
                 Where-Object { $_.BaseName -match "^$([regex]::Escape($idb.BaseName))-\d{12}$" } |
                 Sort-Object Name -Descending | Select-Object -First 1
@@ -71,17 +75,23 @@ if (-not (Test-Admin)) {
 
 try {
     Write-Log "=== launcher start ==="
-    Backup-Idbs 'pre'
-    $sp = @{ FilePath = $IdaExe; WorkingDirectory = (Split-Path $IdaExe); PassThru = $true }
     if ($Idb) {
         if (-not (Test-Path $Idb)) { throw "IDB not found: $Idb" }
-        $sp.ArgumentList = "`"$Idb`""
+        if ((Get-Item $Idb).Length -eq 0) {
+            throw "IDB is 0 bytes (corrupt/truncated): $Idb`nIDA was NOT launched. Restore it from a NAME-YYYYMMDDHHMM.idb backup."
+        }
     }
+    Backup-Idbs 'pre'
+    $sp = @{ FilePath = $IdaExe; WorkingDirectory = (Split-Path $IdaExe); PassThru = $true }
+    if ($Idb) { $sp.ArgumentList = "`"$Idb`"" }
     $p = Start-Process @sp
     Write-Log "started $IdaExe $Idb (pid $($p.Id))"
     $p.WaitForExit()
     Write-Log "IDA exited (code $($p.ExitCode))"
     Backup-Idbs 'post'
+    if ($Idb -and (Test-Path $Idb) -and (Get-Item $Idb).Length -eq 0) {
+        throw "IDA exited and left $Idb at 0 bytes!`nIt was NOT backed up. Restore from the newest NAME-YYYYMMDDHHMM.idb backup."
+    }
     Write-Log "=== launcher done ==="
 } catch {
     Write-Log "FATAL: $_"

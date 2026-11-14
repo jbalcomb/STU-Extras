@@ -2,12 +2,13 @@
 """
 Run the IDA 5.5 file dumps for MAGIC and WIZARDS, then split the ASM into per-procedure files.
 
-  1. ida_dasm_export/ida55_clean_export.py --copy            -> in/{MAGIC,WIZARDS}.{asm,inc,lst,map}
-  2. ida_proc_data_export/ida55_export_function_data.py --copy -> in/*.idb.ida55-functions.{txt,json}
+  1. ida_dasm_export/ida55_clean_export.py                   -> in/{MAGIC,WIZARDS}.{asm,inc,lst,map}
+  2. ida_proc_data_export/ida55_export_function_data.py      -> in/*.idb.ida55-functions.json
   3. ida_dasm_export/ida55_check_clean_asm.py                -> fails on a dirty ASM listing
   4. remove existing out/<GAME>/<segment>/*.asm, then ida55_split_asm.py -> out/MAGIC, out/WIZARDS
 
-Close every IDA window first: both exports run IDA through ../../IDA55-Py/ida55py/idaw.py.
+Close every IDA window first: both exports run IDA through ../../IDA55-Py/ida55py/idaw.py, on work copies of the
+IDBs under out/ida55-work/ (the real IDBs are never opened), and write their outputs into in/ by default.
 --skip-ida runs only steps 3-4, on the files already in in/.
 """
 
@@ -46,8 +47,8 @@ def run_step(command: Sequence[str], dry_run: bool) -> None:
 
 
 def ida_export_commands(python: str, timeout_seconds: int, dry_run: bool) -> List[List[str]]:
-    """Commands for the two IDA exports, both copying their outputs into in/. Powered by Claude."""
-    shared = ["--copy", "--timeout-seconds", str(timeout_seconds), "--python", python] + (["--dry-run"] if dry_run else [])
+    """Commands for the two IDA exports; both write their outputs into in/ by default. Powered by Claude."""
+    shared = ["--timeout-seconds", str(timeout_seconds), "--python", python] + (["--dry-run"] if dry_run else [])
     return [
         [python, "-B", str(Path("ida_dasm_export") / "ida55_clean_export.py"), "--skip-registry-snapshot", *shared],
         [python, "-B", str(Path("ida_proc_data_export") / "ida55_export_function_data.py"), *shared],

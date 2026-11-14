@@ -7516,7 +7516,7 @@ mov     ax, 6100
 push    ax
 call    j_Allocate_Data_Space
 pop     cx
-call    Disable_Cancel
+call    Enable_Cancel
 mov     ax, e_ST_UNDEFINED
 push    ax
 xor     ax, ax
@@ -7707,7 +7707,7 @@ pop     cx
 xor     _DI_quit_flag, _DI_quit_flag
 mov     [screen_changed], e_ST_TRUE
 mov     [g_GUI_MainScreenJump], e_ST_UNDEFINED
-call    Disable_Cancel
+call    Enable_Cancel
 jmp     short @@LoopWhileFalse
 @@DoMainMenuScreen:
 xor     ax, ax
@@ -9348,8 +9348,8 @@ mov     bp, sp
 call    Stop_Music__STUB
 call    Reset_System_Mouse
 call    Audio_Uninit__STUB
-call    EMM_Release_All
-call    DBG_Close_ERROR_LOG
+call    EMM_ReleaseAll__STUB
+call    DBG_Close_ERROR_LOG__STUB
 call    Reset_Video
 push    [bp+string]
 call    Quit_With_Message
@@ -9374,8 +9374,8 @@ add     sp, 6
 call    Stop_Music__STUB
 call    Reset_System_Mouse
 call    Audio_Uninit__STUB
-call    EMM_Release_All
-call    DBG_Close_ERROR_LOG
+call    EMM_ReleaseAll__STUB
+call    DBG_Close_ERROR_LOG__STUB
 call    Reset_Video
 lea     ax, [bp+string]
 push    ax
@@ -9386,7 +9386,7 @@ pop     bp
 retf
 endp Exit_With_Value
 ; Attributes: bp-based frame
-proc Respawn far
+proc GAME_EXE_Swap far
 Exit_Message= byte ptr -52h
 Handle_Index= word ptr -2
 EXE_NAME@= word ptr  6
@@ -9457,7 +9457,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp Respawn ; sp-analysis failed
+endp GAME_EXE_Swap ; sp-analysis failed
 ; Attributes: bp-based frame
 proc Check_Free far
 push    bp
@@ -9492,8 +9492,8 @@ push    di
 call    Stop_Music__STUB
 call    Reset_System_Mouse
 call    Audio_Uninit__STUB
-call    EMM_Release_All
-call    DBG_Close_ERROR_LOG
+call    EMM_ReleaseAll__STUB
+call    DBG_Close_ERROR_LOG__STUB
 call    Reset_Video
 push    [bp+file_name]
 call    LOF
@@ -9767,7 +9767,7 @@ loc_14656:
 pop     es
 retf
 endp Dos_Free
-proc DBG_Open_ERROR_LOG far
+proc DBG_Open_ERROR_LOG__STUB far
 push    es
 push    ds
 loc_1465A:
@@ -9781,8 +9781,8 @@ pop     ds
 pop     es
 locret_14660:
 retf
-endp DBG_Open_ERROR_LOG
-proc DBG_Close_ERROR_LOG far
+endp DBG_Open_ERROR_LOG__STUB
+proc DBG_Close_ERROR_LOG__STUB far
 push    es
 loc_14662:
 push    ds
@@ -9797,7 +9797,7 @@ loc_14668:
 pop     es
 locret_14669:
 retf
-endp DBG_Close_ERROR_LOG
+endp DBG_Close_ERROR_LOG__STUB
 ends seg006
 ; Segment type: Pure code
 segment seg007 byte public 'CODE' use16
@@ -10277,7 +10277,7 @@ pop     bp
 retf
 endp Allocate_Space ; sp-analysis failed
 ; Attributes: bp-based frame
-proc Allocate_Space_No_Header__LbxHeader far
+proc Allocate_Space_No_Header far
 sgmt_addr= word ptr -2
 nparas= word ptr  6
 push    bp
@@ -10314,7 +10314,7 @@ jmp     short @@JmpDone
 mov     sp, bp
 pop     bp
 retf
-endp Allocate_Space_No_Header__LbxHeader
+endp Allocate_Space_No_Header
 ; Attributes: bp-based frame
 proc Allocate_Space_No_Header__EntrySize far
 sgmt_addr= word ptr -2
@@ -11295,7 +11295,7 @@ pop     bp
 retf
 endp LBX_Load_Data
 ; Attributes: bp-based frame
-proc UU_LBXR_LoadReplace far
+proc LBX_Reload_Data far
 FileName@= word ptr  6
 Entry_Index= word ptr  8
 LBX_Alloc_Seg= word ptr  0Ah
@@ -11318,9 +11318,9 @@ call    near ptr LBX_Load_Library_Data
 add     sp, 0Eh
 pop     bp
 retf
-endp UU_LBXR_LoadReplace
+endp LBX_Reload_Data
 ; Attributes: bp-based frame
-proc UU_LBXR_LoadAppend far
+proc LBX_Reload_Next_Data far
 FileName@= word ptr  6
 Entry_Index= word ptr  8
 LBX_Alloc_Seg= word ptr  0Ah
@@ -11344,7 +11344,7 @@ call    near ptr LBX_Load_Library_Data
 add     sp, 0Eh
 pop     bp
 retf
-endp UU_LBXR_LoadAppend
+endp LBX_Reload_Next_Data
 ; Attributes: bp-based frame
 proc UU_LBXE_LoadSingle2 far
 FileName@= word ptr  6
@@ -11456,7 +11456,7 @@ jnz     short loc_15077
 mov     [farload_lbx_header_flag], 1
 mov     ax, e_LBX_HEADER_SIZE_paras
 push    ax
-call    Allocate_Space_No_Header__LbxHeader
+call    Allocate_Space_No_Header
 pop     cx
 mov     [farload_lbx_header], ax
 loc_15077:
@@ -11979,7 +11979,7 @@ jnz     short @@TryEmmLoad
 mov     [farload_lbx_header_flag], 1
 mov     ax, e_LBX_HEADER_SIZE_paras
 push    ax
-call    Allocate_Space_No_Header__LbxHeader
+call    Allocate_Space_No_Header
 pop     cx
 mov     [farload_lbx_header], ax
 @@TryEmmLoad:
@@ -12576,7 +12576,7 @@ jnz     short @@TryEmmLoad
 mov     [farload_lbx_header_flag], e_ST_TRUE
 mov     ax, e_LBX_HEADER_SIZE_paras
 push    ax
-call    Allocate_Space_No_Header__LbxHeader
+call    Allocate_Space_No_Header
 pop     cx
 mov     [farload_lbx_header], ax
 @@TryEmmLoad:
@@ -12974,7 +12974,7 @@ jnz     short loc_15C84
 mov     [farload_lbx_header_flag], 1
 mov     ax, e_LBX_HEADER_SIZE_paras
 push    ax
-call    Allocate_Space_No_Header__LbxHeader
+call    Allocate_Space_No_Header
 pop     cx
 mov     [farload_lbx_header], ax
 loc_15C84:
@@ -13676,7 +13676,7 @@ assume cs:seg012
 ;org 6
 assume es:nothing, ss:nothing, ds:dseg, fs:nothing, gs:nothing
 EMM_Logical_Page dw 0
-proc EMM_Detect_Device far
+proc EMM_DetectDevice far
 push    si
 loc_16179:
 push    di
@@ -13730,8 +13730,8 @@ pop     es
 pop     di
 pop     si
 retf
-endp EMM_Detect_Device
-proc EMM_Number_Of_Handles far
+endp EMM_DetectDevice
+proc EMM_GetHandleCount far
 push    es
 push    ds
 push    si
@@ -13753,8 +13753,8 @@ pop     si
 pop     ds
 pop     es
 retf
-endp EMM_Number_Of_Handles
-proc EMM_Get_Free_Page_Count far
+endp EMM_GetHandleCount
+proc EMM_GetFreePageCnt far
 push    es
 push    ds
 push    si
@@ -13777,7 +13777,7 @@ pop     si
 pop     ds
 pop     es
 retf
-endp EMM_Get_Free_Page_Count
+endp EMM_GetFreePageCnt
 ; Attributes: bp-based frame
 proc EMM_GetPageCount far
 EMM_Handle= word ptr  6
@@ -13851,7 +13851,7 @@ pop     bp
 retf
 endp EMM_MakeNamedHandle
 ; Attributes: bp-based frame
-proc EMM_Get_Handle_Name far
+proc EMM_GetHandleName far
 argEmsHandleName= word ptr  6
 argEmsHandleNumber= word ptr  8
 push    bp
@@ -13889,9 +13889,9 @@ pop     ds
 pop     es
 pop     bp
 retf
-endp EMM_Get_Handle_Name
+endp EMM_GetHandleName
 ; Attributes: bp-based frame
-proc EMM_Release_Handle far
+proc EMM_ReleaseHandle__SUTB far
 argEmmHandle= word ptr  6
 push    bp
 mov     bp, sp
@@ -13911,7 +13911,7 @@ pop     ds
 pop     es
 pop     bp
 retf
-endp EMM_Release_Handle
+endp EMM_ReleaseHandle__SUTB
 ; Attributes: bp-based frame
 proc EMM_MapnRead far
 Dst_Ofst= word ptr  6
@@ -14047,14 +14047,14 @@ mov     sp, bp
 pop     bp
 retf
 endp EMM_MapnWrite
-proc EMM_Get_Page_Frame far
+proc EMM_GetPageFrame far
 push    ds
 mov     ax, seg dseg
 mov     ds, ax
 mov     ax, [EMS_PFBA]
 pop     ds
 retf
-endp EMM_Get_Page_Frame
+endp EMM_GetPageFrame
 ; Attributes: bp-based frame
 proc EMM_MapFourPages far
 EmmHandle= word ptr  6
@@ -14144,12 +14144,12 @@ mov     bp, sp
 loc_1643A:
 sub     sp, 66h
 push    si
-call    EMM_Detect_Device
+call    EMM_DetectDevice
 or      ax, ax
 jnz     short @@EMM_Detected
 jmp     @@EMM_NotPresent
 @@EMM_Detected:
-call    EMM_Number_Of_Handles
+call    EMM_GetHandleCount
 mov     [bp+EMM_Open_Handle_Count], ax
 mov     [EmmHndlNbr_YOMOMA], 0
 mov     si, 1
@@ -14158,7 +14158,7 @@ jmp     short @@LoopActiveHandles
 push    si
 lea     ax, [bp+buffer]
 push    ax
-call    EMM_Get_Handle_Name
+call    EMM_GetHandleName
 pop     cx
 pop     cx
 or      ax, ax
@@ -14195,7 +14195,7 @@ mov     ax, 1
 push    ax
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 add     sp, 6
 mov     [EmmHndlNbr_YOMOMA], ax
 jmp     short @@DoneYomomaHndl
@@ -14230,7 +14230,7 @@ lea     ax, [bp+buffer]
 push    ax
 nop
 push    cs
-call    near ptr EMM_Error_Message
+call    near ptr EMM_GetLowString
 pop     cx
 lea     ax, [bp+buffer]
 push    ax
@@ -14246,7 +14246,7 @@ jmp     short @@Loop50Tries
 push    si
 lea     ax, [bp+buffer]
 push    ax
-call    EMM_Get_Handle_Name
+call    EMM_GetHandleName
 pop     cx
 pop     cx
 or      ax, ax
@@ -14283,7 +14283,7 @@ jge     short @@CheckEnoughPages
 cmp     [EMM_Open_Handles], 40
 jl      short @@CheckForHandleName
 @@CheckEnoughPages:
-call    EMM_Get_Free_Page_Count
+call    EMM_GetFreePageCnt
 cmp     ax, [EMM_Pages_Reserved]
 jge     short @@DoBaseGameAllocs
 @@ErrorOutOfPages:
@@ -14291,7 +14291,7 @@ lea     ax, [bp+buffer]
 push    ax
 nop
 push    cs
-call    near ptr EMM_Error_Message
+call    near ptr EMM_GetLowString
 pop     cx
 lea     ax, [bp+buffer]
 push    ax
@@ -14306,7 +14306,7 @@ mov     ax, 5
 push    ax
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 add     sp, 6
 mov     [_VGAFILEH_seg], ax
 mov     ax, 1
@@ -14317,7 +14317,7 @@ mov     ax, 4
 push    ax
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 add     sp, 6
 mov     [_EMMDATAH_seg], ax
 mov     [EMMDATAH_offset], 0
@@ -14327,7 +14327,7 @@ lea     ax, [bp+buffer]
 push    ax
 nop
 push    cs
-call    near ptr EMM_Error_Message
+call    near ptr EMM_GetLowString
 pop     cx
 lea     ax, [bp+buffer]
 push    ax
@@ -14509,7 +14509,7 @@ inc     [bp+varLbxFileSize16kBlocks]
 @@NoRemainder:
 cmp     [bp+argEmmRsvdFlag], 0
 jnz     short @@RsvdFlagSet
-call    EMM_Get_Free_Page_Count
+call    EMM_GetFreePageCnt
 mov     dx, [EMM_Pages_Reserved]
 add     dx, [bp+varLbxFileSize16kBlocks]
 cmp     ax, dx
@@ -14525,14 +14525,14 @@ push    ax
 push    [bp+varLbxFileSize16kBlocks]
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 add     sp, 6
 mov     [bp+varEmmHndlNbr], ax
 cmp     [bp+varEmmHndlNbr], 0
 jnz     short @@GotEmmHndl
 jmp     @@MaybeLbxToEmmLoadFail
 @@GotEmmHndl:
-call    EMM_Get_Page_Frame
+call    EMM_GetPageFrame
 mov     [bp+varTmpEmmPageFrameSgmtAddr], ax
 mov     [bp+varEmmLogicalPage], 0
 cmp     [bp+varTmpEmmPageFrameSgmtAddr], 0
@@ -14814,7 +14814,7 @@ push    ax
 push    [bp+Page_Count]
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 add     sp, 6
 mov     [bp+EMM_Handle], ax
 cmp     [bp+EMM_Handle], 0
@@ -14830,7 +14830,7 @@ db  83h
 db 0C4h
 db    6
 loc_16995:
-call    EMM_Get_Page_Frame
+call    EMM_GetPageFrame
 mov     [bp+Page_Frame_Seg], ax
 mov     [bp+Logical_Page], 0
 mov     ax, [word ptr bp+Entry_Size+2]
@@ -15128,7 +15128,7 @@ push    ax
 push    [bp+Page_Count]
 nop
 push    cs
-call    near ptr EMM_Get_Handle
+call    near ptr EMM_GetHandle
 pop     cx
 pop     cx
 mov     [bp+EMM_Handle], ax
@@ -15145,7 +15145,7 @@ db  83h
 db 0C4h
 db    6
 loc_16C16:
-call    EMM_Get_Page_Frame
+call    EMM_GetPageFrame
 mov     [bp+Buffer_Seg], ax
 mov     [bp+First_Log_Page], 0
 mov     ax, [word ptr bp+LBX_Entry_Size+2]
@@ -16394,7 +16394,7 @@ pop     bp
 retf
 endp EMM_CheckHandleOpen
 ; Attributes: bp-based frame
-proc EMM_Release_All far
+proc EMM_ReleaseAll__STUB far
 push    bp
 mov     bp, sp
 push    si
@@ -16406,7 +16406,7 @@ mov     dx, size s_EMM_RECORD
 imul    dx
 mov     bx, ax
 push    [EMM_Table.handle+bx]
-call    EMM_Release_Handle
+call    EMM_ReleaseHandle__SUTB
 pop     cx
 inc     si
 loc_17622:
@@ -16415,13 +16415,13 @@ jl      short loc_1760E
 cmp     [g_EmmHndl_OVERXYZ], 0
 jz      short loc_17639
 push    [g_EmmHndl_OVERXYZ]
-call    EMM_Release_Handle
+call    EMM_ReleaseHandle__SUTB
 pop     cx
 loc_17639:
 pop     si
 pop     bp
 retf
-endp EMM_Release_All
+endp EMM_ReleaseAll__STUB
 ; Attributes: bp-based frame
 proc EMM_Release_Resd far
 push    bp
@@ -16441,7 +16441,7 @@ mov     dx, e_sizeof_EMM_RECORD
 imul    dx
 mov     bx, ax
 push    [EMM_Table.handle+bx]
-call    EMM_Release_Handle
+call    EMM_ReleaseHandle__SUTB
 pop     cx
 @@Continue:
 inc     si
@@ -16517,7 +16517,7 @@ pop     cx
 add     [EMM_Pages_Reserved], ax
 loc_176E9:
 push    di
-call    EMM_Release_Handle
+call    EMM_ReleaseHandle__SUTB
 pop     cx
 mov     si, di
 jmp     short loc_1774A
@@ -16583,7 +16583,7 @@ pop     bp
 retf
 endp UU_EMM_Available
 ; Attributes: bp-based frame
-proc EMM_Get_Handle far
+proc EMM_GetHandle far
 varTmpStrEmsRsvdErr= byte ptr -0Ah
 varExistingEmsHndlNbr= word ptr -4
 varItrOurOpenHandleCount= word ptr -2
@@ -16855,7 +16855,7 @@ pop     _SI_handle_name
 mov     sp, bp
 pop     bp
 retf
-endp EMM_Get_Handle
+endp EMM_GetHandle
 ; Attributes: bp-based frame
 proc RP_EMM_VGAWrite_fP5 far
 Source_Seg= word ptr  6
@@ -16958,7 +16958,7 @@ pop     bp
 retf
 endp EMMDATAH_Map
 ; Attributes: bp-based frame
-proc EMMDATAH_Allocate_First far
+proc EMM_EMMDATAH_AllocFirst far
 EMMDATAH_Nparas_Free= word ptr -2
 nparas= word ptr  6
 push    bp
@@ -17037,9 +17037,9 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp EMMDATAH_Allocate_First ; sp-analysis failed
+endp EMM_EMMDATAH_AllocFirst ; sp-analysis failed
 ; Attributes: bp-based frame
-proc EMMDATAH_Allocate_Next far
+proc EMM_EMMDATAH_AllocNext far
 EMMDATAH_Nparas_Free= word ptr -2
 nparas= word ptr  6
 push    bp
@@ -17119,25 +17119,25 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp EMMDATAH_Allocate_Next ; sp-analysis failed
+endp EMM_EMMDATAH_AllocNext ; sp-analysis failed
 ; Attributes: bp-based frame
-proc EMMDATAH_Save_Last_Offset far
+proc UU_EMM_Data_Mark far
 push    bp
 mov     bp, sp
 mov     ax, [EMMDATAH_offset]
 mov     [UU_EMMData_PrevLvl], ax
 pop     bp
 retf
-endp EMMDATAH_Save_Last_Offset
+endp UU_EMM_Data_Mark
 ; Attributes: bp-based frame
-proc EMMDATAH_Restore_Last_Offset far
+proc UU_EMM_Data_Undo far
 push    bp
 mov     bp, sp
 mov     ax, [UU_EMMData_PrevLvl]
 mov     [EMMDATAH_offset], ax
 pop     bp
 retf
-endp EMMDATAH_Restore_Last_Offset
+endp UU_EMM_Data_Undo
 ; Attributes: bp-based frame
 proc UU_EMM_LBX_Load2Hnd far
 File_Name= byte ptr -20h
@@ -17228,7 +17228,7 @@ push    ax
 call    Exit_With_Message
 pop     cx
 loc_17C65:
-call    EMM_Get_Page_Frame
+call    EMM_GetPageFrame
 mov     [bp+Buffer_Seg], ax
 mov     [bp+First_Log_Page], 0
 cmp     [bp+Buffer_Seg], 0
@@ -17315,7 +17315,7 @@ pop     bp
 retf
 endp EMM_Set_Minimum
 ; Attributes: bp-based frame
-proc EMM_Error_Message far
+proc EMM_GetLowString far
 buffer= byte ptr -14h
 _message= word ptr  6
 message = si
@@ -17353,7 +17353,7 @@ pop     message
 mov     sp, bp
 pop     bp
 retf
-endp EMM_Error_Message
+endp EMM_GetLowString
 ends seg013
 ; Segment type: Pure code
 segment seg014 byte public 'CODE' use16
@@ -17378,7 +17378,7 @@ push    bp
 mov     bp, sp
 push    _SI_InputType
 mov     _SI_InputType, [bp+input_type]
-call    DBG_Open_ERROR_LOG
+call    DBG_Open_ERROR_LOG__STUB
 call    EMM_Startup
 call    Set_Video_Mode
 cmp     _SI_InputType, e_ST_UNDEFINED
@@ -17454,7 +17454,7 @@ push    bp
 mov     bp, sp
 push    si
 mov     si, [bp+Input_Type]
-call    DBG_Open_ERROR_LOG
+call    DBG_Open_ERROR_LOG__STUB
 call    EMM_Startup
 cmp     si, 0FFFFh
 jnz     short loc_17E3F
@@ -19287,7 +19287,7 @@ mov     sp, bp
 pop     bp
 retf
 endp UU_VGA_DiagColumns
-proc rnd_bitfiddle__1oom far
+proc Dither_Scramble_Seed far
 push    bx
 push    cx
 push    dx
@@ -19321,7 +19321,7 @@ retf
 loc_18B9C:
 mov     ax, 35C8h
 jmp     short loc_18B71
-endp rnd_bitfiddle__1oom
+endp Dither_Scramble_Seed
 db 0CBh
 ; Attributes: bp-based frame
 proc Tint_Fill far
@@ -19965,7 +19965,7 @@ push    si
 push    es
 mov     ax, [bp+Seed]
 push    cs
-call    near ptr rnd_bitfiddle__1oom
+call    near ptr Dither_Scramble_Seed
 mov     [bp+LFSR_State], ax
 mov     dx, e_SC_INDEX
 mov     al, e_SC_MAPMASK
@@ -20055,7 +20055,7 @@ inc     bl
 loop    loc_19165
 mov     ax, [bp+LFSR_State]
 push    cs
-call    near ptr rnd_bitfiddle__1oom
+call    near ptr Dither_Scramble_Seed
 mov     [bp+LFSR_State], ax
 mov     di, [bp+Right]
 mov     bx, di
@@ -20089,7 +20089,7 @@ inc     bl
 loop    loc_191A6
 mov     ax, [bp+LFSR_State]
 push    cs
-call    near ptr rnd_bitfiddle__1oom
+call    near ptr Dither_Scramble_Seed
 mov     [bp+LFSR_State], ax
 mov     bx, [bp+Right]
 shr     bx, 1
@@ -20140,7 +20140,7 @@ mov     ax, [bp+LFSR_State]
 loc_19216:
 push    cs
 loc_19217:
-call    near ptr rnd_bitfiddle__1oom
+call    near ptr Dither_Scramble_Seed
 loc_1921A:
 mov     [bp+LFSR_State], ax
 loc_1921D:
@@ -21817,7 +21817,7 @@ pop     bp
 retf
 endp Set_Color_Set
 ; Attributes: bp-based frame
-proc PSTRM far
+proc ST_PSTRM far
 Conversion_String= byte ptr -16h
 Font_Index= word ptr -6
 Color_1= word ptr -4
@@ -21901,9 +21901,9 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp PSTRM
+endp ST_PSTRM
 ; Attributes: bp-based frame
-proc Disp_PSTR_Wrapper far
+proc DBG_Disp_PSTR far
 Col= word ptr  6
 Row= word ptr  8
 String@= word ptr  0Ah
@@ -21925,7 +21925,7 @@ add     sp, 6
 loc_19E90:
 pop     bp
 retf
-endp Disp_PSTR_Wrapper
+endp DBG_Disp_PSTR
 ; Attributes: bp-based frame
 proc PSTRS far
 Col= word ptr  6
@@ -21960,7 +21960,7 @@ pop     bp
 retf
 endp PSTRS
 ; Attributes: bp-based frame
-proc PSTR far
+proc ST_PSTR far
 String= byte ptr -10h
 Col= word ptr  6
 Row= word ptr  8
@@ -21993,7 +21993,7 @@ loc_19F05:
 mov     sp, bp
 pop     bp
 retf
-endp PSTR
+endp ST_PSTR
 ; Attributes: bp-based frame
 proc PSTRL far
 String= byte ptr -10h
@@ -23847,7 +23847,7 @@ shl     bx, 1
 mov     si, [bx+s_FONT_HEADER.current_data_offsets]
 mov     bx, [cs:_CS_skip_x]
 push    cs
-call    near ptr Print_Character_ASM_
+call    near ptr Print_Character_ASM
 nop
 mov     ax, [cs:_CS_next_x]
 pop     di
@@ -23909,7 +23909,7 @@ shl     bx, 1
 mov     si, [bx+s_FONT_HEADER.current_data_offsets]
 mov     bx, [cs:_CS_skip_x]
 push    cs
-call    near ptr Print_Character_No_Alias_ASM_
+call    near ptr Print_Character_No_Alias_ASM
 nop
 mov     ax, [cs:_CS_next_x]
 pop     di
@@ -24016,7 +24016,7 @@ mov     sp, bp
 pop     bp
 retf
 endp Print_Character_To_Bitmap
-proc Print_Character_ASM_ far
+proc Print_Character_ASM far
 mov     [cs:_CS_width], dx
 mov     dx, 3C4h
 mov     al, 2
@@ -24087,8 +24087,8 @@ dec     [cs:_CS_width]
 jnz     short @@While_Width
 @@Done:
 retf
-endp Print_Character_ASM_
-proc Print_Character_No_Alias_ASM_ far
+endp Print_Character_ASM
+proc Print_Character_No_Alias_ASM far
 mov     [cs:_CS_width], dx
 mov     dx, 3C4h
 mov     al, 2
@@ -24161,7 +24161,7 @@ mov     dx, di
 dec     [cs:_CS_width]
 jnz     short loc_1AEE5
 retf
-endp Print_Character_No_Alias_ASM_
+endp Print_Character_No_Alias_ASM
 ; Attributes: bp-based frame
 proc Get_String_Width far
 String= word ptr  6
@@ -24589,7 +24589,7 @@ dw offset loc_1B113
 dw offset loc_1B147
 dw offset loc_1B192
 ; Attributes: bp-based frame
-proc UU_VGA_WndDrawText far
+proc Print_Paragraph_Aligned__NIU far
 Left= word ptr  6
 Top= word ptr  8
 Width= word ptr  0Ah
@@ -24710,9 +24710,9 @@ pop     di
 pop     si
 pop     bp
 retf
-endp UU_VGA_WndDrawText
+endp Print_Paragraph_Aligned__NIU
 ; Attributes: bp-based frame
-proc UU_GUI_CreateHelpLinks far
+proc Add_Paragraph_Link_Fields__NIU far
 Link_Ends= word ptr -4Ah
 Link_Starts= word ptr -36h
 Font_Glyph_Widths@= dword ptr -22h
@@ -25040,7 +25040,7 @@ push    ax
 push    [bp+Link_Ctrl_Index]
 push    [bp+State@]
 push    [bp+GUI_Ctrl_Count]
-call    UU_GUI_CreateHelpLink
+call    Add_Click_Link_Field__NIU
 add     sp, 12h
 inc     [bp+Link_Ctrl_Index]
 inc     si
@@ -25063,7 +25063,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp UU_GUI_CreateHelpLinks
+endp Add_Paragraph_Link_Fields__NIU
 off_1B64C dw offset loc_1B3ED
 dw offset loc_1B400
 dw offset loc_1B412
@@ -26542,7 +26542,7 @@ pop     bp
 retf
 endp Reset_Cycle_Palette_Color
 ; Attributes: bp-based frame
-proc Cycle_Palette_Color__STUB far
+proc Cycle_Palette_Color far
 Current_Green= word ptr -0Ah
 Current_Blue= word ptr -8
 Current_Red= word ptr -6
@@ -26759,7 +26759,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp Cycle_Palette_Color__STUB
+endp Cycle_Palette_Color
 ; Attributes: bp-based frame
 proc Update_Cycle far
 color_min= word ptr  6
@@ -27353,7 +27353,7 @@ pop     bp
 retf
 endp Tint_Palette
 ; Attributes: bp-based frame
-proc VGA_SlideColors__STUB far
+proc Rotate_Palette_Colors far
 First_Color= word ptr  6
 Count= word ptr  8
 ShiftBy= word ptr  0Ah
@@ -27464,9 +27464,9 @@ pop     di
 pop     si
 pop     bp
 retf
-endp VGA_SlideColors__STUB
+endp Rotate_Palette_Colors
 ; Attributes: bp-based frame
-proc NX_VGA_ColorWave far
+proc Wave_Palette_Colors__NIU far
 First_Color= word ptr  6
 Count= word ptr  8
 Wave_Step= word ptr  0Ah
@@ -27550,7 +27550,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp NX_VGA_ColorWave
+endp Wave_Palette_Colors__NIU
 ; Attributes: bp-based frame
 proc Create_Remap_Palette far
 Tbl_Index= word ptr  6
@@ -28471,7 +28471,7 @@ pop     bp
 retf
 endp Delete_Structure
 ; Attributes: bp-based frame
-proc Copy_Memory_Less far
+proc Copy_Memory_Less_Than far
 Destn@= dword ptr  6
 Source@= dword ptr  0Ah
 Amt_Bytes= word ptr  0Eh
@@ -28523,7 +28523,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp Copy_Memory_Less
+endp Copy_Memory_Less_Than
 ; Attributes: bp-based frame
 proc Clear_Memory far
 Target@= dword ptr  6
@@ -28825,7 +28825,7 @@ pop     bp
 retf
 endp Clear_Bit_Field
 ; Attributes: bp-based frame
-proc MEM_TestBit_Near far
+proc Test_Bit_Field_Near far
 Result= word ptr -2
 Bit_Index= word ptr  6
 BitField@= word ptr  8
@@ -28858,7 +28858,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp MEM_TestBit_Near
+endp Test_Bit_Field_Near
 ; Attributes: bp-based frame
 proc Set_Bit_Field_Near far
 Bit_Index= word ptr  6
@@ -31936,7 +31936,7 @@ assume cs:seg027
 ;org 0Ch
 assume es:nothing, ss:nothing, ds:dseg, fs:nothing, gs:nothing
 ; Attributes: bp-based frame
-proc Draw_Frame_ASM far
+proc FLIC_Draw_Frame far
 x_start= word ptr  6
 y_start= word ptr  8
 frame_width= word ptr  0Ah
@@ -32097,9 +32097,9 @@ pop     _DI_screen_pos
 pop     si
 pop     bp
 retf
-endp Draw_Frame_ASM
+endp FLIC_Draw_Frame
 ; Attributes: noreturn bp-based frame
-proc Remap_Draw_Frame_ASM far
+proc FLIC_Remap_Draw_Frame far
 Left= word ptr  6
 Top= word ptr  8
 Width= word ptr  0Ah
@@ -32371,7 +32371,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp Remap_Draw_Frame_ASM
+endp FLIC_Remap_Draw_Frame
 cseg_EmmLgclPg dw 0
 ; int cseg_EmmHndl
 cseg_EmmHndl dw 0
@@ -33035,7 +33035,7 @@ pop     bp
 retf
 endp Create_Picture
 ; Attributes: bp-based frame
-proc LBX_IMG_VShiftRect far
+proc Shear_Bitmap_Y far
 Image_Data_Address= dword ptr -16h
 New_Height= word ptr -12h
 Backscaled_Top= word ptr -10h
@@ -33287,9 +33287,9 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp LBX_IMG_VShiftRect
+endp Shear_Bitmap_Y
 ; Attributes: bp-based frame
-proc LBX_IMG_VertWarp far
+proc Shear_Array_Bitmap_Y far
 Image_Data@= dword ptr -0Eh
 Warped_Height= word ptr -0Ah
 Col_Shift_Value= word ptr -8
@@ -33459,9 +33459,9 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp LBX_IMG_VertWarp
+endp Shear_Array_Bitmap_Y
 ; Attributes: bp-based frame
-proc LBX_IMG_HorzWarp far
+proc Shear_Array_Bitmap_X far
 Total_Pixels= word ptr -14h
 Image_Data@= dword ptr -12h
 LineShift_Size= word ptr -0Eh
@@ -33638,7 +33638,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp LBX_IMG_HorzWarp
+endp Shear_Array_Bitmap_X
 ; Attributes: bp-based frame
 proc Create_Blank_Picture far
 Image_Size_Bytes= word ptr -2
@@ -34082,7 +34082,7 @@ push    [bp+IMG_Huge_Off]
 push    [bp+PS_FLIC_Header.Width]
 push    di
 push    si
-call    Draw_Frame_ASM
+call    FLIC_Draw_Frame
 jmp     short @@End_VgaDrawBitmap
 @@YayShading:
 push    [bp+IMG_Huge_Seg]
@@ -34090,7 +34090,7 @@ push    [bp+IMG_Huge_Off]
 push    [bp+PS_FLIC_Header.Width]
 push    di
 push    si
-call    Remap_Draw_Frame_ASM
+call    FLIC_Remap_Draw_Frame
 @@End_VgaDrawBitmap:
 add     sp, 0Ah
 jmp     short @@Done
@@ -34627,7 +34627,7 @@ pop     bp
 retf
 endp FLIC_Get_Height
 ; Attributes: bp-based frame
-proc VGA_WndDrawRotateImg far
+proc Draw_Bitmap_Rotated far
 Image_Width= word ptr -0Eh
 BL_Y= word ptr -0Ch
 BL_X= word ptr -0Ah
@@ -34680,7 +34680,7 @@ push    [bp+Image_Width]
 push    [bp+Angle]
 nop
 push    cs
-call    near ptr VGA_RotateRect
+call    near ptr Get_Rotated_Pixels
 add     sp, 16h
 push    [bp+Image_Width]
 push    di
@@ -34695,16 +34695,16 @@ push    [bp+Top]
 push    [bp+Left]
 nop
 push    cs
-call    near ptr VGA_WndDrawImageRect
+call    near ptr Draw_Bitmap_Animation_Block
 add     sp, 16h
 pop     di
 pop     si
 mov     sp, bp
 pop     bp
 retf
-endp VGA_WndDrawRotateImg
+endp Draw_Bitmap_Rotated
 ; Attributes: bp-based frame
-proc VGA_WndDrawImageRect far
+proc Draw_Bitmap_Animation_Block far
 Read_Offset= word ptr -4Eh
 Col1_Hgt= word ptr -4Ch
 Draw_Height= word ptr -4Ah
@@ -35217,7 +35217,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture
+call    Texture_Map_Block
 jmp     short loc_2007E
 loc_20027:
 mov     ax, [screen_window_x2]
@@ -35252,7 +35252,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture_R
+call    Remap_Texture_Map_Block
 loc_2007E:
 add     sp, 2Eh
 loc_20081:
@@ -35800,7 +35800,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture
+call    Texture_Map_Block
 jmp     short loc_205C1
 loc_2056A:
 mov     ax, [screen_window_x2]
@@ -35835,7 +35835,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture_R
+call    Remap_Texture_Map_Block
 loc_205C1:
 add     sp, 2Eh
 loc_205C4:
@@ -36158,7 +36158,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture
+call    Texture_Map_Block
 jmp     short loc_20904
 loc_208AD:
 mov     ax, [screen_window_x2]
@@ -36193,7 +36193,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture_R
+call    Remap_Texture_Map_Block
 loc_20904:
 add     sp, 2Eh
 loc_20907:
@@ -36522,7 +36522,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture
+call    Texture_Map_Block
 jmp     short loc_20C51
 loc_20BFA:
 mov     ax, [screen_window_x2]
@@ -36557,7 +36557,7 @@ push    [bp+Col1_Hgt]
 push    [bp+Draw_Width]
 push    [bp+Draw_Top]
 push    [bp+Draw_Left]
-call    VGA_DrawTexture_R
+call    Remap_Texture_Map_Block
 loc_20C51:
 add     sp, 2Eh
 loc_20C54:
@@ -36566,7 +36566,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp VGA_WndDrawImageRect
+endp Draw_Bitmap_Animation_Block
 off_20C5A dw offset loc_209B6
 dw offset loc_20A14
 dw offset loc_20A74
@@ -36729,7 +36729,7 @@ push    [bp+RM_X]
 push    [bp+LM_Y]
 push    di
 push    cs
-call    near ptr VGA_WndDrawImageRect
+call    near ptr Draw_Bitmap_Animation_Block
 add     sp, 16h
 pop     di
 pop     si
@@ -36738,7 +36738,7 @@ pop     bp
 retf
 endp UU_VGA_WndDrawTransform
 ; Attributes: bp-based frame
-proc VGA_RotateRect far
+proc Get_Rotated_Pixels far
 Original_X= word ptr -6
 Center_Y= word ptr -4
 Center_X= word ptr -2
@@ -37038,7 +37038,7 @@ pop     si
 mov     sp, bp
 pop     bp
 retf
-endp VGA_RotateRect
+endp Get_Rotated_Pixels
 ; Attributes: bp-based frame
 proc Draw_Picture far
 x= word ptr  6
@@ -37696,7 +37696,7 @@ push    ax
 push    [bp+IMG_Seg]
 mov     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 xor     ax, ax
 jmp     loc_215D2
@@ -37733,7 +37733,7 @@ push    ax
 push    [bp+IMG_Seg]
 mov     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 loc_21559:
 mov     ax, si
@@ -37752,7 +37752,7 @@ mov     ax, [bp+Col_Index]
 imul    si
 add     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 loc_21587:
 cmp     [bp+TrimBottom], 0
@@ -37764,7 +37764,7 @@ imul    si
 add     ax, [bp+Bottom]
 add     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 loc_215A7:
 inc     [bp+Col_Index]
@@ -37784,7 +37784,7 @@ mov     ax, di
 imul    si
 add     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 loc_215D2:
 pop     di
@@ -37842,7 +37842,7 @@ push    ax
 push    [bp+IMG_Seg]
 mov     ax, 10h
 push    ax
-call    Clear_Bitmap_Pixels
+call    Clear_Memory_Far
 add     sp, 6
 xor     ax, ax
 jmp     loc_216B8
@@ -38565,7 +38565,7 @@ jz      short loc_21BD1
 @@AddOneToCaptureRemainder:
 inc     [bp+Page_Count]
 loc_21BD1:
-call    EMM_Get_Page_Frame
+call    EMM_GetPageFrame
 mov     [bp+PageFrame_SgmtAddr], ax
 mov     si, [bp+First_Log_Page]
 mov     ax, [word ptr bp+lu_Entry_Size+2]
@@ -41830,7 +41830,7 @@ pop     bp
 retf
 endp Mask_Bitmap_Pixels_Inverse
 ; Attributes: bp-based frame
-proc Clear_Bitmap_Pixels far
+proc Clear_Memory_Far far
 Target@= dword ptr  6
 Amt_Bytes= word ptr  0Ah
 push    bp
@@ -41851,7 +41851,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp Clear_Bitmap_Pixels
+endp Clear_Memory_Far
 Horz_Remainder dw 0
 Horz_Ratio dw 0
 Orig_Height dw 0
@@ -42024,7 +42024,7 @@ GFX_RNG_TempSeed dw 0
 GFX_RND100_Lookup db 2Ah, 44h, 23h, 1, 46h, 19h, 4Fh, 3Bh, 3Fh, 41h, 6, 2Eh, 52h, 1Ch, 3Eh, 5Ch, 60h, 2Bh, 1Ch, 25h, 5Ch, 5, 3, 36h, 5Dh, 53h, 16h, 11h, 13h, 60h, 30h, 1Bh, 48h, 27h, 46h, 0Dh, 44h, 64h, 24h, 5Fh, 4, 0Ch, 17h, 22h, 4Ah, 41h, 2Ah, 0Ch, 36h, 45h, 30h, 2Dh, 3Fh, 3Ah, 26h, 3Ch, 18h, 2Ah, 1Eh, 4Fh, 11h, 24h, 5Bh, 2Bh, 59h, 7, 29h, 2Bh, 41h, 31h, 2Fh, 6, 5Bh, 1Eh, 47h, 33h, 7, 2, 5Eh, 31h, 1Eh, 18h, 55h, 37h, 39h, 29h, 43h, 4Dh, 20h, 9, 2Dh, 28h, 1Bh, 18h, 26h, 27h, 13h, 53h, 1Eh, 2Ah, 22h, 10h, 28h, 3Bh, 5, 1Fh, 4Eh, 7, 4Ah, 57h, 16h, 2Eh, 19h, 49h, 47h, 1Eh, 4Eh, 4Ah, 62h, 0Dh, 57h, 5Bh, 3Eh, 25h, 38h, 44h, 38h, 4Bh, 20h, 35h, 2 dup(33h), 2Ah, 19h, 43h, 1Fh, 8, 5Ch, 8, 26h, 3Ah, 58h, 36h, 54h, 2Eh, 2 dup(0Ah), 3Bh, 16h, 59h, 17h, 2Fh, 7, 1Fh, 0Eh, 45h, 1, 5Ch, 3Fh, 38h, 0Bh, 3Ch, 19h, 26h, 31h, 54h, 60h, 2Ah, 3, 33h, 5Ch, 25h, 4Bh, 15h, 61h, 16h, 31h, 64h, 45h, 55h, 52h, 23h, 36h, 64h, 13h, 27h, 1, 59h, 1Ch, 44h, 1Dh, 5Eh, 31h, 54h, 8, 16h, 0Bh, 12h, 0Eh, 0Fh, 0Ah, 11h, 24h, 34h, 1, 32h, 14h
 db 39h, 63h, 4, 19h, 9, 2Dh, 0Ah, 5Ah, 3, 60h, 56h, 5Eh, 2Ch, 18h, 58h, 0Fh, 4, 31h, 1, 3Bh, 13h, 51h, 61h, 63h, 52h, 5Ah, 63h, 0Ah, 3Ah, 49h, 17h, 27h, 5Dh, 27h, 50h, 5Bh, 3Ah, 3Bh, 5Ch, 10h, 59h, 39h, 0Ch, 3, 23h, 49h, 38h, 1Dh, 2Fh
 ; Attributes: bp-based frame
-proc Vanish_Bitmap__WIP far
+proc Vanish_Bitmap far
 bitmap= word ptr  6
 percent= word ptr  8
 push    bp
@@ -42036,7 +42036,7 @@ push    ds
 mov     ax, 1000
 push    ax
 push    cs
-call    near ptr RNG_GFX_Random__WIP
+call    near ptr Vanish_Bitmap_Dither_Seed
 nop
 add     sp, 2
 mov     [cs:GFX_RNG_TempSeed], ax
@@ -42051,7 +42051,7 @@ mov     ds, ax
 assume ds:seg031
 loc_234E5:
 mov     ax, [cs:GFX_RNG_TempSeed]
-call    rnd_bitfiddle__1oom
+call    Dither_Scramble_Seed
 mov     [cs:GFX_RNG_TempSeed], ax
 mov     al, ah
 xor     ah, ah
@@ -42083,7 +42083,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp Vanish_Bitmap__WIP
+endp Vanish_Bitmap
 ; Attributes: bp-based frame
 proc Gray_Scale_Bitmap far
 IMG_Seg= word ptr  6
@@ -42161,7 +42161,7 @@ pop     bp
 retf
 endp Gray_Scale_Bitmap
 ; Attributes: bp-based frame
-proc LBX_IMG_RevGrayscale far
+proc Inverse_Gray_Scale_Bitmap far
 IMG_Seg= word ptr  6
 Grayscale_Last= word ptr  8
 push    bp
@@ -42237,9 +42237,9 @@ pop     di
 pop     ds
 pop     bp
 retf
-endp LBX_IMG_RevGrayscale
+endp Inverse_Gray_Scale_Bitmap
 ; Attributes: bp-based frame
-proc UU_DUP_RevGrayscale far
+proc DUPE_Inverse_Gray_Scale_Bitmap far
 IMG_Seg= word ptr  6
 Grayscale_Last= word ptr  8
 push    bp
@@ -42317,10 +42317,10 @@ pop     ds
 pop     bp
 locret_236B4:
 retf
-endp UU_DUP_RevGrayscale
+endp DUPE_Inverse_Gray_Scale_Bitmap
 C_LFSR_MASK dd 0A2893h
 ; Attributes: bp-based frame
-proc RNG_GFX_Random__WIP far
+proc Vanish_Bitmap_Dither_Seed far
 Output_Shift_Bits= word ptr -2
 n= word ptr  6
 push    bp
@@ -42397,7 +42397,7 @@ mov     sp, bp
 pop     bp
 locret_23746:
 retf
-endp RNG_GFX_Random__WIP
+endp Vanish_Bitmap_Dither_Seed
 ends seg031
 ; Segment type: Pure code
 segment seg032 byte public 'CODE' use16
@@ -42776,7 +42776,7 @@ Skip_Width dw 0
 Min_Write_Offset dw 0
 Max_Write_Offset dw 0
 ; Attributes: bp-based frame
-proc VGA_DrawTexture far
+proc Texture_Map_Block far
 Start_X= word ptr  6
 Start_Y= word ptr  8
 Width= word ptr  0Ah
@@ -42950,9 +42950,9 @@ pop     ds
 pop     es
 pop     bp
 retf
-endp VGA_DrawTexture
+endp Texture_Map_Block
 ; Attributes: bp-based frame
-proc VGA_DrawTexture_R far
+proc Remap_Texture_Map_Block far
 Start_X= word ptr  6
 Start_Y= word ptr  8
 Width= word ptr  0Ah
@@ -43202,7 +43202,7 @@ pop     es
 loc_23ED4:
 pop     bp
 retf
-endp VGA_DrawTexture_R
+endp Remap_Texture_Map_Block
 ends seg032
 ; Segment type: Pure code
 segment seg033 byte public 'CODE' use16
@@ -43449,14 +43449,14 @@ mov     sp, bp
 pop     bp
 retf
 endp Init_Mouse_Driver
-proc RP_MOUSE_SetUsable far
+proc RP_Mouse_SetUsable far
 push    ds
 mov     ax, seg dseg
 mov     ds, ax
 mov     [CRP_g_MOUSE_EmuEnabled], 1
 pop     ds
 retf
-endp RP_MOUSE_SetUsable
+endp RP_Mouse_SetUsable
 proc Reset_System_Mouse far
 push    si
 push    di
@@ -47111,21 +47111,21 @@ pop     bp
 retf
 endp UU_GUI_SaveClickFile
 ; Attributes: bp-based frame
-proc Disable_Cancel far
+proc Enable_Cancel far
 push    bp
 mov     bp, sp
 mov     [mouse_cancel_disabled], e_ST_TRUE
 pop     bp
 retf
-endp Disable_Cancel
+endp Enable_Cancel
 ; Attributes: bp-based frame
-proc Enable_Cancel far
+proc Disable_Cancel far
 push    bp
 mov     bp, sp
 mov     [mouse_cancel_disabled], 0
 pop     bp
 retf
-endp Enable_Cancel
+endp Disable_Cancel
 ; Attributes: bp-based frame
 proc Disable_Mouse_Wait far
 push    bp
@@ -50479,7 +50479,7 @@ pop     bp
 retf
 endp Scan_Input
 ; Attributes: bp-based frame
-proc UU_GUI_KeyWaitLoop far
+proc Read_Character far
 push    bp
 mov     bp, sp
 jmp     short $+2
@@ -50491,7 +50491,7 @@ call    Read_Key
 jmp     short $+2
 pop     bp
 retf
-endp UU_GUI_KeyWaitLoop
+endp Read_Character
 ; Attributes: bp-based frame
 proc Reset_Wait_For_Input far
 push    bp
@@ -54004,7 +54004,7 @@ pop     bp
 retf
 endp Add_Hot_Key
 ; Attributes: bp-based frame
-proc UU_GUI_CreateHelpLink far
+proc Add_Click_Link_Field__NIU far
 Parent= word ptr  6
 State@= word ptr  8
 Index= word ptr  0Ah
@@ -54128,7 +54128,7 @@ pop     di
 pop     si
 pop     bp
 retf
-endp UU_GUI_CreateHelpLink
+endp Add_Click_Link_Field__NIU
 ; Attributes: bp-based frame
 proc Add_Grid_Field far
 Left= word ptr  6
@@ -55059,7 +55059,7 @@ pop     bp
 retf
 endp Clear_Fields
 ; Attributes: bp-based frame
-proc NX_UU_GUI_NoSelectColor far
+proc Set_Unselectable_Text_Color__NIU far
 ColorSet_Index= word ptr  6
 push    bp
 mov     bp, sp
@@ -55075,7 +55075,7 @@ mov     [GUI_NoTxtSelectColor], 0
 loc_2A753:
 pop     bp
 retf
-endp NX_UU_GUI_NoSelectColor
+endp Set_Unselectable_Text_Color__NIU
 ; Attributes: bp-based frame
 proc UU_GUI_ScrollableTxtDlg far
 Local_Buffer= byte ptr -34h
@@ -57083,7 +57083,7 @@ cmp     ax, 2
 jz      short @@NotInputTypeZeroOneTwo
 jmp     short @@NoMouseOrEmu
 @@DoMouseEmuByConfig:
-call    RP_MOUSE_SetUsable
+call    RP_Mouse_SetUsable
 mov     [mouse_installed], 0
 mov     [g_MOUSE_Emu_X], 158
 mov     [g_MOUSE_Emu_Y], 100
@@ -57108,7 +57108,7 @@ mov     [mouse_installed], ax
 cmp     [mouse_installed], e_RE_FAILURE
 jnz     short @@SuccessMouseInit
 @@DoMouseEmuByFailure:
-call    RP_MOUSE_SetUsable
+call    RP_Mouse_SetUsable
 mov     [g_MOUSE_Emu_X], 158
 mov     [g_MOUSE_Emu_Y], 100
 mov     ax, 100
@@ -57200,14 +57200,14 @@ locret_2B9D8:
 retf
 endp Set_Input_Delay
 ; Attributes: bp-based frame
-proc UU_Get_Input_Delay far
+proc Get_Input_Delay far
 push    bp
 mov     bp, sp
 mov     ax, [input_delay]
 jmp     short $+2
 pop     bp
 retf
-endp UU_Get_Input_Delay
+endp Get_Input_Delay
 ; Attributes: bp-based frame
 proc UU_GUI_ClearSelectable far
 Ctrl_Index= word ptr  6
@@ -62747,17 +62747,17 @@ mov     ax, AIL_VOC_PB_STAT
 jmp     near ptr _call_driver
 endp UU_AIL_VOC_play_status
 ; Attributes: library function
-proc _AIL_start_digi_play far
+proc _AIL_start_digital_playback far
 Driver= word ptr  4
 mov     ax, AIL_START_D_PB
 jmp     near ptr _call_driver
-endp _AIL_start_digi_play
+endp _AIL_start_digital_playback
 ; Attributes: library function
-proc _AIL_stop_digi_play far
+proc _AIL_stop_digital_playback far
 Driver= word ptr  4
 mov     ax, AIL_STOP_D_PB
 jmp     near ptr _call_driver
-endp _AIL_stop_digi_play
+endp _AIL_stop_digital_playback
 ; Attributes: library function
 proc UU_AIL_pause_digi_play far
 Driver= word ptr  4
@@ -62803,7 +62803,7 @@ mov     ax, AIL_STATE_TAB_SIZE
 jmp     near ptr _call_driver
 endp _AIL_state_table_size
 ; Attributes: library function
-proc _AIL_register_seq far
+proc _AIL_register_sequence far
 Driver= word ptr  4
 FORM_XMID= dword ptr  6
 Seq_Num= word ptr  0Ah
@@ -62811,7 +62811,7 @@ State_Tbl= dword ptr  0Ch
 Controller_Tbl= dword ptr  10h
 mov     ax, AIL_REG_SEQ
 jmp     near ptr _call_driver
-endp _AIL_register_seq
+endp _AIL_register_sequence
 ; Attributes: library function
 proc _AIL_release_seq_hnd far
 Driver= word ptr  4
@@ -62820,26 +62820,26 @@ mov     ax, AIL_REL_SEQ_HND
 jmp     near ptr _call_driver
 endp _AIL_release_seq_hnd
 ; Attributes: library function
-proc _AIL_t_cache_size far
+proc _AIL_default_timbre_cache_size far
 Driver= word ptr  4
 mov     ax, AIL_T_CACHE_SIZE
 jmp     near ptr _call_driver
-endp _AIL_t_cache_size
+endp _AIL_default_timbre_cache_size
 ; Attributes: library function
-proc _AIL_define_t_cache far
+proc _AIL_define_timbre_cache far
 Driver= word ptr  4
 Timbre_Cache= dword ptr  6
 Cache_Size= word ptr  0Ah
 mov     ax, AIL_DEFINE_T_CACHE
 jmp     near ptr _call_driver
-endp _AIL_define_t_cache
+endp _AIL_define_timbre_cache
 ; Attributes: library function
-proc _AIL_timbre_req far
+proc _AIL_timbre_request far
 Driver= word ptr  4
 Sequence= word ptr  6
 mov     ax, AIL_T_REQ
 jmp     near ptr _call_driver
-endp _AIL_timbre_req
+endp _AIL_timbre_request
 ; Attributes: library function
 proc _AIL_install_timbre far
 Driver= word ptr  4
@@ -62916,14 +62916,14 @@ mov     ax, AIL_REL_TEMPO
 jmp     near ptr _call_driver
 endp UU_AIL_relative_tempo
 ; Attributes: library function
-proc UU_AIL_set_rel_volume far
+proc _AIL_set_rel_volume far
 Driver= word ptr  4
 Sequence= word ptr  6
 Percent= word ptr  8
 Milliseconds= word ptr  0Ah
 mov     ax, AIL_SET_REL_VOL
 jmp     near ptr _call_driver
-endp UU_AIL_set_rel_volume
+endp _AIL_set_rel_volume
 ; Attributes: library function
 proc UU_AIL_set_rel_tempo far
 Driver= word ptr  4
@@ -65180,7 +65180,7 @@ call    strcat
 pop     cx
 pop     cx
 push    [SND_MIDI_Drv_handle]
-call    _AIL_t_cache_size
+call    _AIL_default_timbre_cache_size
 pop     cx
 mov     _DI_timbre_cache_size, ax
 cmp     _DI_timbre_cache_size, 2000
@@ -65207,7 +65207,7 @@ push    _DI_timbre_cache_size
 push    [word ptr bp+Timbre_Cache+2]
 push    [word ptr bp+Timbre_Cache]
 push    [SND_MIDI_Drv_handle]
-call    _AIL_define_t_cache
+call    _AIL_define_timbre_cache
 add     sp, 8
 loc_3032D:
 mov     [audio_initialized], e_ST_TRUE
@@ -65240,7 +65240,7 @@ jmp     short $+2
 loc_30374:
 nop
 push    cs
-call    near ptr SND_Get_Seq_Status
+call    near ptr Midi_Sequence_Status
 cmp     ax, 2
 jnz     short loc_30374
 loc_3037E:
@@ -65263,7 +65263,7 @@ jmp     short $+2
 loc_303A2:
 nop
 push    cs
-call    near ptr SND_Get_Seq_Status
+call    near ptr Midi_Sequence_Status
 cmp     ax, 2
 jnz     short loc_303A2
 @@JmpReturn_1:
@@ -65375,7 +65375,7 @@ push    ax
 push    [word ptr SND_Music_Data@+2]
 push    [word ptr SND_Music_Data@]
 push    [SND_MIDI_Drv_handle]
-call    _AIL_register_seq
+call    _AIL_register_sequence
 add     sp, 10h
 mov     [SND_Music_Seq_Handle], ax
 cmp     ax, -1
@@ -65447,7 +65447,7 @@ db  59h
 loc_3051B:
 push    [SND_Music_Seq_Handle]
 push    [SND_MIDI_Drv_handle]
-call    _AIL_timbre_req
+call    _AIL_timbre_request
 pop     cx
 pop     cx
 mov     [bp+Timbre_Needed], ax
@@ -65511,7 +65511,7 @@ jz      short loc_305C1
 cmp     [SND_Digi_Drv_Index], SND_None
 jle     short loc_305C1
 push    [SND_Digi_Drv_Handle]
-call    _AIL_stop_digi_play
+call    _AIL_stop_digital_playback
 pop     cx
 loc_305C1:
 mov     ax, VOC_FormSig
@@ -65539,7 +65539,7 @@ push    [SND_Digi_Drv_Handle]
 call    _AIL_play_VOC_file
 add     sp, 8
 push    [SND_Digi_Drv_Handle]
-call    _AIL_start_digi_play
+call    _AIL_start_digital_playback
 jmp     short loc_30619
 loc_30610:
 mov     ax, SND_Invalid_File
@@ -65629,7 +65629,7 @@ jz      short loc_306C6
 cmp     [SND_Digi_Drv_Index], SND_None
 jle     short loc_306C6
 push    [SND_Digi_Drv_Handle]
-call    _AIL_stop_digi_play
+call    _AIL_stop_digital_playback
 pop     cx
 loc_306C6:
 mov     ax, -1
@@ -65657,7 +65657,7 @@ push    [SND_Digi_Drv_Handle]
 call    _AIL_play_VOC_file
 add     sp, 8
 push    [SND_Digi_Drv_Handle]
-call    _AIL_start_digi_play
+call    _AIL_start_digital_playback
 pop     cx
 loc_30714:
 pop     di
@@ -65667,7 +65667,7 @@ pop     bp
 retf
 endp Play_Sound ; sp-analysis failed
 ; Attributes: bp-based frame
-proc UU_SND_SetMIDIVol far
+proc Set_Music_Volume__STUB far
 Percent= word ptr -2
 Vol_Percent= word ptr  6
 push    bp
@@ -65696,16 +65696,16 @@ push    ax
 push    [bp+Percent]
 push    [SND_Music_Seq_Handle]
 push    [SND_MIDI_Drv_handle]
-call    UU_AIL_set_rel_volume
+call    _AIL_set_rel_volume
 add     sp, 8
 loc_3075D:
 pop     si
 mov     sp, bp
 pop     bp
 retf
-endp UU_SND_SetMIDIVol
+endp Set_Music_Volume__STUB
 ; Attributes: bp-based frame
-proc UU_SND_GetMIDIVol far
+proc Get_Music_Volume__STUB far
 Percent= word ptr -2
 push    bp
 mov     bp, sp
@@ -65734,9 +65734,9 @@ loc_30795:
 mov     sp, bp
 pop     bp
 retf
-endp UU_SND_GetMIDIVol
+endp Get_Music_Volume__STUB
 ; Attributes: bp-based frame
-proc UU_SND_Silence far
+proc Stop_All_Sounds__STUB far
 Percent= word ptr -2
 push    bp
 mov     bp, sp
@@ -65761,7 +65761,7 @@ push    ax
 push    [bp+Percent]
 push    [SND_Music_Seq_Handle]
 push    [SND_MIDI_Drv_handle]
-call    UU_AIL_set_rel_volume
+call    _AIL_set_rel_volume
 add     sp, 8
 loc_307E1:
 cmp     [SND_Digi_Drv_Handle], -1
@@ -65769,15 +65769,15 @@ jz      short loc_307F9
 cmp     [SND_Digi_Drv_Index], SND_None
 jle     short loc_307F9
 push    [SND_Digi_Drv_Handle]
-call    _AIL_stop_digi_play
+call    _AIL_stop_digital_playback
 pop     cx
 loc_307F9:
 mov     sp, bp
 pop     bp
 retf
-endp UU_SND_Silence
+endp Stop_All_Sounds__STUB
 ; Attributes: bp-based frame
-proc SND_Get_Seq_Status far
+proc Midi_Sequence_Status far
 Seq_Status= word ptr -2
 push    bp
 mov     bp, sp
@@ -65803,7 +65803,7 @@ loc_3082D:
 mov     sp, bp
 pop     bp
 retf
-endp SND_Get_Seq_Status
+endp Midi_Sequence_Status
 ; Attributes: bp-based frame
 proc Stop_Music__STUB far
 push    bp
@@ -65883,7 +65883,7 @@ pop     bp
 retf
 endp Audio_Uninit__STUB
 ; Attributes: bp-based frame
-proc UU_SND_LegacyFn far
+proc NX_UU_SND_LegacyFn far
 Zero_Enabled= word ptr  6
 push    bp
 mov     bp, sp
@@ -65935,7 +65935,7 @@ jmp     short $+2
 loc_3095B:
 pop     bp
 retf
-endp UU_SND_LegacyFn
+endp NX_UU_SND_LegacyFn
 ; Attributes: bp-based frame
 proc BLASTER__board_ID far
 string= byte ptr -8Ch
@@ -73274,7 +73274,7 @@ mov     ax, offset cnst_EXESwap_Arg
 push    ax
 mov     ax, offset cnst_EXESwap_File
 push    ax
-call    Respawn
+call    GAME_EXE_Swap
 add     sp, 8
 pop     save_gam_idx
 pop     bp
@@ -78175,7 +78175,7 @@ call    Set_Mouse_List
 pop     cx
 pop     cx
 call    Clear_Fields
-call    Disable_Cancel
+call    Enable_Cancel
 mov     [bp+wsa_ptr], offset _players.alchemy
 mov     [bp+leave_screen], 0
 mov     [bp+First_Draw_Done], 0
@@ -103820,7 +103820,7 @@ mov     ax, 0Bh
 push    ax
 mov     ax, 0F4h
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -103836,7 +103836,7 @@ mov     ax, 8
 push    ax
 mov     ax, 0F7h
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -104118,7 +104118,7 @@ mov     ax, 0Bh
 push    ax
 mov     ax, 0F4h
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -104134,7 +104134,7 @@ mov     ax, 8
 push    ax
 mov     ax, 0F7h
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -104392,7 +104392,7 @@ mov     ax, 11
 push    ax
 mov     ax, 244
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -104608,7 +104608,7 @@ mov     ax, 0Bh
 push    ax
 mov     ax, 0F4h
 push    ax
-call    VGA_SlideColors__STUB
+call    Rotate_Palette_Colors
 add     sp, 6
 mov     ax, [GUI_ColorSlide_State]
 inc     ax
@@ -115396,7 +115396,7 @@ push    ax
 loc_553BC:
 mov     ax, 28
 push    ax
-call    EMM_Get_Handle
+call    EMM_GetHandle
 add     sp, 6
 mov     [EmmHndl_FIGUREX], ax
 mov     ax, 1
@@ -115405,7 +115405,7 @@ mov     ax, offset EmmHndlNm_TILEXXX
 push    ax
 mov     ax, 3
 push    ax
-call    EMM_Get_Handle
+call    EMM_GetHandle
 add     sp, 6
 mov     [EmmHndl_TILEXXX], ax
 mov     [tmp_World_Data_Paras], 3519
@@ -115552,7 +115552,7 @@ pop     cx
 mov     [World_Data_Extra], ax
 mov     ax, 632
 push    ax
-call    EMMDATAH_Allocate_First
+call    EMM_EMMDATAH_AllocFirst
 pop     cx
 push    ax
 call    SA_MK_FP0
@@ -115561,7 +115561,7 @@ mov     [word ptr movepath_cost_map+2], dx
 mov     [word ptr movepath_cost_map], ax
 mov     ax, 1802
 push    ax
-call    EMMDATAH_Allocate_Next
+call    EMM_EMMDATAH_AllocNext
 pop     cx
 push    ax
 call    SA_MK_FP0
@@ -115570,7 +115570,7 @@ mov     [word ptr movement_mode_cost_maps+2], dx
 mov     [word ptr movement_mode_cost_maps], ax
 mov     ax, 301
 push    ax
-call    EMMDATAH_Allocate_Next
+call    EMM_EMMDATAH_AllocNext
 pop     cx
 push    ax
 call    SA_MK_FP0
@@ -115579,7 +115579,7 @@ mov     [word ptr city_area_shared_bits+2], dx
 mov     [word ptr city_area_shared_bits], ax
 mov     ax, 301
 push    ax
-call    EMMDATAH_Allocate_Next
+call    EMM_EMMDATAH_AllocNext
 pop     cx
 push    ax
 call    SA_MK_FP0
@@ -115588,7 +115588,7 @@ mov     [word ptr city_area_bits+2], dx
 mov     [word ptr city_area_bits], ax
 mov     ax, 1033
 push    ax
-call    EMMDATAH_Allocate_Next
+call    EMM_EMMDATAH_AllocNext
 pop     cx
 push    ax
 call    SA_MK_FP0
@@ -115778,7 +115778,7 @@ mov     ax, offset EmmHndlNm_CONTXXX
 push    ax
 mov     ax, 4
 push    ax
-call    EMM_Get_Handle
+call    EMM_GetHandle
 add     sp, 6
 mov     [ehn_CONTXXX], ax
 pop     _SI_World_Data

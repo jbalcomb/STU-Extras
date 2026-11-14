@@ -12,6 +12,7 @@ function dump so the evidence chain needs no separate IDA export. Powered by Cla
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -26,8 +27,16 @@ from piethawn_sync.models import ProcedureInventory, ProcedureRecord
 def build_inventory_from_functions_text(text: str, database: str, source_path: Path) -> ProcedureInventory:
     """Convert function-dump text into the same inventory shape as the snapshot path. Powered by Claude."""
     meta, sections = parse_snapshot_text(text)
-    functions = sections.get("function", [])
+    return build_inventory_from_functions(meta, sections.get("function", []), database, source_path)
 
+
+def build_inventory_from_function_dump_json(payload: dict, database: str, source_path: Path) -> ProcedureInventory:
+    """Convert a function-dump .json payload (meta, segments, functions) into the inventory shape. Powered by Claude."""
+    return build_inventory_from_functions(payload.get("meta", {}), payload.get("functions", []), database, source_path)
+
+
+def build_inventory_from_functions(meta: dict, functions: list, database: str, source_path: Path) -> ProcedureInventory:
+    """Order functions by segment and address and number them within each segment. Powered by Claude."""
     by_segment: dict[str, list[dict[str, str]]] = {}
     for function in functions:
         by_segment.setdefault(function.get("segment", ""), []).append(function)
@@ -67,7 +76,11 @@ def build_inventory_from_functions_text(text: str, database: str, source_path: P
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Convert an ida55 function-data dump into procedure inventory JSON.")
-    parser.add_argument("functions_txt", type=Path, help="Function dump text produced by ida55_dump_functions.idc")
+    parser.add_argument(
+        "functions_dump",
+        type=Path,
+        help="Function dump: <GAME>.idb.ida55-functions.json (from ida55_export_function_data.py) or the raw .txt from ida55_dump_functions.idc",
+    )
     parser.add_argument("--database", required=True, help="Database label, for example MGC or WZD.")
     parser.add_argument("--output", type=Path, required=True, help="Output procedure inventory JSON path.")
     return parser.parse_args()
@@ -76,8 +89,12 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     database = args.database.upper()
-    text = args.functions_txt.read_text(encoding="utf-8")
-    inventory = build_inventory_from_functions_text(text, database, args.functions_txt)
+    if args.functions_dump.suffix.lower() == ".json":
+        payload = json.loads(args.functions_dump.read_text(encoding="utf-8"))
+        inventory = build_inventory_from_function_dump_json(payload, database, args.functions_dump)
+    else:
+        text = args.functions_dump.read_text(encoding="utf-8")
+        inventory = build_inventory_from_functions_text(text, database, args.functions_dump)
     write_json(args.output, inventory.to_dict())
 
     print(f"Wrote {args.output}")

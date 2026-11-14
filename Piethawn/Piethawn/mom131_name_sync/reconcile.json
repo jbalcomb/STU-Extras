@@ -1,0 +1,166 @@
+{
+  "entries": {
+    "WZD s001p01": {
+      "action": "skip",
+      "why": "main: ReMoM is one program; it cannot have WIZARDS' main (or MAGIC's)"
+    },
+    "MGC s001p01": {
+      "action": "skip",
+      "why": "main: as WZD s001p01"
+    },
+    "MGC o050p38": {
+      "action": "skip",
+      "why": "asm: MAGIC's proc is only call Toggle_Pages; ReMoM keeps it apart from WIZARDS' PageFlip_FX as PageFlip_FX_MGC"
+    },
+    "MGC o050p36": {
+      "action": "skip",
+      "why": "MAGIC's own copy of WZD s01p12_empty_function; ReMoM names it s01p12_empty_function_MGC (pairing from the HLP_DrawExpanding call sites)"
+    },
+    "MGC o050p37": {
+      "action": "skip",
+      "why": "MAGIC's own copy of WZD s01p11_empty_function; ReMoM names it s01p11_empty_function_MGC (pairing from the HLP_DrawExpanding call sites)"
+    }
+  },
+  "mentions": [
+    {
+      "file": "BUGS_AND_QUIRKS.txt",
+      "name": "Unit_Create",
+      "near": "(..., plane 9) first",
+      "program": "WZD",
+      "why": "combat summon (#180): combat is WIZARDS only"
+    },
+    {
+      "file": "index.html",
+      "name": "Unit_Create",
+      "near": "(..., plane 9) first",
+      "program": "WZD",
+      "why": "#180, as BUGS_AND_QUIRKS.txt"
+    },
+    {
+      "file": "BUGS_AND_QUIRKS.txt",
+      "name": "Unit_Create",
+      "near": "type 0xa9 on plane 9",
+      "program": "WZD",
+      "why": "Demon Lord summon (#232): combat, WIZARDS"
+    },
+    {
+      "file": "index.html",
+      "name": "Unit_Create",
+      "near": "type 0xa9 on plane 9",
+      "program": "WZD",
+      "why": "#232, as BUGS_AND_QUIRKS.txt"
+    },
+    {
+      "file": "BUGS_AND_QUIRKS.txt",
+      "name": "Unit_Create",
+      "near": "makes nothing",
+      "program": "MGC",
+      "why": "neutral towns' garrisons at world generation (ReMoM MAPGEN.c)"
+    },
+    {
+      "file": "index.html",
+      "name": "Unit_Create",
+      "near": "makes nothing",
+      "program": "MGC",
+      "why": "as BUGS_AND_QUIRKS.txt"
+    },
+    {
+      "file": "docs/matching/MATCH_CALIBRATION.txt",
+      "name": "Unit_Create",
+      "near": "src != 2000",
+      "program": "WZD",
+      "why": "the src parameter is WIZARDS' (NAMING.TXT)"
+    },
+    {
+      "file": "docs/matching/MATCH_CALIBRATION.txt",
+      "name": "Unit_Create",
+      "near": "Place_Neutral_Cities, Progress_Bar",
+      "program": "MGC",
+      "why": "listed with MAGIC's world-generator functions"
+    },
+    {
+      "file": "docs/matching/MATCH_PLAYBOOK.txt",
+      "name": "Unit_Create",
+      "near": "Place_Neutral_Cities, Progress_Bar",
+      "program": "MGC",
+      "why": "as MATCH_CALIBRATION.txt"
+    },
+    {
+      "file": "docs/matching/MATCH_CALIBRATION.txt",
+      "name": "Unit_Create",
+      "near": "signed jle",
+      "program": "keep",
+      "why": "true of both copies"
+    },
+    {
+      "file": "src/NAMING.TXT",
+      "name": "Unit_Create",
+      "near": "sixth parameter is the city",
+      "program": "keep",
+      "why": "contrasts the two copies"
+    },
+    {
+      "file": "src/NAMING.TXT",
+      "name": "Tile_Is_Water_Gen",
+      "near": "MAPLAYER.C / WORLDGEN.C",
+      "program": "keep",
+      "why": "names both copies"
+    },
+    {
+      "file": "BUGS_AND_QUIRKS.txt",
+      "name": "Random_Weighted_Pick",
+      "near": "halve weights until the sum",
+      "program": "WZD",
+      "why": "with Event_Pick_Wizard, a WIZARDS function"
+    },
+    {
+      "file": "index.html",
+      "name": "Random_Weighted_Pick",
+      "near": "halve weights until the sum",
+      "program": "WZD",
+      "why": "as BUGS_AND_QUIRKS.txt"
+    },
+    {
+      "file": "index.html",
+      "name": "Random_Weighted_Pick",
+      "near": "for long weights",
+      "program": "WZD",
+      "why": "Random_Weighted_Pick32 (13ec:076b) is WIZARDS.C's long version"
+    },
+    {
+      "file": "index.html",
+      "name": "Random_Weighted_Pick",
+      "near": "over City_Build_Options",
+      "program": "WZD",
+      "why": "the AI's city production, WIZARDS"
+    },
+    {
+      "file": "index.html",
+      "name": "Random_Weighted_Pick",
+      "near": "BUG #376",
+      "program": "WZD",
+      "why": "AI landmass targets, WIZARDS"
+    },
+    {
+      "file": "docs/matching/MATCH_PLAYBOOK.txt",
+      "name": "Random_Weighted_Pick",
+      "near": "switch (Random_Weighted_Pick(w, 50))",
+      "program": "WZD",
+      "why": "e318 = AISPELL.C, WIZARDS"
+    },
+    {
+      "file": "docs/matching/MATCH_CALIBRATION.txt",
+      "name": "Random_Weighted_Pick",
+      "near": "register tie again",
+      "program": "keep",
+      "why": "matching note; does not say which copy"
+    },
+    {
+      "file": "docs/matching/MATCH_CALIBRATION.txt",
+      "name": "Hero_Item_Slot_Types",
+      "near": "variants harness",
+      "program": "keep",
+      "why": "matching note; does not say which copy"
+    }
+  ]
+}

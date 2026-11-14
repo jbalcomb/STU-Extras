@@ -1,0 +1,13 @@
+{
+  "segment_aliases": {
+    "_AIL_": "s037",
+    "SOUND": "s038"
+  },
+  "MGC_segment_aliases": {
+    "_AIL_": "s035",
+    "SOUND": "s036"
+  },
+  "entries": {},
+  "same_as": {},
+  "same_as_why": "'MGC oNNNpNN': 'WZD oNNNpNN' when MAGIC's procedure is the same code as WIZARDS' and ReMoM has it once, as a '// === // WZD <id>' line under the MGC id comment in ReMoM would say. Check the asm first: MAGIC's load screen (o050p03/04/28) is NOT the same as WIZARDS' o160p01-03 (different help entries, LBX, flow)."
+}

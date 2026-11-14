@@ -47,7 +47,15 @@ do the same. `idaw.py` refuses to start in either situation, backs up the packed
 for both afterwards. Read-only export scripts lose nothing on a kill; a script that renames or recolors loses its
 unsaved changes.
 
-Recovery: see the steps `idaw.py` prints, and `ida55py\restore_ida_backup.py`.
+Prevention: run read-only scripts with `idaw.py --work-dir DIR`. IDA then works on a copy of the IDB, and a
+kill can only damage the copy; delete `DIR` and re-run. On 2026-11-11 a timeout kill during IDA's exit
+(mid re-pack) left a real `MAGIC.idb` at 0 bytes; with a work copy that would have cost nothing.
+
+IDA 5.5's text-mode `idaw.exe` needs a real console window. Launched from a process without one (for example an
+automation agent's shell), it can finish the IDC and then hang on exit. Run live IDA jobs from a normal cmd or
+PowerShell window.
+
+Recovery when the real IDB was used: see the steps `idaw.py` prints, and `ida55py\restore_ida_backup.py`.
 
 ## Registry vs IDB Settings
 

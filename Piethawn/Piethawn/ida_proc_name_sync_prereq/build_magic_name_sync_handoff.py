@@ -12,6 +12,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from piethawn_sync.jsonio import load_json, write_json
+from piethawn_sync.rename_order import order_rename_pairs
 
 
 DEFAULT_COMPARISON = Path("ida_proc_name_sync_prereq/MGC-vs-WZD.procedure-evidence-comparison.json")
@@ -48,10 +49,18 @@ def collect_minimal_renames(comparison: Dict[str, Any]) -> List[Dict[str, str]]:
 
 
 def build_handoff(comparison: Dict[str, Any]) -> Dict[str, Any]:
+    """The handoff JSON: the minimal renames, ordered so chains and swaps (e.g. Enable_Cancel <-> Disable_Cancel)
+    apply one at a time without colliding. Powered by Claude."""
+    existing = {
+        str(pair.get(side, {}).get("name"))
+        for pair in comparison.get("procedure_pairs", [])
+        for side in ("left", "right")
+        if pair.get(side, {}).get("name")
+    }
     return {
         "schema_version": 1,
         "artifact": "magic_proc_name_sync_handoff",
-        "renames": collect_minimal_renames(comparison),
+        "renames": order_rename_pairs(collect_minimal_renames(comparison), existing),
     }
 
 

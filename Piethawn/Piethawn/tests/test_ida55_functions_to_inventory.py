@@ -3,7 +3,11 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from ida_proc_data_export.ida55_functions_to_inventory import build_inventory_from_functions_text
+from ida_proc_data_export.ida55_functions_to_inventory import (
+    build_inventory_from_function_dump_json,
+    build_inventory_from_functions_text,
+)
+from piethawn_sync.function_dump import build_function_dump
 
 
 def sample_function_dump() -> str:
@@ -68,6 +72,13 @@ class Ida55FunctionsToInventoryTests(unittest.TestCase):
 
         self.assertEqual(inventory.idb_path, r"C:\STU_DASM\IDA55_MOM131\MAGIC.idb")
         self.assertEqual(inventory.procedures[1].name, "Later")
+
+    def test_json_dump_gives_same_inventory_as_text(self) -> None:
+        from_text = build_inventory_from_functions_text(sample_function_dump(), "MGC", Path("f.txt"))
+        from_json = build_inventory_from_function_dump_json(build_function_dump(sample_function_dump()), "MGC", Path("f.json"))
+
+        self.assertEqual([r.to_dict() for r in from_json.procedures], [r.to_dict() for r in from_text.procedures])
+        self.assertEqual(from_json.idb_path, from_text.idb_path)
 
     def test_missing_size_is_a_counterexample(self) -> None:
         text = sample_function_dump().replace("function[0].size=149", "function[0].size=not-a-number")

@@ -35,7 +35,11 @@ def load_renames(path: Path) -> List[Dict[str, str]]:
     return renames
 
 
-def render_idc(renames: Iterable[Dict[str, Any]]) -> str:
+def render_idc(renames: Iterable[Dict[str, Any]], batch: bool = False, label: str = "magic-name-sync") -> str:
+    """Render the rename IDC. batch=False: GUI script (SaveBase, IDA stays open).
+    batch=True: command-line script for idaw.py -A; it also calls Exit(0) when every rename is ok or already synced,
+    Exit(1) when any entry failed, Exit(2) when SaveBase failed. label prefixes the summary/save log lines
+    (<label>-summary, <label>-saved, <label>-save-failed). Powered by Claude."""
     lines = [
         "#include <idc.idc>",
         "",
@@ -96,16 +100,39 @@ def render_idc(renames: Iterable[Dict[str, Any]]) -> str:
     lines.extend(
         [
             "",
-            "    Message(\"magic-name-sync-summary,attempted=%d,ok=%d,failed=%d\\n\", attempted, ok, attempted - ok);",
-            "    if ( !SaveBase(\"\", 0) )",
-            "        Message(\"magic-name-sync-save-failed\\n\");",
-            "    else",
-            "        Message(\"magic-name-sync-saved\\n\");",
-            "    Batch(0);",
-            "}",
-            "",
+            "    Message(\"" + label + "-summary,attempted=%d,ok=%d,failed=%d\\n\", attempted, ok, attempted - ok);",
         ]
     )
+    if batch:
+        lines.extend(
+            [
+                "    if ( !SaveBase(\"\", 0) )",
+                "    {",
+                "        Message(\"" + label + "-save-failed\\n\");",
+                "        Batch(0);",
+                "        Exit(2);",
+                "    }",
+                "    Message(\"" + label + "-saved\\n\");",
+                "    Batch(0);",
+                "    if ( ok != attempted )",
+                "        Exit(1);",
+                "    Exit(0);",
+                "}",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "    if ( !SaveBase(\"\", 0) )",
+                "        Message(\"" + label + "-save-failed\\n\");",
+                "    else",
+                "        Message(\"" + label + "-saved\\n\");",
+                "    Batch(0);",
+                "}",
+                "",
+            ]
+        )
     return "\n".join(lines)
 
 
@@ -113,6 +140,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate MAGIC IDA IDC procedure-name sync script from minimal handoff JSON.")
     parser.add_argument("--renames", type=Path, default=DEFAULT_RENAMES, help="Minimal rename handoff JSON.")
     parser.add_argument("--output-idc", type=Path, default=DEFAULT_OUTPUT, help="Output IDC rename script.")
+    parser.add_argument("--batch", action="store_true", help="Write the command-line variant (ends with Exit()) for idaw.py -A.")
     return parser.parse_args()
 
 
@@ -121,7 +149,7 @@ def main() -> int:
     print(f"Input renames: {args.renames}")
     renames = load_renames(args.renames)
     args.output_idc.parent.mkdir(parents=True, exist_ok=True)
-    args.output_idc.write_text(render_idc(renames), encoding="utf-8")
+    args.output_idc.write_text(render_idc(renames, batch=args.batch), encoding="utf-8")
     print(f"Wrote {args.output_idc}")
     print(f"Rename count: {len(renames)}")
     return 0

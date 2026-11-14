@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
-"""Launch IDA Pro 5.5 after backing up the packed IDB file.
+"""Launch IDA Pro 5.5 safely: on a work copy of the IDB, or after backing up the packed IDB.
 
 Usage:
-    python -B idaw.py [--ida-exe EXE] [--backup-dir DIR] [--dry-run] -- <IDA arguments, exactly one .idb>
+    python -B idaw.py [--ida-exe EXE] [--work-dir DIR | --backup-dir DIR] [--dry-run] -- <IDA arguments, exactly one .idb>
 
+--work-dir DIR    (recommended) Copy the .idb into DIR (new or empty) and run IDA on the copy. The real IDB is
+                  never opened, so a hang, kill or crash can only damage the copy; delete DIR to clean up.
+                  Scripts that write next to GetIdbPath() write into DIR. No backup is made.
+--write-back      With --work-dir, for scripts that change the database: when IDA exits with code 0, the copy is
+                  healthy, and the real IDB has not changed since it was copied, back up the real IDB (to
+                  --backup-dir) and replace it with the copy. Otherwise the real IDB is left alone and the work
+                  directory is kept for inspection.
+--backup-dir DIR  Backup folder: for --write-back, or, without --work-dir, the pre-run backup before IDA runs on the
+                  real IDB (default: %IDA55_BACKUP_DIR%, else the IDB's own folder).
 IDA executable:   --ida-exe, else %IDA55_EXE%, else C:\\STU_DASM\\IDA55\\idaw.exe
-Backup directory: --backup-dir, else %IDA55_BACKUP_DIR%, else the IDB's own folder
 Backups are named <stem>-YYYYMMDDHHMM.idb; restore_ida_backup.py reads the same names.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import re
 import shutil
@@ -46,6 +55,15 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--backup-dir",
         help=f"Directory for the pre-run .idb backup. Default: %%{BACKUP_DIR_ENV}%%, else the IDB's own folder.",
+    )
+    parser.add_argument(
+        "--work-dir",
+        help="Run IDA on a copy of the .idb placed in this new or empty directory; the real IDB is never opened.",
+    )
+    parser.add_argument(
+        "--write-back",
+        action="store_true",
+        help="With --work-dir: after a clean exit and a healthy copy, back up the real IDB and replace it with the copy.",
     )
     parser.add_argument(
         "--allow-running-ida",
@@ -296,6 +314,126 @@ def print_recovery_guidance(idb_path: Path, backup_path: Path, reason: str) -> N
         print(line, file=sys.stderr)
 
 
+def prepare_work_copy(idb_path: Path, work_dir: Path, dry_run: bool = False) -> Path:
+    """Copy the packed IDB into a new or empty work directory and return the copy's path. Powered by Claude."""
+    if not idb_path.is_file():
+        raise FileNotFoundError(f"IDB not found: {denormalize_for_display(idb_path)}")
+    if idb_path.stat().st_size == 0:
+        raise IdawError(f"Refusing to copy a 0-byte IDB: {denormalize_for_display(idb_path)}")
+    if work_dir.exists() and any(work_dir.iterdir()):
+        raise IdawError(f"Work directory is not empty: {denormalize_for_display(work_dir)}")
+    work_idb = work_dir / idb_path.name
+    if dry_run:
+        return work_idb
+    work_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(idb_path, work_idb)
+    if work_idb.stat().st_size != idb_path.stat().st_size:
+        raise IdawError(
+            f"Work copy size mismatch: {denormalize_for_display(idb_path)} -> {denormalize_for_display(work_idb)}"
+        )
+    return work_idb
+
+
+def replace_idb_argument(ida_args: Sequence[str], new_idb: Path) -> List[str]:
+    """Return the IDA arguments with the single .idb argument replaced by new_idb. Powered by Claude."""
+    return [str(new_idb) if arg.lower().endswith(".idb") else arg for arg in ida_args]
+
+
+def work_copy_problem(work_idb: Path, log_paths: Sequence[Path], offsets: Dict[Path, int]) -> Optional[str]:
+    """Describe what is wrong with the work copy after IDA exits, or None if it looks healthy. Powered by Claude."""
+    if not work_idb.exists() or work_idb.stat().st_size == 0:
+        return "IDA left a missing or 0-byte work copy"
+    if log_contains_unpacked_database_prompt(log_paths, offsets):
+        return "IDA reported unpacked database state for the work copy"
+    if find_unpacked_parts(work_idb):
+        return "IDA exited without re-packing the work copy; unpacked parts remain"
+    return None
+
+
+def file_fingerprint(path: Path) -> tuple:
+    """Size and modification time, used to detect that a file changed. Powered by Claude."""
+    stat = path.stat()
+    return (stat.st_size, stat.st_mtime_ns)
+
+
+def sha256_of(path: Path) -> str:
+    """sha256 of a file, read in 1 MiB blocks. Powered by Claude."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def write_back(idb_path: Path, work_idb: Path, original_fingerprint: tuple, backup_path: Path, allow_running_ida: bool) -> None:
+    """Replace the real IDB with the healthy work copy: refuse if the real IDB changed since it was copied, if IDA is
+    running, or if unpacked parts appeared beside it; back the real IDB up first; replace through a temporary file
+    in the same folder; verify by sha256. Powered by Claude."""
+    if file_fingerprint(idb_path) != original_fingerprint:
+        raise IdawError(
+            f"Not writing back: the real IDB changed while IDA worked on the copy: {denormalize_for_display(idb_path)}"
+        )
+    if not allow_running_ida and find_running_ida_processes():
+        raise IdawError("Not writing back: an IDA process is running; it may have the real IDB open.")
+    if find_unpacked_parts(idb_path):
+        raise IdawError(
+            f"Not writing back: unpacked parts appeared beside the real IDB (open elsewhere?): {denormalize_for_display(idb_path)}"
+        )
+    backup_idb(idb_path, backup_path)
+    print(f"Backup: {denormalize_for_display(backup_path)}")
+    temp_path = idb_path.with_name(idb_path.name + ".write-back.tmp")
+    shutil.copy2(work_idb, temp_path)
+    os.replace(temp_path, idb_path)
+    if sha256_of(idb_path) != sha256_of(work_idb):
+        raise IdawError(f"Write-back verification failed (sha256 differs): {denormalize_for_display(idb_path)}")
+    print(f"Written back: {denormalize_for_display(work_idb)} -> {denormalize_for_display(idb_path)}")
+
+
+def run_on_work_copy(args: argparse.Namespace, ida_exe: Path, idb_path: Path, ida_args: Sequence[str]) -> int:
+    """Run IDA on a copy of the IDB in --work-dir; the real IDB is only read, never opened by IDA. With --write-back,
+    a healthy copy replaces the real IDB afterwards. Powered by Claude."""
+    work_dir = normalize_path(args.work_dir)
+    print(f"IDB:    {denormalize_for_display(idb_path)}  ({'replaced only by --write-back' if args.write_back else 'read only'}; IDA runs on the work copy)")
+    preflight_checks(idb_path, args.allow_running_ida, args.allow_unpacked_parts)
+    original_fingerprint = file_fingerprint(idb_path) if idb_path.exists() else None
+    work_idb = prepare_work_copy(idb_path, work_dir, args.dry_run)
+    print(f"Work:   {denormalize_for_display(work_idb)}")
+    backup_path = backup_path_for_idb(idb_path, timestamp(), resolve_backup_dir(args.backup_dir, idb_path))
+    if args.write_back:
+        print(f"Write-back backup: {denormalize_for_display(backup_path)}")
+
+    work_args = replace_idb_argument(ida_args, work_idb)
+    log_paths = extract_log_paths(work_args)
+    offsets = log_offsets(log_paths)
+    command = [str(ida_exe)] + work_args
+    print("+", " ".join(command))
+    if args.dry_run:
+        return 0
+
+    result = subprocess.run(command)
+
+    problem = work_copy_problem(work_idb, log_paths, offsets)
+    if problem:
+        print(
+            f"\nWORK COPY DAMAGED: {problem}.\n"
+            f"  The real IDB was not opened and is unchanged: {denormalize_for_display(idb_path)}\n"
+            f"  Outputs in the work directory may be incomplete. Delete it: {denormalize_for_display(work_dir)}\n",
+            file=sys.stderr,
+        )
+        raise IdawError(f"{problem}: {denormalize_for_display(work_idb)}")
+    if args.write_back:
+        if result.returncode != 0:
+            print(
+                f"\nNOT WRITTEN BACK: IDA exited with code {result.returncode}.\n"
+                f"  The real IDB is unchanged: {denormalize_for_display(idb_path)}\n"
+                f"  The work copy is kept for inspection: {denormalize_for_display(work_idb)}\n",
+                file=sys.stderr,
+            )
+            return result.returncode
+        write_back(idb_path, work_idb, original_fingerprint, backup_path, args.allow_running_ida)
+    return result.returncode
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     ida_args = strip_passthrough_separator(args.ida_args)
@@ -304,6 +442,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     ida_exe = resolve_ida_exe(args.ida_exe)
     idb_path = find_idb_argument(ida_args)
+    if args.write_back and not args.work_dir:
+        raise IdawError("--write-back needs --work-dir.")
+    if args.work_dir:
+        if args.backup_dir and not args.write_back:
+            raise IdawError("--work-dir and --backup-dir cannot be used together without --write-back; a read-only work copy needs no backup.")
+        return run_on_work_copy(args, ida_exe, idb_path, ida_args)
+
     stamp = timestamp()
     backup_path = backup_path_for_idb(idb_path, stamp, resolve_backup_dir(args.backup_dir, idb_path))
 

@@ -24,13 +24,23 @@ Reference material (IDA 5.5 install, SDK, IDA-Python wrapper, config dumps, opti
 ## idaw.py
 
 ```powershell
-python -B ida55py\idaw.py [--ida-exe EXE] [--backup-dir DIR] [--dry-run] -- -A -L<log> -S<script.idc> <file.idb>
+python -B ida55py\idaw.py [--ida-exe EXE] [--work-dir DIR [--write-back]] [--backup-dir DIR] [--dry-run] -- -A -L<log> -S<script.idc> <file.idb>
 ```
 
 - Options for `idaw.py` go before `--`; everything after it is passed to IDA. Exactly one `.idb` is required.
 - IDA executable: `--ida-exe`, else `%IDA55_EXE%`, else `C:\STU_DASM\IDA55\idaw.exe`.
-- Backup folder: `--backup-dir`, else `%IDA55_BACKUP_DIR%`, else the IDB's own folder. Backups are named
-  `<stem>-YYYYMMDDHHMM.idb`.
+- **`--work-dir DIR` (use this for anything that only reads the database):** `idaw.py` copies the `.idb` into
+  `DIR` (which must be new or empty) and runs IDA on the copy. The real IDB is never opened, so a hang, a timeout
+  kill or a crash can only damage the copy; the fix is to delete `DIR`. IDCs that write next to `GetIdbPath()`
+  write into `DIR`, so the caller collects its outputs from there. No backup is made, so `--backup-dir` is only
+  accepted together with `--write-back`.
+- **`--write-back` (with `--work-dir`, for scripts that change the database):** after IDA exits, the real IDB is
+  backed up to `--backup-dir` and replaced with the copy, but only when IDA's exit code is 0, the copy is healthy,
+  no IDA is running, and the real IDB has not changed since it was copied (size and mtime). The replace goes through
+  a temporary file in the same folder and is checked by sha256. Otherwise the real IDB is left alone and `DIR` is
+  kept for inspection. The script must end with `Exit(0)` only on full success.
+- Without `--work-dir`, IDA runs on the real IDB after a backup to `--backup-dir`, else `%IDA55_BACKUP_DIR%`,
+  else the IDB's own folder. Backups are named `<stem>-YYYYMMDDHHMM.idb`.
 - Unsafe overrides: `--allow-running-ida`, `--allow-unpacked-parts`.
 - On a damaged result it prints recovery steps, including the exact `restore_ida_backup.py` command, and
   changes nothing.

@@ -49,7 +49,7 @@ flowchart TD
     end
 
     subgraph CS["2. Color sync (ida_proc_status_sync/)"]
-        C1["ida55_export_function_data.py --copy<br/>→ in/*.idb.ida55-functions.txt + .json (names after rename)"]
+        C1["ida55_export_function_data.py<br/>→ in/*.idb.ida55-functions.json (names after rename)"]
         C3["ida_proc_status_sync.py<br/>→ ida_proc_status_sync.plan.json"]
         C4["→ mgc_proc_status_sync.idc<br/>→ wzd_proc_status_sync.idc"]
         C5["apply each IDC on its IDB in the GUI<br/>(no SaveBase: save on close)"]
@@ -67,8 +67,8 @@ The old `build_status_sync_plan.cmd`/`.sh` runner is in `DEPRECATED/`.
 ```powershell
 # 1. Name sync: see NAME_SYNC_PROCESS.md, through applying magic_sync_names_from_wzd.idc.
 
-# 2. Color sync. Close every IDA window first. Re-export both IDBs (.txt + .json), then build the plan and IDCs.
-c:/python314/python.exe -B .\ida_proc_data_export\ida55_export_function_data.py --copy
+# 2. Color sync. Close every IDA window first. Re-export both IDBs (.json into in\; IDA runs on work copies), then build the plan and IDCs.
+c:/python314/python.exe -B .\ida_proc_data_export\ida55_export_function_data.py
 c:/python314/python.exe -B .\ida_proc_status_sync\ida_proc_status_sync.py
 
 # 3. Apply, one IDB at a time, in the IDA GUI (File > IDC file...):

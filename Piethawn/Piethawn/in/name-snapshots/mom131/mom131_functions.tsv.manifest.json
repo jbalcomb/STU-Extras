@@ -1,0 +1,47 @@
+{
+  "source": "C:\\STU\\devel\\mom131-bridge",
+  "commit": "b2465737beff899ef113e63a3b4f8af0052cfe68",
+  "taken": "2026-11-13T21:10:50-05:00",
+  "programs": {
+    "WZD": {
+      "ida_functions": "C:\\STU\\devel\\STU-Extras\\Piethawn\\Piethawn\\in\\WIZARDS.idb.ida55-functions.json",
+      "ida_functions_sha256": "666d1f964f0b2b0ceecc56aa350f19646d4a29487e1adf5fac297ef0a59f5048",
+      "map": "",
+      "map_sha256": "",
+      "map_stale": true,
+      "counts": {
+        "modules": 153,
+        "functions": 2123,
+        "by_order": 2009,
+        "by_map": 0,
+        "by_between": 0,
+        "not_placed": 114,
+        "map_ok": 0,
+        "map_differs": 0,
+        "modules_count_differs": [
+          "src/ail/AIL.ASM (_AIL_: source 114, IDA 107)"
+        ]
+      }
+    },
+    "MGC": {
+      "ida_functions": "C:\\STU\\devel\\STU-Extras\\Piethawn\\Piethawn\\in\\MAGIC.idb.ida55-functions.json",
+      "ida_functions_sha256": "f8e3c02948e24906414e3e9873839f08c24917cd8b348952cc6ea39b0ccf137f",
+      "map": "",
+      "map_sha256": "",
+      "map_stale": true,
+      "counts": {
+        "modules": 50,
+        "functions": 839,
+        "by_order": 725,
+        "by_map": 0,
+        "by_between": 0,
+        "not_placed": 114,
+        "map_ok": 0,
+        "map_differs": 0,
+        "modules_count_differs": [
+          "src/ail/AIL.ASM (_AIL_: source 114, IDA 107)"
+        ]
+      }
+    }
+  }
+}

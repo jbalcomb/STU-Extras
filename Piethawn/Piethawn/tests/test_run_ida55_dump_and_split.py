@@ -45,13 +45,13 @@ class RunIda55DumpAndSplitTests(unittest.TestCase):
 
             self.assertEqual(dump_and_split.split_asm_paths(root), [first, second])
 
-    def test_ida_export_commands_copy_into_in_with_a_timeout(self) -> None:
+    def test_ida_export_commands_run_with_a_timeout(self) -> None:
         asm_export, function_export = dump_and_split.ida_export_commands("py", 900, dry_run=False)
 
         self.assertEqual(asm_export[:3], ["py", "-B", str(Path("ida_dasm_export") / "ida55_clean_export.py")])
         self.assertEqual(function_export[:3], ["py", "-B", str(Path("ida_proc_data_export") / "ida55_export_function_data.py")])
         for command in (asm_export, function_export):
-            self.assertIn("--copy", command)
+            self.assertNotIn("--copy", command)
             self.assertEqual(command[command.index("--timeout-seconds") + 1], "900")
             self.assertNotIn("--dry-run", command)
 
